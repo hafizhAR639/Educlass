@@ -1,6 +1,6 @@
 # EduClass - Android Application 📚
 
-EduClass adalah aplikasi manajemen pembelajaran berbasis Android yang dirancang untuk memudahkan mahasiswa dalam mengelola aktivitas akademik. Saat ini, aplikasi telah mengimplementasikan sistem autentikasi dasar menggunakan database lokal.
+EduClass adalah aplikasi manajemen pembelajaran berbasis Android yang dirancang untuk memudahkan Siswa SMA dalam mengelola aktivitas akademik dengan Gaya belajar terpersonalisasi. Saat ini, aplikasi telah mengimplementasikan sistem autentikasi dasar menggunakan database lokal.
 
 ---
 
