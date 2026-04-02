@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingStart="46dp"
+        android:paddingEnd="46dp"
+        android:paddingTop="61dp"
+        android:paddingBottom="40dp">
+
+        <!-- ==================== LOGO ==================== -->
+        <ImageView
+            android:id="@+id/imgLogo"
+            android:layout_width="114dp"
+            android:layout_height="179dp"
+            android:src="@drawable/logo4"
+            android:scaleType="centerCrop"
+            android:contentDescription="Logo" />
+
+        <!-- Spacer antara logo dan form fields -->
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0"
+            android:minHeight="32dp" />
+
+        <!-- ==================== FULL NAME FIELD ==================== -->
+        <LinearLayout
+            android:id="@+id/layoutFullName"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <!-- Icon person -->
+            <ImageView
+                android:id="@+id/icPerson"
+                android:layout_width="20dp"
+                android:layout_height="22dp"
+                android:contentDescription="Person icon"
+                android:src="@drawable/ic_person"
+                app:tint="#3D4947" />
+
+            <!-- Spacer kecil antara icon dan input -->
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="match_parent" />
+
+            <!-- EditText Full Name -->
+            <EditText
+                android:id="@+id/etFullName"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Full name"
+                android:textColorHint="#6B7280"
+                android:textColor="#3D4947"
+                android:textSize="14sp"
+                android:background="@null"
+                android:inputType="textPersonName"
+                android:singleLine="true"
+                android:importantForAutofill="no" />
+
+        </LinearLayout>
+
+        <!-- Spacer antar field -->
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <!-- ==================== EMAIL FIELD ==================== -->
+        <LinearLayout
+            android:id="@+id/layoutEmail"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <!-- Icon mail -->
+            <ImageView
+                android:id="@+id/icMail"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_mail"
+                android:contentDescription="Mail icon"
+                app:tint="#3D4947" />
+
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="match_parent" />
+
+            <!-- EditText Email -->
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Email"
+                android:textColorHint="#6B7280"
+                android:textColor="#3D4947"
+                android:textSize="14sp"
+                android:background="@null"
+                android:inputType="textEmailAddress"
+                android:singleLine="true"
+                android:importantForAutofill="no" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <!-- ==================== PASSWORD FIELD ==================== -->
+        <LinearLayout
+            android:id="@+id/layoutPassword"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <!-- Icon lock -->
+            <ImageView
+                android:id="@+id/icLock1"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_lock"
+                android:contentDescription="Lock icon"
+                app:tint="#3D4947" />
+
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="match_parent" />
+
+            <!-- EditText Password -->
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Password"
+                android:textColorHint="#6B7280"
+                android:textColor="#3D4947"
+                android:textSize="14sp"
+                android:background="@null"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:importantForAutofill="no" />
+
+            <!-- Icon eye (toggle password visibility) -->
+            <ImageView
+                android:id="@+id/icEye1"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_eye"
+                android:contentDescription="Toggle password visibility"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="#3D4947" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <!-- ==================== CONFIRM PASSWORD FIELD ==================== -->
+        <LinearLayout
+            android:id="@+id/layoutConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <!-- Icon lock -->
+            <ImageView
+                android:id="@+id/icLock2"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_lock"
+                android:contentDescription="Lock icon"
+                app:tint="#3D4947" />
+
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="match_parent" />
+
+            <!-- EditText Confirm Password -->
+            <EditText
+                android:id="@+id/etConfirmPassword"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Confirm Password"
+                android:textColorHint="#6B7280"
+                android:textColor="#3D4947"
+                android:textSize="14sp"
+                android:background="@null"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:importantForAutofill="no" />
+
+            <!-- Icon eye (toggle confirm password visibility) -->
+            <ImageView
+                android:id="@+id/icEye2"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_eye"
+                android:contentDescription="Toggle password visibility"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="#3D4947" />
+
+        </LinearLayout>
+
+        <!-- Spacer sebelum button -->
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="5dp" />
+
+        <!-- ==================== SIGN UP BUTTON ==================== -->
+        <Button
+            android:id="@+id/btnSignUp"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="#337DFF"
+            android:text="Sign up"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <!-- Spacer sebelum sign in link -->
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="4dp" />
+
+        <!-- ==================== ALREADY HAVE ACCOUNT ==================== -->
+        <!--
+            Untuk teks dua warna "Already have account? Sign in",
+            set via Java/SpannableString di Activity:
+
+            SpannableString span = new SpannableString("Already have account? Sign in");
+            span.setSpan(new ForegroundColorSpan(Color.parseColor("#347EFF")),
+                         22, 29, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            tvSignIn.setText(span);
+        -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already have account? "
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/tvSignUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="login"
+                android:textColor="#337DFF"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

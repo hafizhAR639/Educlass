@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EduClass</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="text">lock</string>
+    <string name="________">••••••••</string>
+    <string name="forgot_password_">Forgot password?</string>
+    <string name="login">Login</string>
+    <string name="don_t_have_account__sign_up">Don’t have account? Sign up</string>
+</resources>
