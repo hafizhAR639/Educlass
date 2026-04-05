@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
             if (db.loginUser(email, password)) {
                 Toast.makeText(this, "Selamat Datang!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, HomepageActivity.class);
+                Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 finish();
             } else {

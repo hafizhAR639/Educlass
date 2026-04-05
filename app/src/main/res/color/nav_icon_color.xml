@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Semua icon SELALU hitam, aktif maupun tidak aktif.
+    Yang berubah hanya background indicator (lingkaran putih) di activity_main.xml
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="#000000" />
+</selector>

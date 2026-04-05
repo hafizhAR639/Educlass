@@ -7,4 +7,14 @@
     <string name="forgot_password_">Forgot password?</string>
     <string name="login">Login</string>
     <string name="don_t_have_account__sign_up">Don’t have account? Sign up</string>
+
+    <!-- Main Activity Pages -->
+    <string name="home_title">EduClass - Home</string>
+    <string name="home_welcome">Selamat Datang di EduClass</string>
+    <string name="modul_title">Modul Pembelajaran</string>
+    <string name="modul_desc">Daftar materi kursus kamu</string>
+    <string name="chart_title">Statistik Belajar</string>
+    <string name="chart_desc">Lihat progress belajar kamu</string>
+    <string name="profile_title">Profil Pengguna</string>
+    <string name="profile_desc">Pengaturan akun dan profil</string>
 </resources>

@@ -1,5 +1,6 @@
-*.iml
+# Project-wide Gradle settings
 .gradle
+/build
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -7,9 +8,45 @@
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/other.xml
+*.iml
+
+# App-specific build folders
+/app/build
+
+# Log files
+*.log
+
+# Android Studio / IntelliJ IDEA
+.idea
+*.iws
+*.out
+
+# Mac OS X
 .DS_Store
-/build
+
+# Captures and profiling
 /captures
+
+# External Native Build
 .externalNativeBuild
 .cxx
-local.properties
+
+# Backup files
+*~
+*.swp
+
+# APKs and bundles
+*.apk
+*.ap_
+*.aab
+
+# Keystore files (IMPORTANT: NEVER commit these to public repos)
+*.jks
+*.keystore
+*.p12
+*.jceks
+
+# Google Services
+google-services.json
