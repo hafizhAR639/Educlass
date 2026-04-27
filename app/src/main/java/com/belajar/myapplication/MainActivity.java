@@ -1,56 +1,53 @@
 package com.belajar.myapplication;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.LinearLayout;
-
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
-    LinearLayout pageHome, pageModul, pageChart, pageProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Inisialisasi semua halaman
-        pageHome    = findViewById(R.id.pageHome);
-        pageModul   = findViewById(R.id.pageModul);
-        pageChart   = findViewById(R.id.pageChart);
-        pageProfile = findViewById(R.id.pageProfile);
-
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
 
-        // Logika pindah halaman saat menu diklik
+        // Load Fragment pertama kali (Home)
+        if (savedInstanceState == null) {
+            loadFragment(new HomeFragment());
+        }
+
         bottomNav.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
             int id = item.getItemId();
 
             if (id == R.id.nav_home) {
-                showPage(pageHome);
+                selectedFragment = new HomeFragment();
             } else if (id == R.id.nav_modul) {
-                showPage(pageModul);
+                selectedFragment = new ModulFragment();
             } else if (id == R.id.nav_chart) {
-                showPage(pageChart);
+                // Placeholder untuk ChartFragment
+                selectedFragment = new HomeFragment(); 
             } else if (id == R.id.nav_profile) {
-                showPage(pageProfile);
+                // Placeholder untuk ProfileFragment
+                selectedFragment = new HomeFragment();
             }
 
+            if (selectedFragment != null) {
+                loadFragment(selectedFragment);
+            }
             return true;
         });
     }
 
-    private void showPage(LinearLayout aktif) {
-        // Sembunyikan semua halaman
-        pageHome.setVisibility(View.GONE);
-        pageModul.setVisibility(View.GONE);
-        pageChart.setVisibility(View.GONE);
-        pageProfile.setVisibility(View.GONE);
-
-        // Tampilkan halaman yang dipilih
-        aktif.setVisibility(View.VISIBLE);
+    private void loadFragment(Fragment fragment) {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragment_container, fragment);
+        ft.commit();
     }
 }

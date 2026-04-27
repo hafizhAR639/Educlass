@@ -1,7 +1,9 @@
 package com.belajar.myapplication;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.widget.Button;
@@ -10,25 +12,32 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.firebase.auth.FirebaseUser;
 
 public class RegisterActivity extends AppCompatActivity {
 
     EditText etFullName, etEmail, etPassword, etConfirmPassword;
     ImageView icEye1, icEye2;
     Button btnSignUp;
-    TextView tvSignInLink; // Link untuk balik ke login
+    TextView tvSignInLink;
     boolean pass1Visible = false, pass2Visible = false;
 
-    DatabaseHelper db;
+    // DatabaseHelper db; // Migrated to Firebase
+    private Authenticate authManager;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        db = new DatabaseHelper(this);
+        // db = new DatabaseHelper(this); // Disabled
+        authManager = new Authenticate();
 
-        // Inisialisasi View berdasarkan ID di XML ScrollView kamu
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Creating account...");
+        progressDialog.setCancelable(false);
+
         etFullName = findViewById(R.id.etFullName);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
@@ -36,11 +45,8 @@ public class RegisterActivity extends AppCompatActivity {
         icEye1 = findViewById(R.id.icEye1);
         icEye2 = findViewById(R.id.icEye2);
         btnSignUp = findViewById(R.id.btnSignUp);
-
-        // Di XML kamu ID-nya tvSignUp meskipun teksnya "login"
         tvSignInLink = findViewById(R.id.tvSignUp);
 
-        // Toggle Password 1
         icEye1.setOnClickListener(v -> {
             pass1Visible = !pass1Visible;
             etPassword.setTransformationMethod(pass1Visible ?
@@ -49,7 +55,6 @@ public class RegisterActivity extends AppCompatActivity {
             etPassword.setSelection(etPassword.length());
         });
 
-        // Toggle Password 2
         icEye2.setOnClickListener(v -> {
             pass2Visible = !pass2Visible;
             etConfirmPassword.setTransformationMethod(pass2Visible ?
@@ -64,7 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
             String password = etPassword.getText().toString().trim();
             String confirmPwd = etConfirmPassword.getText().toString().trim();
 
-            if (fullName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            if (TextUtils.isEmpty(fullName) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
                 Toast.makeText(this, "Semua field harus diisi!", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -74,16 +79,23 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            boolean berhasil = db.registerUser(fullName, email, password);
-            if (berhasil) {
-                Toast.makeText(this, "Registrasi Berhasil!", Toast.LENGTH_SHORT).show();
-                finish(); // Kembali ke LoginActivity
-            } else {
-                Toast.makeText(this, "Registrasi Gagal / Email sudah ada!", Toast.LENGTH_SHORT).show();
-            }
+            progressDialog.show();
+            authManager.registerUser(email, password, fullName, new Authenticate.AuthCallback() {
+                @Override
+                public void onSuccess(FirebaseUser user) {
+                    progressDialog.dismiss();
+                    Toast.makeText(RegisterActivity.this, "Registrasi Berhasil!", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+
+                @Override
+                public void onFailure(String message) {
+                    progressDialog.dismiss();
+                    Toast.makeText(RegisterActivity.this, "Registrasi Gagal: " + message, Toast.LENGTH_LONG).show();
+                }
+            });
         });
 
-        // Klik teks "login" balik ke halaman depan
         tvSignInLink.setOnClickListener(v -> finish());
     }
 }

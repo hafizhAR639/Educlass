@@ -6,116 +6,15 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Area Konten (Halaman) -->
+    <!-- Container untuk Fragments -->
     <FrameLayout
-        android:id="@+id/content_frame"
+        android:id="@+id/fragment_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <!-- Halaman Home -->
-        <LinearLayout
-            android:id="@+id/pageHome"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/home_title"
-                android:textColor="#337DFF"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/home_welcome"
-                android:textColor="#6B7280"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <!-- Halaman Modul -->
-        <LinearLayout
-            android:id="@+id/pageModul"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/modul_title"
-                android:textColor="#337DFF"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/modul_desc"
-                android:textColor="#6B7280"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <!-- Halaman Chart -->
-        <LinearLayout
-            android:id="@+id/pageChart"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/chart_title"
-                android:textColor="#337DFF"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/chart_desc"
-                android:textColor="#6B7280"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <!-- Halaman Profile -->
-        <LinearLayout
-            android:id="@+id/pageProfile"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/profile_title"
-                android:textColor="#337DFF"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/profile_desc"
-                android:textColor="#6B7280"
-                android:textSize="16sp" />
-        </LinearLayout>
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

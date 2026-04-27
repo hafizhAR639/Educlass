@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Izin Internet untuk Glide (jika load gambar dari URL) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
 
+        <!-- SplashActivity sebagai pintu masuk utama -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -29,12 +33,14 @@
             android:name=".RegisterActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".HomepageActivity"
-            android:exported="false"/>
+        <!-- MainActivity adalah container utama untuk Fragment Home, Modul, dll -->
         <activity
             android:name=".MainActivity"
-            android:exported="false"/>
+            android:exported="false"
+            android:windowSoftInputMode="adjustNothing" />
+
+        <!-- Fragment tidak perlu didaftarkan di AndroidManifest.xml,
+             hanya Activity saja yang didaftarkan -->
 
     </application>
 

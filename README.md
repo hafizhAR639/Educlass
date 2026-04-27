@@ -1,15 +1,41 @@
-# Feature: Custom Floating Navbar
+# EduClass App - Firebase Migration & Dynamic Content
 
-## Deskripsi
-Implementasi Bottom Navigation Bar melayang dengan efek indikator lingkaran putih permanen saat menu aktif.
+## Deskripsi Perubahan Terbaru
+Aplikasi telah dimigrasi dari sistem penyimpanan lokal statis ke ekosistem **Firebase** untuk autentikasi dan database materi yang dinamis.
 
-## Komponen yang Ditambahakan
-- `activity_main.xml`: Menambahkan BottomNavigationView dengan background rounded.
-- `MainActivity.java`: Menambahkan logika switch visibility antar layout.
-- `nav_item_bg.xml`: Selector untuk lingkaran putih (menggunakan inset agar ukuran proporsional).
-- `'bg_navbar_rounded.xml`: Backgorund untuk lingkaran putih saat aktif diklik.
+## Perubahan Utama (Migration & Features)
 
-## Cara Test
-1. Jalankan aplikasi.
-2. Klik ikon 'Modul', 'Chart', dan lain lain
-3. Pastikan lingkaran putih muncul dan teks "Halaman ..." terlihat di layar.
+### 1. Autentikasi Firebase
+- Menggantikan sistem login SQLite ke **Firebase Authentication**.
+- **Login & Register**: Sekarang terhubung langsung ke server Firebase.
+- **Data User**: Data tambahan (Nama Lengkap) disimpan secara otomatis ke **Cloud Firestore** saat registrasi.
+
+### 2. Database Materi Dinamis (Cloud Firestore)
+- Daftar Mata Pelajaran (Subjects) dan Materi (Topics) kini ditarik secara *real-time* dari Firestore.
+- **Field yang Digunakan**:
+  - `subjects`: `nama`, `color_hex`, `icon_name`, `total_moduls`, `order`.
+  - `topics`: `judul`, `subject_id`, `views_count`.
+
+### 3. Pembaruan Navigasi & UI
+- **Homepage**: Menambahkan `RecyclerView` horizontal untuk "Mata Pelajaran Terpopuler" yang dapat di-scroll.
+- **Modul Page**: Menampilkan grid mata pelajaran yang diambil secara dinamis dari database.
+- **Materi List**: Implementasi `MateriFragment` yang menampilkan daftar topik spesifik berdasarkan mata pelajaran yang diklik.
+- **Visual Page**: Navigasi akhir dari topik ke `VisualFragment` untuk konten pembelajaran.
+
+### 4. Integrasi Ikon & Gambar Dinamis
+- Menggunakan library **Glide** untuk optimasi pemuatan gambar.
+- **Ikon Lokal Dinamis**: Sistem secara otomatis mencari ikon di folder `drawable` berdasarkan field `icon_name` dari database (Contoh: `"ic_matematika"`).
+
+## Alur Navigasi Baru
+1. **Login/Register** (Firebase Auth) -> Masuk ke **Homepage**.
+2. **Homepage/Modul** -> Klik Mata Pelajaran (Ditarik dari koleksi `subjects`).
+3. **MateriFragment** -> Menampilkan List Topik (Ditarik dari koleksi `topics` filter by `subject_id`).
+4. **VisualFragment** -> Konten Detail Materi.
+
+## Persyaratan Teknis Baru
+- File `google-services.json` harus berada di folder `app/`.
+- SHA-1 Fingerprint PC/Laptop pengembang harus terdaftar di Firebase Console untuk menghindari `DEVELOPER_ERROR`.
+- Library Baru: `firebase-auth`, `firebase-firestore`, `glide`.
+
+---
+*Terakhir diupdate: 27 April 2026*
