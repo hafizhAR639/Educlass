@@ -20,17 +20,21 @@ Aplikasi telah dimigrasi dari sistem penyimpanan lokal statis ke ekosistem **Fir
 - **Homepage**: Menambahkan `RecyclerView` horizontal untuk "Mata Pelajaran Terpopuler" yang dapat di-scroll.
 - **Modul Page**: Menampilkan grid mata pelajaran yang diambil secara dinamis dari database.
 - **Materi List**: Implementasi `MateriFragment` yang menampilkan daftar topik spesifik berdasarkan mata pelajaran yang diklik.
-- **Visual Page**: Navigasi akhir dari topik ke `VisualFragment` untuk konten pembelajaran.
+- **Content Page**: Navigasi akhir dari topik ke `ContentFragment` yang menampilkan materi berdasarkan gaya belajar (Visual, Auditory, Kinesthetic).
 
 ### 4. Integrasi Ikon & Gambar Dinamis
 - Menggunakan library **Glide** untuk optimasi pemuatan gambar.
 - **Ikon Lokal Dinamis**: Sistem secara otomatis mencari ikon di folder `drawable` berdasarkan field `icon_name` dari database (Contoh: `"ic_matematika"`).
 
+### 5. Peningkatan Struktur & Penamaan Kode
+- **Refactoring Model**: Struktur model data (`ModelSubject`, `ModelTopic`) telah diperbaiki untuk konsistensi penamaan dan kemudahan integrasi.
+- **Robustness**: Model kini menggunakan penanganan tipe data dinamis untuk mencegah error `Could not deserialize` jika terdapat perbedaan tipe data (String/Long) di Firestore.
+
 ## Alur Navigasi Baru
 1. **Login/Register** (Firebase Auth) -> Masuk ke **Homepage**.
 2. **Homepage/Modul** -> Klik Mata Pelajaran (Ditarik dari koleksi `subjects`).
 3. **MateriFragment** -> Menampilkan List Topik (Ditarik dari koleksi `topics` filter by `subject_id`).
-4. **VisualFragment** -> Konten Detail Materi.
+4. **ContentFragment** -> Konten Detail Materi.
 
 ## Persyaratan Teknis Baru
 - File `google-services.json` harus berada di folder `app/`.

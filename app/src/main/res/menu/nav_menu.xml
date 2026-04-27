@@ -3,22 +3,22 @@
 
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/ic_home"
+        android:icon="@drawable/shared_ic_nav_home"
         android:title="Home" />
 
     <item
         android:id="@+id/nav_modul"
-        android:icon="@drawable/ic_book"
+        android:icon="@drawable/shared_ic_nav_modul"
         android:title="Modul" />
 
     <item
         android:id="@+id/nav_chart"
-        android:icon="@drawable/ic_chart"
+        android:icon="@drawable/shared_ic_stats"
         android:title="Chart" />
 
     <item
         android:id="@+id/nav_profile"
-        android:icon="@drawable/ic_person"
+        android:icon="@drawable/shared_ic_user"
         android:title="Profile" />
 
 </menu>
