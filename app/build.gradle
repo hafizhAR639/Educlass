@@ -39,6 +39,7 @@ dependencies {
     implementation libs.firebase.storage
     implementation libs.firebase.auth
     implementation libs.glide
+    implementation libs.youtube.player
     
     implementation libs.appcompat
     implementation libs.material
