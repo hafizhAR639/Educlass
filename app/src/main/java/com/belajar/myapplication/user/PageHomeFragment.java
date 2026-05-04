@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,18 +18,23 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class PageHomeFragment extends Fragment {
 
     private RecyclerView rvSubjects;
     private AdapterSubject adapter;
     private final List<ModelSubject> subjectList = new ArrayList<>();
     private FirebaseFirestore db;
+    private TextView tvGreeting;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_fragment_home, container, false);
 
+        tvGreeting = view.findViewById(R.id.rn7158ojy3rs);
         rvSubjects = view.findViewById(R.id.rv_subjects_home);
         rvSubjects.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         adapter = new AdapterSubject(subjectList, true);
@@ -36,8 +42,23 @@ public class PageHomeFragment extends Fragment {
 
         db = FirebaseFirestore.getInstance();
         fetchSubjects();
+        loadUserData();
 
         return view;
+    }
+
+    private void loadUserData() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            db.collection("users").document(user.getUid()).get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    String nama = documentSnapshot.getString("nama");
+                    if (nama != null && tvGreeting != null) {
+                        tvGreeting.setText("Hallo, " + nama + " 👋 ");
+                    }
+                }
+            });
+        }
     }
 
     private void fetchSubjects() {

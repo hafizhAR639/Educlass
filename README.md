@@ -5,6 +5,7 @@
 *   **Database**: Google Cloud Firestore (NoSQL)
 *   **Authentication**: Firebase Auth
 *   **Image Loading**: Glide
+*   **Video Player**: Android YouTube Player SDK (PierfrancescoSoffritti)
 *   **UI Components**: Material Design, RecyclerView (Linear & Grid)
 
 ## 📂 Struktur Folder & Fungsi
@@ -17,27 +18,27 @@ app/src/main/java/com/belajar/myapplication/
     ├── PageHome...     -> Fragment beranda
     ├── PageModul...    -> Fragment daftar mata pelajaran
     ├── PageMateri...   -> Fragment daftar topik/bab
-    └── PageContent...  -> Fragment isi materi detail
+    └── PageContent...  -> Fragment isi materi (Personalized Content)
 ```
 
 ## 🔄 Alur Aplikasi (User Flow)
-1.  **Splash Screen**: Cek status aplikasi.
-2.  **Auth (Login/Regis)**: Masuk atau daftar akun via Firebase.
+1.  **Splash Screen**: Cek status login aplikasi.
+2.  **Auth (Login/Regis)**: Masuk atau daftar akun via Firebase. Data profil (Gaya Belajar) disimpan di Firestore.
 3.  **Home Page**: Melihat ringkasan & mata pelajaran populer.
-4.  **Modul Page**: Memilih mata pelajaran yang ingin dipelajari.
-5.  **Materi Page**: Memilih topik spesifik dari mata pelajaran tersebut.
-6.  **Content Page**: Membaca/mempelajari isi materi detail.
+4.  **Modul Page**: Memilih mata pelajaran (e.g., Matematika).
+5.  **Materi Page**: Memilih bab/topik spesifik.
+6.  **Content Page**: Membaca materi yang **otomatis menyesuaikan** dengan Gaya Belajar user.
 
 ## 📡 Alur Data (Data Flow)
-1.  **Cloud Firestore**: Menyimpan data `subjects` (mapel) dan `topics` (bab).
-2.  **Model (POJO)**: Mengambil data dari Firestore. Menggunakan prinsip **KISS** (simpel) dengan `String.valueOf()` agar aplikasi tidak crash jika ada tipe data yang tidak sesuai.
-3.  **Adapter**: Menghubungkan data dari Model ke tampilan `RecyclerView` secara dinamis.
-4.  **UI**: Menampilkan data akhir ke pengguna (Nama mapel, ikon, jumlah modul, dll).
+1.  **Auth Profile**: Aplikasi mengambil `gaya_belajar` dari koleksi `users`.
+2.  **Smart Content Loading**: Di `PageContentFragment`, aplikasi menggunakan gaya belajar tersebut untuk memilih sub-data di Firestore (`visual`, `audio`, atau `kinestetik`).
+3.  **Robust Handling**: Menggunakan `String.valueOf()` di model dan pengecekan `null` di UI untuk mencegah crash jika data tidak lengkap.
+4.  **Video Extraction**: Sistem secara otomatis mengekstrak ID video dari URL YouTube lengkap (watch?v=...) agar bisa diputar di player native.
 
-## 📝 Catatan Perubahan Terbaru
-- **Migrasi Firebase**: Transisi dari data lokal statis ke database real-time.
-- **Robust Model**: Penanganan error `Could not deserialize` dengan menyederhanakan tipe data pada getter/setter model.
-- **Ikon Dinamis**: Memanggil drawable berdasarkan string nama dari database.
+## 📝 Catatan Perubahan & Robustness
+- **Clean Code**: Semua warning mayor telah dibersihkan (unused imports, unchecked casts, null safety).
+- **Auto-Lifecycle**: Video player otomatis berhenti/lepas saat fragment ditutup (mencegah memory leak).
+- **Personalized UI**: Label header di halaman konten berubah secara dinamis sesuai profil user.
 
 ---
 *Terakhir diupdate: 27 April 2026*

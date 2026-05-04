@@ -1,7 +1,6 @@
 package com.belajar.myapplication.user;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +20,8 @@ import java.util.Map;
 public class PageContentFragment extends Fragment {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
-    private TextView tvLabelGayaBelajar, tvJudulTopik, tvPenjelasan;
-    private String topicId, topicJudul;
+    private TextView tvLabelGayaBelajar, tvPenjelasan;
+    private String topicId;
     private YouTubePlayerView youTubePlayerView;
 
     @Nullable
@@ -38,8 +37,8 @@ public class PageContentFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-        tvLabelGayaBelajar = view.findViewById(R.id.rsa0mkdkytdc); // Label "Visual", "Audio", dll
-        tvJudulTopik = view.findViewById(R.id.r8p2j2jpedem);
+        tvLabelGayaBelajar = view.findViewById(R.id.rsa0mkdkytdc);
+        TextView tvJudulTopik = view.findViewById(R.id.r8p2j2jpedem);
         tvPenjelasan = view.findViewById(R.id.r29po0f85m63);
         youTubePlayerView = view.findViewById(R.id.youtube_player_view);
         
@@ -55,107 +54,143 @@ public class PageContentFragment extends Fragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             topicId = bundle.getString("topic_id");
-            topicJudul = bundle.getString("topic_judul");
+            String topicJudul = bundle.getString("topic_judul");
             
-            if (topicJudul != null) tvJudulTopik.setText(topicJudul);
-            if (topicId != null) {
-                getUserLearningStyleAndLoadContent();
-            }
+            if (tvJudulTopik != null && topicJudul != null) tvJudulTopik.setText(topicJudul);
+            
+            // Mengambil gaya belajar dulu, baru load content
+            getUserLearningStyleAndLoadContent(topicJudul);
         }
     }
 
-    private void getUserLearningStyleAndLoadContent() {
+    private void getUserLearningStyleAndLoadContent(String topicJudul) {
         String uid = mAuth.getUid();
         if (uid == null) return;
 
-        // Step 1: Ambil gaya belajar user dari koleksi "users"
         db.collection("users").document(uid).get().addOnSuccessListener(documentSnapshot -> {
-            String style = documentSnapshot.getString("gaya_belajar");
-            if (style == null) style = "Visual"; // Default jika tidak ada
+            String styleFromDb = documentSnapshot.getString("gaya_belajar");
+            final String finalStyle = (styleFromDb != null) ? styleFromDb : "Visual";
             
-            tvLabelGayaBelajar.setText(style);
-            loadContentBasedOnStyle(topicId, style);
-        }).addOnFailureListener(e -> {
-            loadContentBasedOnStyle(topicId, "Visual"); // Fallback
-        });
+            if (tvLabelGayaBelajar != null) tvLabelGayaBelajar.setText(finalStyle);
+            loadContentBasedOnStyle(topicId, topicJudul, finalStyle);
+        }).addOnFailureListener(e -> loadContentBasedOnStyle(topicId, topicJudul, "Visual"));
     }
 
-    private void loadContentBasedOnStyle(String tId, String style) {
-        // Step 2: Ambil konten dari koleksi "content"
+    @SuppressWarnings("unchecked")
+    private void loadContentBasedOnStyle(String tId, String tJudul, String style) {
+        // Coba cari berdasarkan Document ID dulu
         db.collection("content")
             .whereEqualTo("topic_id", tId)
             .get()
             .addOnCompleteListener(task -> {
-                if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        
-                        // Pilih map berdasarkan gaya belajar (visual, audio, atau kinestetik)
-                        String styleKey = style.toLowerCase();
-                        if (styleKey.equals("kinestetik")) styleKey = "kinestetik"; // Memastikan nama key
-                        
-                        Map<String, Object> contentMap = (Map<String, Object>) document.get(styleKey);
-                        
-                        if (contentMap != null) {
-                            // Tampilkan Teks
-                            String text = (String) contentMap.get("text_content");
-                            if (text != null) {
-                                tvPenjelasan.setText(text.replace("\\n", "\n"));
-                            }
-                            
-                            // Tampilkan Video (jika ada field video_url atau audio_url atau kin_url)
-                            String videoUrl = (String) contentMap.get("video_url");
-                            if (videoUrl == null) videoUrl = (String) contentMap.get("audio_url");
-                            if (videoUrl == null) videoUrl = (String) contentMap.get("kin_url");
-
-                            TextView tvLabelVideo = getView().findViewById(R.id.rmntw2d4hb59);
-                            if (videoUrl == null || videoUrl.isEmpty()) {
-                                if (tvLabelVideo != null) tvLabelVideo.setVisibility(View.GONE);
-                                if (youTubePlayerView != null) youTubePlayerView.setVisibility(View.GONE);
-                            } else {
-                                if (tvLabelVideo != null) tvLabelVideo.setVisibility(View.VISIBLE);
-                                if (youTubePlayerView != null) {
-                                    youTubePlayerView.setVisibility(View.VISIBLE);
-                                    setupYouTubePlayer(videoUrl);
-                                }
-                            }
-                        }
-                    }
+                if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
+                    processContentResults(task.getResult(), style);
                 } else {
-                    tvPenjelasan.setText("Konten untuk gaya belajar " + style + " belum tersedia.");
-                    if (youTubePlayerView != null) youTubePlayerView.setVisibility(View.GONE);
+                    // Jika tidak ketemu dengan ID, coba cari berdasarkan Judul (sesuai struktur Firestore user)
+                    db.collection("content")
+                        .whereEqualTo("topic_id", tJudul)
+                        .get()
+                        .addOnCompleteListener(task2 -> {
+                            if (task2.isSuccessful() && task2.getResult() != null && !task2.getResult().isEmpty()) {
+                                processContentResults(task2.getResult(), style);
+                            } else {
+                                showNotFoundMessage(style);
+                            }
+                        });
                 }
             });
     }
 
+    @SuppressWarnings("unchecked")
+    private void processContentResults(com.google.firebase.firestore.QuerySnapshot result, String style) {
+        for (QueryDocumentSnapshot document : result) {
+            // Mapping berdasarkan struktur yang diberikan user
+            String styleKey = style.toLowerCase();
+            // Handle typo di Firestore user "kinetetik"
+            if (styleKey.equals("kinestetik") || styleKey.equals("kin")) {
+                styleKey = "kinetetik"; 
+            }
+            
+            Map<String, Object> contentMap = (Map<String, Object>) document.get(styleKey);
+            if (contentMap == null) {
+                // Fallback case-sensitive
+                contentMap = (Map<String, Object>) document.get(style);
+            }
+
+            if (contentMap != null) {
+                displayContent(contentMap);
+            } else {
+                showNotFoundMessage(style);
+            }
+        }
+    }
+
+    private void showNotFoundMessage(String style) {
+        String msg = "Konten untuk gaya belajar " + style + " belum tersedia.";
+        if (tvPenjelasan != null) tvPenjelasan.setText(msg);
+        if (youTubePlayerView != null) youTubePlayerView.setVisibility(View.GONE);
+    }
+
+    private void displayContent(Map<String, Object> contentMap) {
+        String text = (String) contentMap.get("text_content");
+        if (tvPenjelasan != null && text != null) {
+            tvPenjelasan.setText(text.replace("\\n", "\n"));
+        }
+        
+        String videoUrl = (String) contentMap.get("video_url");
+        // Gunakan key sesuai Firestore user: "audio_url", "kin_url"
+        if (videoUrl == null) videoUrl = (String) contentMap.get("audio_url");
+        if (videoUrl == null) videoUrl = (String) contentMap.get("kin_url");
+
+        View view = getView();
+        if (view != null) {
+            TextView tvLabelVideo = view.findViewById(R.id.rmntw2d4hb59);
+            if (videoUrl == null || videoUrl.isEmpty()) {
+                if (tvLabelVideo != null) tvLabelVideo.setVisibility(View.GONE);
+                if (youTubePlayerView != null) youTubePlayerView.setVisibility(View.GONE);
+            } else {
+                if (tvLabelVideo != null) tvLabelVideo.setVisibility(View.VISIBLE);
+                if (youTubePlayerView != null) {
+                    youTubePlayerView.setVisibility(View.VISIBLE);
+                    setupYouTubePlayer(videoUrl);
+                }
+            }
+        }
+    }
+
     private void setupYouTubePlayer(String videoId) {
         final String cleanVideoId = extractVideoId(videoId);
-        youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
-            @Override
-            public void onReady(@NonNull YouTubePlayer youTubePlayer) {
-                youTubePlayer.cueVideo(cleanVideoId, 0);
-            }
-        });
+        if (youTubePlayerView != null) {
+            youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
+                @Override
+                public void onReady(@NonNull YouTubePlayer youTubePlayer) {
+                    youTubePlayer.cueVideo(cleanVideoId, 0);
+                }
+            });
+        }
     }
 
     private String extractVideoId(String url) {
-        if (url == null) return "";
+        if (url == null || url.isEmpty()) return "";
         if (url.length() == 11) return url;
         if (url.contains("v=")) {
             int start = url.indexOf("v=") + 2;
-            return url.substring(start, Math.min(start + 11, url.length()));
+            int end = Math.min(start + 11, url.length());
+            return url.substring(start, end);
         }
         if (url.contains("be/")) {
             int start = url.indexOf("be/") + 3;
-            return url.substring(start, Math.min(start + 11, url.length()));
+            int end = Math.min(start + 11, url.length());
+            return url.substring(start, end);
         }
         return url;
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         if (youTubePlayerView != null) {
-            youTubePlayerView.release();
+            getLifecycle().removeObserver(youTubePlayerView);
         }
     }
 }

@@ -1,5 +1,4 @@
 package com.belajar.myapplication.auth;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,13 +16,11 @@ import com.belajar.myapplication.user.MainActivity;
 import com.google.firebase.auth.FirebaseUser;
 
 public class AuthLoginActivity extends AppCompatActivity {
-
     private EditText etEmail, etPassword;
     private ImageView icEye;
     private Button btnLogin;
     private TextView tvSignUp;
     private boolean passwordVisible = false;
-    
     private AuthManager authManager;
     private ProgressDialog progressDialog;
 

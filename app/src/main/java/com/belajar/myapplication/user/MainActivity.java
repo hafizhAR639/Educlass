@@ -31,9 +31,9 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_modul) {
                 selectedFragment = new PageModulFragment();
             } else if (id == R.id.nav_chart) {
-                selectedFragment = new PageHomeFragment(); // Placeholder
+                selectedFragment = new PagePomodoroFragment();
             } else if (id == R.id.nav_profile) {
-                selectedFragment = new PageHomeFragment(); // Placeholder
+                selectedFragment = new PageProfileFragment();
             }
 
             if (selectedFragment != null) {

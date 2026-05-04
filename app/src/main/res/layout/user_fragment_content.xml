@@ -133,8 +133,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="24dp"
                             android:layout_marginBottom="33dp"
-                            app:autoPlay="false"
-                            app:showFullScreenButton="true" />
+                            app:autoPlay="false" />
 
                         <LinearLayout
                             android:id="@+id/rpy4se63ty5i"
