@@ -36,14 +36,14 @@ public class AuthRegisterActivity extends AppCompatActivity {
         progressDialog.setMessage("Creating account...");
         progressDialog.setCancelable(false);
 
-        etFullName = findViewById(R.id.etFullName);
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
-        etConfirmPassword = findViewById(R.id.etConfirmPassword);
-        icEye1 = findViewById(R.id.icEye1);
-        icEye2 = findViewById(R.id.icEye2);
-        btnSignUp = findViewById(R.id.btnSignUp);
-        tvSignInLink = findViewById(R.id.tvSignUp);
+        etFullName = findViewById(R.id.et_full_name);
+        etEmail = findViewById(R.id.et_email);
+        etPassword = findViewById(R.id.et_password);
+        etConfirmPassword = findViewById(R.id.et_confirm_password);
+        icEye1 = findViewById(R.id.iv_eye_toggle_1);
+        icEye2 = findViewById(R.id.iv_eye_toggle_2);
+        btnSignUp = findViewById(R.id.btn_register_submit);
+        tvSignInLink = findViewById(R.id.tv_login_link);
 
         icEye1.setOnClickListener(v -> {
             pass1Visible = !pass1Visible;

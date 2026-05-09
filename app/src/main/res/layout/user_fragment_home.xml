@@ -10,7 +10,7 @@
     android:orientation="vertical">
 
     <ScrollView
-        android:id="@+id/r0duc8pnkcbs"
+        android:id="@+id/scroll_view_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#EFF3F6"
@@ -27,7 +27,7 @@
             android:paddingBottom="100dp">
 
             <RelativeLayout
-                android:id="@+id/rx1aqu6sc6l"
+                android:id="@+id/layout_header_home"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="48dp"
@@ -42,7 +42,7 @@
                     android:orientation="vertical">
 
                     <LinearLayout
-                        android:id="@+id/r6cd8aohrel5"
+                        android:id="@+id/layout_header_blue"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/shared_bg_header_blue"
@@ -53,7 +53,7 @@
 
                         <!-- Header dengan foto profil -->
                         <LinearLayout
-                            android:id="@+id/rx3g4pwtev29"
+                            android:id="@+id/layout_user_profile_header"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="15dp"
@@ -61,7 +61,7 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:id="@+id/ry8x5d83g6hb"
+                                android:id="@+id/iv_user_profile"
                                 android:layout_width="50dp"
                                 android:layout_height="50dp"
                                 android:layout_marginEnd="9dp"
@@ -69,7 +69,7 @@
                                 android:src="@drawable/user_ic_profile" />
 
                             <TextView
-                                android:id="@+id/rn7158ojy3rs"
+                                android:id="@+id/tv_greeting"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Hallo, Dea 👋 "
@@ -78,20 +78,20 @@
                                 android:textStyle="bold" />
 
                             <View
-                                android:id="@+id/rs510k328b0h"
+                                android:id="@+id/view_spacer_header"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1" />
 
                             <ImageView
-                                android:id="@+id/rdc4qisprxne"
+                                android:id="@+id/iv_premium_badge"
                                 android:layout_width="26dp"
                                 android:layout_height="26dp"
                                 android:layout_marginEnd="4dp"
                                 android:src="@drawable/shared_ic_premium" />
 
                             <ImageView
-                                android:id="@+id/rqfpxdguy2uo"
+                                android:id="@+id/iv_notification_bell"
                                 android:layout_width="22dp"
                                 android:layout_height="22dp"
                                 android:src="@drawable/shared_ic_bell" />
@@ -99,7 +99,7 @@
 
                         <!-- Card Highlight dengan progress bar horizontal -->
                         <RelativeLayout
-                            android:id="@+id/rwwj0ngf0p9"
+                            android:id="@+id/layout_highlight_card"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/user_bg_card_highlight"
@@ -109,7 +109,7 @@
 
                             <!-- Background dekoratif -->
                             <ImageView
-                                android:id="@+id/rsr9kz8xzpj"
+                                android:id="@+id/iv_highlight_bg_decor"
                                 android:layout_width="-50dp"
                                 android:layout_height="-100dp"
                                 android:layout_alignParentBottom="true"
@@ -119,7 +119,7 @@
 
                             <!-- Judul materi -->
                             <TextView
-                                android:id="@+id/r59ig0l52v2r"
+                                android:id="@+id/tv_highlight_title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="20dp"
@@ -130,10 +130,10 @@
 
                             <!-- Progress percentage -->
                             <TextView
-                                android:id="@+id/rhem8iz0oaz4"
+                                android:id="@+id/tv_highlight_progress_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@id/r59ig0l52v2r"
+                                android:layout_below="@id/tv_highlight_title"
                                 android:layout_marginTop="10dp"
                                 android:text="65% completed"
                                 android:paddingStart="20dp"
@@ -143,17 +143,17 @@
                             <!-- Progress bar dan tombol dalam horizontal layout -->
                             <!-- Progress bar (Sekarang berdiri sendiri) -->
                             <LinearLayout
-                                android:id="@+id/rcy86wc8gk8"
+                                android:id="@+id/layout_progress_bar_container"
                                 android:layout_width="match_parent"
                                 android:layout_height="15dp"
-                                android:layout_below="@id/rhem8iz0oaz4"
+                                android:layout_below="@id/tv_highlight_progress_text"
                                 android:layout_marginTop="16dp"
                                 android:layout_marginHorizontal="20dp"
                                 android:background="@drawable/shared_bg_progress_track"
                                 android:weightSum="100">
 
                                 <View
-                                    android:id="@+id/rtoiv2zpevdp"
+                                    android:id="@+id/view_progress_fill"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="65"
@@ -162,10 +162,10 @@
 
                             <!-- Tombol Lanjutkan (Sekarang berada di bawah progress bar) -->
                             <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_lanjutkan"
+                                android:id="@+id/btn_continue"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@id/rcy86wc8gk8"
+                                android:layout_below="@id/layout_progress_bar_container"
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginTop="12dp"
                                 android:layout_marginEnd="20dp"
@@ -186,12 +186,12 @@
 
                 <!-- Search bar dengan margin negatif -->
                 <LinearLayout
-                    android:id="@+id/r0n5pntgvgx4k"
+                    android:id="@+id/layout_search_bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_marginHorizontal="34dp"
-                    android:layout_marginBottom="-22dp"
+                    android:layout_marginBottom="-20dp"
                     android:background="@drawable/shared_bg_search_bar"
                     android:elevation="8dp"
                     android:gravity="center_vertical"
@@ -199,14 +199,14 @@
                     android:padding="15dp">
 
                     <ImageView
-                        android:id="@+id/rh3tw0qzoyu6"
+                        android:id="@+id/iv_search_icon"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginEnd="10dp"
                         android:src="@drawable/shared_ic_mail" />
 
                     <TextView
-                        android:id="@+id/rp05w5kul24"
+                        android:id="@+id/tv_search_hint"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Cari topik yang ingin dipelajari"
@@ -216,7 +216,7 @@
 
             <!-- Mata Pelajaran Terpopuler -->
             <TextView
-                android:id="@+id/rvsbyc3511md"
+                android:id="@+id/tv_popular_subjects_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -238,7 +238,7 @@
 
             <!-- Materi Terpopuler -->
             <TextView
-                android:id="@+id/r8kay9472hen"
+                android:id="@+id/tv_popular_topics_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -249,7 +249,7 @@
                 android:textStyle="bold" />
 
             <LinearLayout
-                android:id="@+id/r9ajrw8f2w1h"
+                android:id="@+id/layout_popular_topics_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="39dp"
@@ -262,7 +262,7 @@
 
                 <!-- Material: Aljabar -->
                 <LinearLayout
-                    android:id="@+id/rdfmyytz34vd"
+                    android:id="@+id/layout_card_aljabar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="12dp"
@@ -275,7 +275,7 @@
                     android:paddingBottom="8dp">
 
                     <LinearLayout
-                        android:id="@+id/ryojje19ndwk"
+                        android:id="@+id/layout_aljabar_content"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
@@ -284,7 +284,7 @@
                         android:orientation="vertical">
 
                         <RelativeLayout
-                            android:id="@+id/r6hmyrzpzcvf"
+                            android:id="@+id/layout_aljabar_image_wrapper"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="7dp"
@@ -292,14 +292,14 @@
                             android:clipToPadding="false">
 
                             <ImageView
-                                android:id="@+id/rbievd8btb3"
+                                android:id="@+id/iv_aljabar_thumb"
                                 android:layout_width="match_parent"
                                 android:layout_height="111dp"
                                 android:scaleType="centerCrop"
                                 android:src="@drawable/user_img_topic_aljabar" />
 
                             <RelativeLayout
-                                android:id="@+id/rosp615jxk1_rl"
+                                android:id="@+id/layout_aljabar_badge_wrapper"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentBottom="true"
@@ -310,7 +310,7 @@
                                 android:clipToPadding="false">
 
                                 <ImageView
-                                    android:id="@+id/rosp615jxk1"
+                                    android:id="@+id/iv_aljabar_badge_bg"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:scaleType="fitXY"
@@ -326,7 +326,7 @@
                                     android:paddingVertical="14dp">
 
                                     <TextView
-                                        android:id="@+id/r7r3o76k7dcj"
+                                        android:id="@+id/tv_aljabar_badge_text"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Gratis"
@@ -338,7 +338,7 @@
                         </RelativeLayout>
 
                         <TextView
-                            android:id="@+id/rqs8mhm5ztxo"
+                            android:id="@+id/tv_aljabar_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
@@ -349,7 +349,7 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/rprjp4a8zcfo"
+                        android:id="@+id/layout_aljabar_stats"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clipChildren="false"
@@ -358,7 +358,7 @@
                         android:orientation="vertical">
 
                         <LinearLayout
-                            android:id="@+id/rn2wl6yiw6nf"
+                            android:id="@+id/layout_aljabar_views"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="17dp"
@@ -368,14 +368,14 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:id="@+id/r3f5p84fhtpy"
+                                android:id="@+id/iv_aljabar_stats_icon"
                                 android:layout_width="11dp"
                                 android:layout_height="12dp"
                                 android:layout_marginEnd="2dp"
                                 android:src="@drawable/shared_ic_stats" />
 
                             <TextView
-                                android:id="@+id/rm5tumwd4pp"
+                                android:id="@+id/tv_aljabar_views_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="10rb"
@@ -388,7 +388,7 @@
 
                 <!-- Material: Pertidaksamaan -->
                 <LinearLayout
-                    android:id="@+id/rdtxalcrp3iq"
+                    android:id="@+id/layout_card_pertidaksamaan"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -400,7 +400,7 @@
                     android:paddingBottom="8dp">
 
                     <ImageView
-                        android:id="@+id/rak8204olr1l"
+                        android:id="@+id/iv_pertidaksamaan_thumb"
                         android:layout_width="match_parent"
                         android:layout_height="111dp"
                         android:layout_marginBottom="7dp"
@@ -408,7 +408,7 @@
                         android:src="@drawable/user_img_topic_pertidaksamaan" />
 
                     <TextView
-                        android:id="@+id/rhvpilf0odb"
+                        android:id="@+id/tv_pertidaksamaan_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
@@ -419,7 +419,7 @@
                         android:textStyle="bold" />
 
                     <LinearLayout
-                        android:id="@+id/rzc8jxel4ztf"
+                        android:id="@+id/layout_pertidaksamaan_stats"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clipChildren="false"
@@ -428,7 +428,7 @@
                         android:orientation="vertical">
 
                         <LinearLayout
-                            android:id="@+id/rmqv5vjqlr6"
+                            android:id="@+id/layout_pertidaksamaan_views"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="17dp"
@@ -438,14 +438,14 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:id="@+id/r897stto6jzt"
+                                android:id="@+id/iv_pertidaksamaan_stats_icon"
                                 android:layout_width="11dp"
                                 android:layout_height="12dp"
                                 android:layout_marginEnd="2dp"
                                 android:src="@drawable/shared_ic_stats" />
 
                             <TextView
-                                android:id="@+id/rh6xcvmksono"
+                                android:id="@+id/tv_pertidaksamaan_views_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="15rb"

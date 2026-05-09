@@ -1,44 +1,78 @@
-# EduClass App - Firebase Migration & Dynamic Content
+# EduClass App - Personalized Learning Management System
 
-## 🛠 Tech Stack
-*   **Language**: Java
+EduClass adalah aplikasi pembelajaran adaptif berbasis Android yang menyesuaikan penyampaian materi berdasarkan gaya belajar pengguna (**Visual, Audio, atau Kinestetik**). Aplikasi ini terintegrasi dengan Firebase untuk manajemen data dan autentikasi secara real-time.
+
+## 🛠 Tech Stack & Versi
+Aplikasi ini dibangun menggunakan teknologi terbaru untuk memastikan performa dan keamanan:
+
+*   **Bahasa Pemrograman**: Java (JDK 11)
+*   **Android Gradle Plugin (AGP)**: v9.1.0
+*   **Gradle Version**: v9.3.1
+*   **Minimum SDK**: 28 (Android 9.0 Pie)
+*   **Target SDK**: 36
 *   **Database**: Google Cloud Firestore (NoSQL)
+*   **Storage**: Firebase Storage (untuk aset gambar/file)
 *   **Authentication**: Firebase Auth
-*   **Image Loading**: Glide
-*   **Video Player**: Android YouTube Player SDK (PierfrancescoSoffritti)
-*   **UI Components**: Material Design, RecyclerView (Linear & Grid)
+*   **Library Utama**:
+    *   `Glide v4.16.0` - Image loading & caching.
+    *   `YouTube Player SDK v12.1.0` - Pemutar video native YouTube.
+    *   `Material Components v1.13.0` - UI modern dengan Material 3.
+    *   `Firebase BOM v33.1.0` - Sinkronisasi versi layanan Firebase.
 
 ## 📂 Struktur Folder & Fungsi
 ```text
 app/src/main/java/com/belajar/myapplication/
-├── auth/           -> Logika Login, Register, & AuthManager
-├── data/models/    -> Model data (POJO) untuk Firestore
-└── user/           -> UI (Activity & Fragment) & Adapter untuk fitur User
-    ├── MainActivity    -> Container utama (Bottom Nav)
-    ├── PageHome...     -> Fragment beranda
-    ├── PageModul...    -> Fragment daftar mata pelajaran
-    ├── PageMateri...   -> Fragment daftar topik/bab
-    └── PageContent...  -> Fragment isi materi (Personalized Content)
+├── auth/           -> Logika Autentikasi (Login, Register, & AuthManager)
+├── data/models/    -> Model data (POJO) untuk mapping Firestore
+└── user/           -> Antarmuka Pengguna & Fitur Utama
+    ├── MainActivity        -> Container utama dengan Bottom Navigation
+    ├── PageHomeFragment    -> Beranda: Ringkasan progres & materi populer
+    ├── PageModulFragment   -> Daftar mata pelajaran (Subjects)
+    ├── PageMateriFragment  -> Daftar topik/bab per mata pelajaran
+    ├── PageContentFragment -> Konten adaptif (Visual/Audio/Kinestetik)
+    ├── PageProfileFragment -> Profil user & pengaturan gaya belajar
+    ├── PagePomodoro        -> Fitur produktivitas (Timer belajar)
+    └── Adapters/           -> Adapter untuk RecyclerView (Subject & Topic)
+
+app/src/main/res/
+├── layout/         -> Definisi UI dalam format XML
+├── drawable/       -> Aset grafis, icon, dan custom backgrounds
+└── values/         -> Definisi warna (colors), teks (strings), & tema (themes)
 ```
 
-## 🔄 Alur Aplikasi (User Flow)
-1.  **Splash Screen**: Cek status login aplikasi.
-2.  **Auth (Login/Regis)**: Masuk atau daftar akun via Firebase. Data profil (Gaya Belajar) disimpan di Firestore.
-3.  **Home Page**: Melihat ringkasan & mata pelajaran populer.
-4.  **Modul Page**: Memilih mata pelajaran (e.g., Matematika).
-5.  **Materi Page**: Memilih bab/topik spesifik.
-6.  **Content Page**: Membaca materi yang **otomatis menyesuaikan** dengan Gaya Belajar user.
+## 💻 Panduan Instalasi (Windows)
 
-## 📡 Alur Data (Data Flow)
-1.  **Auth Profile**: Aplikasi mengambil `gaya_belajar` dari koleksi `users`.
-2.  **Smart Content Loading**: Di `PageContentFragment`, aplikasi menggunakan gaya belajar tersebut untuk memilih sub-data di Firestore (`visual`, `audio`, atau `kinestetik`).
-3.  **Robust Handling**: Menggunakan `String.valueOf()` di model dan pengecekan `null` di UI untuk mencegah crash jika data tidak lengkap.
-4.  **Video Extraction**: Sistem secara otomatis mengekstrak ID video dari URL YouTube lengkap (watch?v=...) agar bisa diputar di player native.
+Ikuti langkah-langkah berikut untuk menjalankan proyek ini di perangkat lokal Anda:
 
-## 📝 Catatan Perubahan & Robustness
-- **Clean Code**: Semua warning mayor telah dibersihkan (unused imports, unchecked casts, null safety).
-- **Auto-Lifecycle**: Video player otomatis berhenti/lepas saat fragment ditutup (mencegah memory leak).
-- **Personalized UI**: Label header di halaman konten berubah secara dinamis sesuai profil user.
+### 1. Persiapan Lingkungan
+*   **Install Git**: Unduh dan install dari [git-scm.com](https://git-scm.com/).
+*   **Install Android Studio**: Gunakan versi **Ladybug (2024.2.1)** atau yang lebih baru untuk mendukung Gradle 9+.
+*   **Java Development Kit (JDK)**: Pastikan JDK 11 atau 17 terpasang dan terkonfigurasi di Android Studio.
+
+### 2. Langkah-langkah Cloning & Running
+1.  **Clone Repository**:
+    Buka CMD atau PowerShell, arahkan ke folder tujuan, lalu jalankan:
+    ```bash
+    git clone https://github.com/username/repository-name.git
+    ```
+2.  **Buka Proyek**:
+    *   Buka Android Studio.
+    *   Pilih **Open** dan pilih folder `MyApplication2`.
+3.  **Konfigurasi Firebase (Wajib)**:
+    *   Buka [Firebase Console](https://console.firebase.google.com/).
+    *   Buat proyek baru dan tambahkan aplikasi Android dengan package name `com.belajar.myapplication`.
+    *   Unduh file `google-services.json` dan letakkan di dalam folder `app/`.
+4.  **Sync Gradle**:
+    *   Android Studio akan otomatis mendownload library yang dibutuhkan.
+    *   Jika muncul peringatan, klik **"Sync Project with Gradle Files"**.
+5.  **Jalankan Aplikasi**:
+    *   Gunakan Emulator (API 28+) atau HP Fisik dengan USB Debugging aktif.
+    *   Klik tombol **Run** (Ikon Segitiga Hijau) di bagian atas Android Studio.
+
+## 🔄 Fitur Utama
+*   **Smart Content Delivery**: Konten otomatis berubah format (teks/video/aktivitas) berdasarkan field `gaya_belajar` di profil Firestore user.
+*   **Progress Tracking**: Menampilkan persentase penyelesaian materi di halaman Home.
+*   **Pomodoro Timer**: Membantu user tetap fokus saat mempelajari materi.
 
 ---
-*Terakhir diupdate: 27 April 2026*
+*Terakhir diupdate: Mei 2024*

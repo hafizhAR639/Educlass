@@ -10,7 +10,7 @@
 
     <!-- LOGO -->
     <ImageView
-        android:id="@+id/logo"
+        android:id="@+id/iv_app_logo"
         android:layout_width="146dp"
         android:layout_height="154dp"
         android:layout_centerHorizontal="true"
@@ -20,7 +20,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/logo"
+        android:layout_below="@id/iv_app_logo"
         android:layout_marginTop="40dp"
         android:orientation="vertical">
 
@@ -45,7 +45,7 @@
                 android:layout_height="match_parent" />
 
             <EditText
-                android:id="@+id/etEmail"
+                android:id="@+id/et_email"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -82,7 +82,7 @@
                 android:layout_height="match_parent" />
 
             <EditText
-                android:id="@+id/etPassword"
+                android:id="@+id/et_password"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -97,7 +97,7 @@
 
             <!-- Eye toggle -->
             <ImageView
-                android:id="@+id/icEye"
+                android:id="@+id/iv_eye_toggle"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/shared_ic_eye_on"
@@ -120,7 +120,7 @@
 
         <!-- LOGIN BUTTON -->
         <Button
-            android:id="@+id/btnLogin"
+            android:id="@+id/btn_login_submit"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="30dp"
@@ -145,7 +145,7 @@
                 android:textColor="#000000" />
 
             <TextView
-                android:id="@+id/tvSignUp"
+                android:id="@+id/tv_sign_up_link"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sign up"

@@ -20,10 +20,12 @@
 
             <!-- Header Section -->
             <RelativeLayout
+                android:id="@+id/layout_header_materi"
                 android:layout_width="match_parent"
                 android:layout_height="220dp">
 
                 <ImageView
+                    android:id="@+id/iv_subject_header_bg"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
@@ -42,6 +44,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"/>
 
                 <LinearLayout
+                    android:id="@+id/layout_subject_title_wrapper"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
@@ -62,6 +65,7 @@
 
             <!-- Gaya Belajar Section -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_learning_style"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
@@ -71,6 +75,7 @@
                 app:cardElevation="8dp">
 
                 <LinearLayout
+                    android:id="@+id/layout_learning_style_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -78,11 +83,13 @@
                     android:padding="16dp">
 
                     <ImageView
+                        android:id="@+id/iv_learning_style_icon"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:src="@drawable/shared_ic_math" />
 
                     <LinearLayout
+                        android:id="@+id/layout_learning_style_text_wrapper"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
@@ -90,6 +97,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tv_learning_style_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Gaya Belajar"
@@ -97,6 +105,7 @@
                             android:textSize="14sp" />
 
                         <TextView
+                            android:id="@+id/tv_current_learning_style"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Visual"
@@ -106,6 +115,7 @@
                     </LinearLayout>
 
                     <TextView
+                        android:id="@+id/btn_change_style"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Ubah"

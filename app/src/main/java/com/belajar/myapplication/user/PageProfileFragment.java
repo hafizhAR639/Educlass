@@ -35,10 +35,10 @@ public class PageProfileFragment extends Fragment {
         authManager = new AuthManager();
         db = FirebaseFirestore.getInstance();
 
-        tvName = view.findViewById(R.id.tvProfileName);
-        tvEmail = view.findViewById(R.id.tvProfileEmail);
-        tvStyle = view.findViewById(R.id.tvProfileStyle);
-        View btnLogout = view.findViewById(R.id.btnLogout);
+        tvName = view.findViewById(R.id.tv_profile_name);
+        tvEmail = view.findViewById(R.id.tv_profile_email);
+        tvStyle = view.findViewById(R.id.tv_profile_style);
+        View btnLogout = view.findViewById(R.id.btn_logout_card);
 
         loadUserData();
 

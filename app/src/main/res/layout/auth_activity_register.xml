@@ -20,7 +20,7 @@
 
         <!-- ==================== LOGO ==================== -->
         <ImageView
-            android:id="@+id/imgLogo"
+            android:id="@+id/iv_app_logo"
             android:layout_width="114dp"
             android:layout_height="179dp"
             android:src="@drawable/shared_logo"
@@ -36,7 +36,7 @@
 
         <!-- ==================== FULL NAME FIELD ==================== -->
         <LinearLayout
-            android:id="@+id/layoutFullName"
+            android:id="@+id/layout_full_name_field"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:orientation="horizontal"
@@ -46,7 +46,7 @@
 
             <!-- Icon person -->
             <ImageView
-                android:id="@+id/icPerson"
+                android:id="@+id/iv_person_icon"
                 android:layout_width="20dp"
                 android:layout_height="22dp"
                 android:contentDescription="Person icon"
@@ -60,7 +60,7 @@
 
             <!-- EditText Full Name -->
             <EditText
-                android:id="@+id/etFullName"
+                android:id="@+id/et_full_name"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -82,7 +82,7 @@
 
         <!-- ==================== EMAIL FIELD ==================== -->
         <LinearLayout
-            android:id="@+id/layoutEmail"
+            android:id="@+id/layout_email_field"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:orientation="horizontal"
@@ -92,7 +92,7 @@
 
             <!-- Icon mail -->
             <ImageView
-                android:id="@+id/icMail"
+                android:id="@+id/iv_mail_icon"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:src="@drawable/shared_ic_mail"
@@ -105,7 +105,7 @@
 
             <!-- EditText Email -->
             <EditText
-                android:id="@+id/etEmail"
+                android:id="@+id/et_email"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -126,7 +126,7 @@
 
         <!-- ==================== PASSWORD FIELD ==================== -->
         <LinearLayout
-            android:id="@+id/layoutPassword"
+            android:id="@+id/layout_password_field"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:orientation="horizontal"
@@ -136,7 +136,7 @@
 
             <!-- Icon lock -->
             <ImageView
-                android:id="@+id/icLock1"
+                android:id="@+id/iv_lock_icon_1"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/shared_ic_lock"
@@ -149,7 +149,7 @@
 
             <!-- EditText Password -->
             <EditText
-                android:id="@+id/etPassword"
+                android:id="@+id/et_password"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -164,7 +164,7 @@
 
             <!-- Icon eye (toggle password visibility) -->
             <ImageView
-                android:id="@+id/icEye1"
+                android:id="@+id/iv_eye_toggle_1"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/shared_ic_eye_on"
@@ -181,7 +181,7 @@
 
         <!-- ==================== CONFIRM PASSWORD FIELD ==================== -->
         <LinearLayout
-            android:id="@+id/layoutConfirmPassword"
+            android:id="@+id/layout_confirm_password_field"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:orientation="horizontal"
@@ -191,7 +191,7 @@
 
             <!-- Icon lock -->
             <ImageView
-                android:id="@+id/icLock2"
+                android:id="@+id/iv_lock_icon_2"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/shared_ic_lock"
@@ -204,7 +204,7 @@
 
             <!-- EditText Confirm Password -->
             <EditText
-                android:id="@+id/etConfirmPassword"
+                android:id="@+id/et_confirm_password"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -219,7 +219,7 @@
 
             <!-- Icon eye (toggle confirm password visibility) -->
             <ImageView
-                android:id="@+id/icEye2"
+                android:id="@+id/iv_eye_toggle_2"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/shared_ic_eye_on"
@@ -237,7 +237,7 @@
 
         <!-- ==================== SIGN UP BUTTON ==================== -->
         <Button
-            android:id="@+id/btnSignUp"
+            android:id="@+id/btn_register_submit"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="30dp"
@@ -277,7 +277,7 @@
                 android:textColor="#000000" />
 
             <TextView
-                android:id="@+id/tvSignUp"
+                android:id="@+id/tv_login_link"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"

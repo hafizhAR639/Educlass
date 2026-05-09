@@ -34,7 +34,7 @@ public class PageHomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_fragment_home, container, false);
 
-        tvGreeting = view.findViewById(R.id.rn7158ojy3rs);
+        tvGreeting = view.findViewById(R.id.tv_greeting);
         rvSubjects = view.findViewById(R.id.rv_subjects_home);
         rvSubjects.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         adapter = new AdapterSubject(subjectList, true);

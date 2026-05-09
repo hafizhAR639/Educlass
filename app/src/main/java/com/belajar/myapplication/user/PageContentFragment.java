@@ -37,16 +37,16 @@ public class PageContentFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-        tvLabelGayaBelajar = view.findViewById(R.id.rsa0mkdkytdc);
-        TextView tvJudulTopik = view.findViewById(R.id.r8p2j2jpedem);
-        tvPenjelasan = view.findViewById(R.id.r29po0f85m63);
+        tvLabelGayaBelajar = view.findViewById(R.id.tv_learning_style);
+        TextView tvJudulTopik = view.findViewById(R.id.tv_topic_title);
+        tvPenjelasan = view.findViewById(R.id.tv_explanation);
         youTubePlayerView = view.findViewById(R.id.youtube_player_view);
         
         if (youTubePlayerView != null) {
             getLifecycle().addObserver(youTubePlayerView);
         }
 
-        View btnBack = view.findViewById(R.id.rs9gqiz7qaib);
+        View btnBack = view.findViewById(R.id.btn_back);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         }
@@ -144,7 +144,7 @@ public class PageContentFragment extends Fragment {
 
         View view = getView();
         if (view != null) {
-            TextView tvLabelVideo = view.findViewById(R.id.rmntw2d4hb59);
+            TextView tvLabelVideo = view.findViewById(R.id.tv_video_label);
             if (videoUrl == null || videoUrl.isEmpty()) {
                 if (tvLabelVideo != null) tvLabelVideo.setVisibility(View.GONE);
                 if (youTubePlayerView != null) youTubePlayerView.setVisibility(View.GONE);

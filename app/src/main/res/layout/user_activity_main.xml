@@ -8,26 +8,28 @@
 
     <!-- Container untuk Fragments -->
     <FrameLayout
-        android:id="@+id/fragment_container"
+        android:id="@+id/layout_fragment_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNav"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav_main"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
+        android:id="@+id/bottom_nav_main"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:background="@drawable/shared_bg_nav_indicator"
+        app:backgroundTint="@null"
+        app:elevation="0dp"
         app:itemIconTint="#FFFFFF"
         app:itemTextColor="#FFFFFF"
-        app:itemActiveIndicatorStyle="@null"
+        app:itemActiveIndicatorEnabled="false"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

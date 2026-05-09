@@ -35,11 +35,11 @@ public class AuthLoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Logging in...");
         progressDialog.setCancelable(false);
 
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
-        icEye = findViewById(R.id.icEye);
-        btnLogin = findViewById(R.id.btnLogin);
-        tvSignUp = findViewById(R.id.tvSignUp);
+        etEmail = findViewById(R.id.et_email);
+        etPassword = findViewById(R.id.et_password);
+        icEye = findViewById(R.id.iv_eye_toggle);
+        btnLogin = findViewById(R.id.btn_login_submit);
+        tvSignUp = findViewById(R.id.tv_sign_up_link);
 
         icEye.setOnClickListener(v -> {
             passwordVisible = !passwordVisible;

@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_activity_main);
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav_main);
 
         // Load Fragment pertama kali (Home)
         if (savedInstanceState == null) {
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadFragment(Fragment fragment) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.fragment_container, fragment);
+        ft.replace(R.id.layout_fragment_container, fragment);
         ft.commit();
     }
 }

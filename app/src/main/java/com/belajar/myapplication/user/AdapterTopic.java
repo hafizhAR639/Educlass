@@ -42,7 +42,7 @@ public class AdapterTopic extends RecyclerView.Adapter<AdapterTopic.ViewHolder> 
 
             ((FragmentActivity) holder.itemView.getContext()).getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
+                    .replace(R.id.layout_fragment_container, fragment)
                     .addToBackStack(null)
                     .commit();
         });
