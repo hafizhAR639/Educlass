@@ -23,7 +23,7 @@ app/src/main/java/com/belajar/myapplication/
 
 ## 💻 Panduan Instalasi Lengkap (Windows)
 
-Ikuti panduan ini agar proyek berjalan lancar di komputer Anda.
+Ikuti panduan in agar proyek berjalan lancar di komputer Anda.
 
 ### 1. Persiapan Software
 Pastikan Anda sudah menginstall:
