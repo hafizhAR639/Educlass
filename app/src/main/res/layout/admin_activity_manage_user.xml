@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EFF3F6"
+    android:orientation="vertical">
+
+    <!-- Header Section (Node 829:977) -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:clipChildren="false">
+
+        <!-- Blue Background with 40dp Bottom Radius -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/shared_bg_header_blue" />
+
+        <!-- Title & Back (Node 838:723) -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:paddingHorizontal="24dp">
+
+            <ImageView
+                android:id="@+id/btn_back_manage"
+                android:layout_width="30dp"
+                android:layout_height="28dp"
+                android:layout_centerVertical="true"
+                android:paddingTop="5dp"
+                android:background="@drawable/bg_card_white_r20"
+                android:backgroundTint="#FFFFFF"
+                android:padding="6dp"
+                android:src="@drawable/shared_ic_back"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Kelola User"
+                android:textColor="#FFFFFF"
+                android:paddingTop="5dp"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black" />
+        </RelativeLayout>
+
+        <!-- Floating Search Bar (Node 838:716) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="0dp"
+            android:background="@drawable/shared_bg_search_bar"
+            android:elevation="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/shared_ic_search"
+                app:tint="#B0B0B0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Cari nama atau email..."
+                android:textColor="#B0B0B0"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- Filter Buttons (Node 837:537-539) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="24dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="88dp"
+            android:layout_height="34dp"
+            android:background="@drawable/shared_bg_nav_indicator"
+            android:gravity="center"
+            android:text="Semua"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="88dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/bg_card_white_r20"
+            android:backgroundTint="#FFFFFF"
+            android:gravity="center"
+            android:text="Aktif"
+            android:textColor="#000000"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="88dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/bg_card_white_r20"
+            android:backgroundTint="#FFFFFF"
+            android:gravity="center"
+            android:text="Tidak Aktif"
+            android:textColor="#000000"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_manage_users"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        android:paddingBottom="40dp"
+        tools:listitem="@layout/admin_item_user" />
+
+</LinearLayout>

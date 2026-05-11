@@ -17,4 +17,5 @@
     <string name="chart_desc">Lihat progress belajar kamu</string>
     <string name="profile_title">Profil Pengguna</string>
     <string name="profile_desc">Pengaturan akun dan profil</string>
+    <string name="google_api_key">AIzaSyAzjsyWpvDIXof0S2uLnMUQmDx4AZ0HyRY</string>
 </resources>

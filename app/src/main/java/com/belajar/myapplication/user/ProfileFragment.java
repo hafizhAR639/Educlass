@@ -15,7 +15,7 @@ import com.belajar.myapplication.auth.AuthManager;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class PageProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment {
 
     private AuthManager authManager;
     private FirebaseFirestore db;

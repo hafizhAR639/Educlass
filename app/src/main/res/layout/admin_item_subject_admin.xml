@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <RelativeLayout
+        android:layout_width="77dp"
+        android:layout_height="107dp">
+
+        <!-- Background Rounded Box (Node 926:788) -->
+        <View
+            android:id="@+id/view_subject_bg"
+            android:layout_width="77dp"
+            android:layout_height="79dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/bg_card_white_r20"
+            android:backgroundTint="#C5A6E9" />
+
+        <!-- Circular Icon (Node 926:789) -->
+        <ImageView
+            android:id="@+id/iv_subject_icon"
+            android:layout_width="67dp"
+            android:layout_height="67dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:elevation="4dp"
+            android:src="@drawable/shared_ic_phys" />
+
+        <!-- Subject Name (Node 926:790) -->
+        <TextView
+            android:id="@+id/tv_subject_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/view_subject_bg"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="Physics"
+            android:textColor="#000000"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+</LinearLayout>

@@ -6,6 +6,7 @@ public class ModelSubject {
     private String nama;
     private String icon_name;
     private String color_hex;
+    private String jurusan;
     private Object total_moduls;
     private long order;
     private Timestamp created_at;
@@ -19,6 +20,8 @@ public class ModelSubject {
     public void setIcon_name(String icon_name) { this.icon_name = icon_name; }
     public String getColor_hex() { return color_hex; }
     public void setColor_hex(String color_hex) { this.color_hex = color_hex; }
+    public String getJurusan() { return jurusan; }
+    public void setJurusan(String jurusan) { this.jurusan = jurusan; }
 
     public String getTotal_moduls() {
         return String.valueOf(total_moduls != null ? total_moduls : 0);

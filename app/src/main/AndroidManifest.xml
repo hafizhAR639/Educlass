@@ -39,6 +39,23 @@
             android:exported="false"
             android:windowSoftInputMode="adjustNothing" />
 
+        <!-- Admin Section -->
+        <activity
+            android:name=".admin.MainActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".admin.ManageUserActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".admin.AddSubjectActivity"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_api_key" />
+
         <!-- Fragment tidak perlu didaftarkan di AndroidManifest.xml,
              hanya Activity saja yang didaftarkan -->
 

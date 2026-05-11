@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import com.belajar.myapplication.R;
 import java.util.Locale;
 
-public class PagePomodoroFragment extends Fragment {
+public class PomodoroFragment extends Fragment {
 
     private TextView tvTimer;
     private Button btnStartPause, btnReset;
@@ -25,7 +25,6 @@ public class PagePomodoroFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Karena layout belum ada, kita bisa gunakan layout placeholder atau buat sederhana di sini
-        // Tapi untuk sekarang saya buatkan kelasnya dulu agar MainActivity tidak error saat dihubungkan
         return inflater.inflate(R.layout.user_fragment_home, container, false); // Placeholder layout
     }
 

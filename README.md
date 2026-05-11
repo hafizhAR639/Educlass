@@ -1,29 +1,44 @@
 # EduClass App - Personalized Learning Management System
 
-EduClass adalah aplikasi pembelajaran adaptif berbasis Android yang menyesuaikan penyampaian materi berdasarkan gaya belajar pengguna (**Visual, Audio, atau Kinestetik**). Aplikasi ini menggunakan Firebase untuk autentikasi dan database Firestore secara real-time.
+EduClass adalah aplikasi pembelajaran adaptif berbasis Android yang menyesuaikan penyampaian materi berdasarkan gaya belajar pengguna (**Visual, Audio, atau Kinestetik**). Aplikasi ini dirancang untuk manajemen pembelajaran yang efisien dengan pemisahan peran Admin dan User.
 
 ## 🛠 Tech Stack & Versi
 *   **Bahasa Pemrograman**: Java (JDK 11)
-*   **Android Gradle Plugin (AGP)**: v9.1.0
-*   **Gradle Version**: v9.3.1
+*   **Android Gradle Plugin (AGP)**: v9.2.1
 *   **Target SDK**: 36 | **Min SDK**: 28
-*   **Database**: Google Cloud Firestore
-*   **Authentication**: Firebase Auth (Email & Password)
+*   **Database Remote**: Google Cloud Firestore (Primary) & Rencana Transisi Supabase.
+*   **Database Lokal**: Room Persistence Library (Rencana Intermediary).
+*   **Authentication**: Firebase Auth (Email & Password).
 *   **Library Utama**: Glide (Image), YouTube Player SDK, Material 3.
 
-## 📂 Struktur Folder
+##  Struktur Folder
 ```text
 app/src/main/java/com/belajar/myapplication/
+├── admin/          -> Fitur khusus Admin (Manage User, Add Subject, dll)
 ├── auth/           -> Login, Register, & AuthManager (Logika Firebase Auth)
-├── data/models/    -> Model data (POJO) untuk mapping data Firestore
-└── user/           -> UI & Fitur Utama (Home, Modul, Materi, Content, Profile)
+├── data/           ->
+│   ├── models/     -> Model data (POJO) untuk mapping Firestore/Room
+│   └── local/      -> Implementasi Room Database (DAO, Entity, Database) - [In Progress]
+└── user/           -> UI & Fitur Utama User (Home, Modul, Materi, Content)
 ```
+
+##  Fitur Terbaru & Perbaikan
+1.  **Admin Panel (Materi & User)**:
+    *   Tampilan Daftar Topik kini berbentuk List panjang (Full-width) yang konsisten dengan sisi User.
+    *   Fitur Tambah Mata Pelajaran dengan pemilihan warna tema dan unggah ikon.
+    *   Manajemen User dengan pengambilan data real-time dari Firestore.
+    *   Auto-initials avatar untuk mempermudah identifikasi user.
+2.  **Fix UI - Add Subject**: Perbaikan warna teks input menjadi hitam (`#101828`) agar terlihat jelas saat mengetik di background putih.
+
+## 🏗 Perencanaan Room (Local Persistence)
+Aplikasi sedang dikembangkan untuk menggunakan **Room Persistence Library** sebagai "penengah" (cache layer).
+*   **Tujuan**: Menghemat kuota Firestore (Free Tier) dan memungkinkan akses offline.
+*   **Object Buffering**: File ikon subjek (path/URL) dan metadata subjek akan disimpan di lokal terlebih dahulu.
+*   **Offline First**: User tetap bisa melihat daftar mata pelajaran yang sudah terunduh tanpa koneksi internet. Proses upload subjek baru akan dicatat secara lokal sebelum disinkronkan ke remote.
 
 ---
 
-## 💻 Panduan Instalasi Lengkap (Windows)
-
-Ikuti panduan in agar proyek berjalan lancar di komputer Anda.
+## 💻 Panduan Instalasi Lengkap
 
 ### 1. Persiapan Software
 Pastikan Anda sudah menginstall:
@@ -40,9 +55,8 @@ Pastikan Anda sudah menginstall:
     ```
 4.  Buka Android Studio, pilih **Open**, arahkan ke folder hasil clone.
 
-### 3. Konfigurasi Firebase (Untuk Tim/Kolaborator)
+### 3. Konfigurasi Firebase
 Karena Anda sudah diundang ke project Firebase yang sama, **jangan membuat project baru**. Cukup unduh file konfigurasi yang sudah ada:
-
 1.  Buka [Firebase Console](https://console.firebase.google.com/).
 2.  Pilih project **EduClass** (atau nama project yang telah dibagikan).
 3.  Klik ikon gerigi ⚙️ (**Project Settings**) di menu samping.
@@ -57,12 +71,7 @@ Karena Anda sudah diundang ke project Firebase yang sama, **jangan membuat proje
 **Masalah Umum:**
 *   **SDK Location**: Jika error, buat file `local.properties` di root folder dan isi: `sdk.dir=C\:\\Users\\NamaUser\\AppData\\Local\\Android\\Sdk`.
 *   **Firebase Error**: Pastikan file `google-services.json` berada di folder `/app`, bukan di root project.
-
----
-
-## 🔄 Alur Kerja Aplikasi
-1.  **Auth**: Registrasi via `AuthRegisterActivity`. Data akun di Firebase Auth, profil di Firestore koleksi `users`.
-2.  **Adaptif**: Di `PageContentFragment`, konten (Video/Gambar/Teks) akan otomatis berubah mengikuti field `gaya_belajar` di Firestore user tersebut.
+*   **Build Error**: Jika muncul error terkait `ProgressBar`, pastikan import `android.widget.ProgressBar` sudah tersemat di class adapter terkait.
 
 ---
 *Kontributor: [Nama Anda/Tim]*

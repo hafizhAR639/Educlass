@@ -47,20 +47,28 @@ public class AdapterSubject extends RecyclerView.Adapter<AdapterSubject.ViewHold
             // Fallback
         }
 
-        if (subject.getIcon_name() != null) {
-            int resId = holder.itemView.getContext().getResources().getIdentifier(
-                    subject.getIcon_name(), "drawable", holder.itemView.getContext().getPackageName());
-            if (resId != 0) {
-                holder.ivIcon.setImageResource(resId);
+        // Logic to load icon (URL or drawable name)
+        String icon = subject.getIcon_name();
+        if (icon != null) {
+            if (icon.startsWith("http")) {
+                Glide.with(holder.itemView.getContext()).load(icon).into(holder.ivIcon);
             } else {
-                holder.ivIcon.setImageResource(R.drawable.shared_ic_math);
+                int resId = holder.itemView.getContext().getResources().getIdentifier(
+                        icon, "drawable", holder.itemView.getContext().getPackageName());
+                if (resId != 0) {
+                    holder.ivIcon.setImageResource(resId);
+                } else {
+                    holder.ivIcon.setImageResource(R.drawable.shared_ic_math);
+                }
             }
         } else {
+            // Default icon based on name if icon_name is null
             int resId = R.drawable.shared_ic_math; 
             if (subject.getNama() != null) {
-                if (subject.getNama().toLowerCase().contains("fisika")) resId = R.drawable.shared_ic_phys;
-                else if (subject.getNama().toLowerCase().contains("kimia")) resId = R.drawable.shared_ic_chem;
-                else if (subject.getNama().toLowerCase().contains("biologi")) resId = R.drawable.shared_ic_bio;
+                String lowName = subject.getNama().toLowerCase();
+                if (lowName.contains("fisika")) resId = R.drawable.shared_ic_phys;
+                else if (lowName.contains("kimia")) resId = R.drawable.shared_ic_chem;
+                else if (lowName.contains("biologi")) resId = R.drawable.shared_ic_bio;
             }
             holder.ivIcon.setImageResource(resId);
         }
@@ -70,7 +78,7 @@ public class AdapterSubject extends RecyclerView.Adapter<AdapterSubject.ViewHold
         }
 
         holder.itemView.setOnClickListener(v -> {
-            PageMateriFragment fragment = new PageMateriFragment();
+            MateriFragment fragment = new MateriFragment();
             Bundle bundle = new Bundle();
             bundle.putString("subject_id", subject.getSubject_id());
             bundle.putString("subject_name", subject.getNama());

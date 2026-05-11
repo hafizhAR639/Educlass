@@ -18,7 +18,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PageMateriFragment extends Fragment {
+public class MateriFragment extends Fragment {
 
     private String subjectId, subjectName;
     private RecyclerView rvTopics;

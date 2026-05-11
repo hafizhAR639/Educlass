@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.belajar.myapplication.R;
 import com.belajar.myapplication.user.MainActivity;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AuthLoginActivity extends AppCompatActivity {
     private EditText etEmail, etPassword;
@@ -23,6 +24,7 @@ public class AuthLoginActivity extends AppCompatActivity {
     private boolean passwordVisible = false;
     private AuthManager authManager;
     private ProgressDialog progressDialog;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +32,12 @@ public class AuthLoginActivity extends AppCompatActivity {
         setContentView(R.layout.auth_activity_login);
 
         authManager = new AuthManager();
+        db = FirebaseFirestore.getInstance();
         
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Logging in...");
         progressDialog.setCancelable(false);
+        // ... (sisanya tetap sama)
 
         etEmail = findViewById(R.id.et_email);
         etPassword = findViewById(R.id.et_password);
@@ -71,15 +75,28 @@ public class AuthLoginActivity extends AppCompatActivity {
             authManager.loginUser(email, password, new AuthManager.AuthCallback() {
                 @Override
                 public void onSuccess(FirebaseUser user) {
-                    // ALUR AUTENTIKASI (STEP 3 - BERHASIL):
-                    // Firebase mengembalikan objek 'user' yang berisi UID, Email, dll.
-                    // Data ini SUDAH SAMA dengan yang ada di Firebase Console.
-                    progressDialog.dismiss();
-                    Toast.makeText(AuthLoginActivity.this, "Welcome " + user.getEmail(), Toast.LENGTH_SHORT).show();
-                    
-                    // Pindah ke halaman utama
-                    startActivity(new Intent(AuthLoginActivity.this, MainActivity.class));
-                    finish();
+                    // Cek Role di Firestore
+                    db.collection("users").document(user.getUid()).get()
+                            .addOnSuccessListener(documentSnapshot -> {
+                                progressDialog.dismiss();
+                                if (documentSnapshot.exists()) {
+                                    String role = documentSnapshot.getString("role");
+                                    if (role != null && role.equals("admin")) {
+                                        startActivity(new Intent(AuthLoginActivity.this, com.belajar.myapplication.admin.MainActivity.class));
+                                    } else {
+                                        startActivity(new Intent(AuthLoginActivity.this, MainActivity.class));
+                                    }
+                                    finish();
+                                } else {
+                                    // Default jika data user tidak ditemukan di Firestore
+                                    startActivity(new Intent(AuthLoginActivity.this, MainActivity.class));
+                                    finish();
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                progressDialog.dismiss();
+                                Toast.makeText(AuthLoginActivity.this, "Error fetching user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                 }
 
                 @Override

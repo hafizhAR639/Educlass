@@ -203,7 +203,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginEnd="10dp"
-                        android:src="@drawable/shared_ic_mail" />
+                        android:src="@drawable/shared_ic_search" />
 
                     <TextView
                         android:id="@+id/tv_search_hint"

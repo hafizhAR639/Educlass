@@ -17,7 +17,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 import java.util.Map;
 
-public class PageContentFragment extends Fragment {
+public class ContentFragment extends Fragment {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private TextView tvLabelGayaBelajar, tvPenjelasan;

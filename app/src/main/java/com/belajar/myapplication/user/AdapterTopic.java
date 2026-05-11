@@ -34,7 +34,7 @@ public class AdapterTopic extends RecyclerView.Adapter<AdapterTopic.ViewHolder> 
         holder.tvIndex.setText(String.valueOf(position + 1));
 
         holder.itemView.setOnClickListener(v -> {
-            PageContentFragment fragment = new PageContentFragment();
+            ContentFragment fragment = new ContentFragment();
             Bundle bundle = new Bundle();
             bundle.putString("topic_id", topic.getTopic_id());
             bundle.putString("topic_judul", topic.getJudul());
