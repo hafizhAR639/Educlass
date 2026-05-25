@@ -16,4 +16,9 @@
         android:icon="@drawable/shared_ic_stats"
         android:title="" />
 
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/shared_ic_user_filled"
+        android:title="" />
+
 </menu>

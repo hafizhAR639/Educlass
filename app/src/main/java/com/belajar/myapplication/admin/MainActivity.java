@@ -5,7 +5,7 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.belajar.myapplication.R;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         menuOrder.put(R.id.nav_modul, 1);
         menuOrder.put(R.id.nav_chart, 2);
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav_admin);
+        NavigationBarView bottomNav = findViewById(R.id.bottom_nav_admin);
 
         if (savedInstanceState == null) {
             loadFragment(new AdminHomeFragment(), false);
@@ -42,33 +42,48 @@ public class MainActivity extends AppCompatActivity {
 
             if (newId == R.id.nav_home) {
                 selectedFragment = new AdminHomeFragment();
+                getSupportFragmentManager().popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                loadFragment(selectedFragment, slideRight, false);
+                currentMenuId = newId;
+                return true;
             } else if (newId == R.id.nav_modul) {
                 selectedFragment = new ModulFragment();
             } else if (newId == R.id.nav_chart) {
                 selectedFragment = new StatistikFragment();
+            } else if (newId == R.id.nav_profile) {
+                // Profile handling (place holder)
+                return true;
             }
             
             if (selectedFragment != null) {
                 currentMenuId = newId;
-                loadFragment(selectedFragment, slideRight);
+                loadFragment(selectedFragment, slideRight, true);
             }
             return true;
         });
     }
 
-    private void loadFragment(Fragment fragment, boolean slideRight) {
+    private void loadFragment(Fragment fragment, boolean slideRight, boolean addToBackStack) {
         if (fragment == null) return;
         
+        androidx.fragment.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        
         if (slideRight) {
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
-                    .replace(R.id.admin_fragment_container, fragment)
-                    .commit();
+            transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
         } else {
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
-                    .replace(R.id.admin_fragment_container, fragment)
-                    .commit();
+            transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left);
         }
+        
+        transaction.replace(R.id.admin_fragment_container, fragment);
+        
+        if (addToBackStack) {
+            transaction.addToBackStack(null);
+        }
+        
+        transaction.commit();
+    }
+
+    private void loadFragment(Fragment fragment, boolean slideRight) {
+        loadFragment(fragment, slideRight, false);
     }
 }

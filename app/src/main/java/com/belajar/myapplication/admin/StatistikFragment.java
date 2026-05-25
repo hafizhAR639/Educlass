@@ -22,8 +22,13 @@ public class StatistikFragment extends Fragment {
         // Inflate layout statistik
         View view = inflater.inflate(R.layout.admin_fragment_statistik, container, false);
 
-        // Inisialisasi tombol kembali
-        ImageView btnBack = view.findViewById(R.id.btn_back_statistik);
+        // Setup Header menggunakan include
+        View header = view.findViewById(R.id.header_admin_statistik);
+        android.widget.TextView tvTitle = header.findViewById(R.id.tv_shared_header_title);
+        if (tvTitle != null) tvTitle.setText("Statistik");
+
+        // Inisialisasi tombol kembali dari shared header
+        View btnBack = header.findViewById(R.id.btn_back);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
                 if (getActivity() != null) {

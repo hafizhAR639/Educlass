@@ -6,34 +6,10 @@
     android:background="#EFF3F6"
     android:orientation="vertical">
 
-    <!-- Header Custom (Statistik) -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/shared_bg_header_blue"
-        android:paddingHorizontal="24dp"
-        android:paddingTop="54dp"
-        android:paddingBottom="40dp">
-
-        <ImageView
-            android:id="@+id/btn_back_statistik"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_centerVertical="true"
-            android:background="@drawable/shared_ic_back"
-            android:padding="8dp"
-            android:src="@drawable/shared_ic_back"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Statistik"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
+    <!-- Header Section -->
+    <include
+        android:id="@+id/header_admin_statistik"
+        layout="@layout/shared_layout_header" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -67,12 +43,13 @@
                     android:padding="20dp">
 
                     <ImageView
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:background="@drawable/bg_card_white_r20_xml"
                         android:backgroundTint="#A8D4FF"
-                        android:padding="10dp"
-                        android:src="@drawable/shared_ic_people" />
+                        android:padding="15dp"
+                        android:src="@drawable/shared_ic_people"
+                        app:tint="#000000" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -103,12 +80,13 @@
                     android:padding="20dp">
 
                     <ImageView
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:background="@drawable/bg_card_white_r20_xml"
                         android:backgroundTint="#C1ECA3"
-                        android:padding="10dp"
-                        android:src="@drawable/shared_ic_book" />
+                        android:padding="15dp"
+                        android:src="@drawable/shared_ic_book"
+                        app:tint="#000000" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -139,12 +117,13 @@
                     android:padding="20dp">
 
                     <ImageView
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:background="@drawable/bg_card_white_r20_xml"
-                        android:backgroundTint="#FFD1D1"
-                        android:padding="10dp"
-                        android:src="@drawable/shared_ic_stats" />
+                        android:backgroundTint="#D1FFBD"
+                        android:padding="15dp"
+                        android:src="@drawable/shared_ic_stats"
+                        app:tint="#000000" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -175,12 +154,13 @@
                     android:padding="20dp">
 
                     <ImageView
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:background="@drawable/bg_card_white_r20_xml"
                         android:backgroundTint="#E5D1FF"
-                        android:padding="10dp"
-                        android:src="@drawable/shared_ic_time" />
+                        android:padding="15dp"
+                        android:src="@drawable/shared_ic_time"
+                        app:tint="#000000" />
 
                     <TextView
                         android:layout_width="wrap_content"
