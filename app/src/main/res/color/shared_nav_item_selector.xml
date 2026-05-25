@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Saat diklik (di atas lingkaran putih), ikon berwarna hitam -->
-    <item android:color="#000000" android:state_checked="true" />
-    <!-- Saat tidak aktif, ikon juga berwarna hitam sesuai desain Figma -->
-    <item android:color="#000000" />
-</selector>

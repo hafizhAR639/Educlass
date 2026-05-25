@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="20dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardElevation="4dp"
+        app:strokeWidth="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="36dp"
+            android:paddingBottom="36dp">
+
+            <!-- Icon Centang (lingkaran hijau muda) -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="36dp"
+                app:cardBackgroundColor="#E8F5E9"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:id="@+id/iv_dialog_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/shared_ic_check"
+                    app:tint="#4CAF50" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Judul -->
+            <TextView
+                android:id="@+id/tv_dialog_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Berhasil!"
+                android:textColor="#111827"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Subjudul -->
+            <TextView
+                android:id="@+id/tv_dialog_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mata pelajaran berhasil ditambahkan"
+                android:textColor="#9CA3AF"
+                android:textSize="14sp"
+                android:gravity="center" />
+
+            <!-- Tombol Tutup (Tetap diperlukan agar logic Activity tidak error) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_dialog_close"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="32dp"
+                android:text="Lanjutkan"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                app:backgroundTint="#4CAF50"
+                app:cornerRadius="12dp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

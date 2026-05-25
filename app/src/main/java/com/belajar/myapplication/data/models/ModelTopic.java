@@ -1,5 +1,7 @@
 package com.belajar.myapplication.data.models;
 
+import com.google.firebase.firestore.PropertyName;
+
 public class ModelTopic {
     private String topic_id;
     private String subject_id;
@@ -8,6 +10,8 @@ public class ModelTopic {
     private String durasi;
     private Object views_count;
     private int progress;
+    private boolean isPremium; // Field baru untuk menentukan apakah materi ini premium
+    private Object order; // Field baru untuk mengurutkan materi, menggunakan Object untuk fleksibilitas tipe data
 
     public ModelTopic() {}
     public String getTopic_id() { return topic_id; }
@@ -31,4 +35,23 @@ public class ModelTopic {
         return String.valueOf(views_count != null ? views_count : 0);
     }
     public void setViews_count(Object views_count) { this.views_count = views_count; }
+
+    @PropertyName("is_premium")
+    public boolean isPremium() { return isPremium; }
+    @PropertyName("is_premium")
+    public void setPremium(boolean premium) { isPremium = premium; }
+
+    public long getOrder() {
+        if (order instanceof Number) {
+            return ((Number) order).longValue();
+        } else if (order instanceof String) {
+            try {
+                return Long.parseLong((String) order);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        return 0;
+    }
+    public void setOrder(Object order) { this.order = order; }
 }

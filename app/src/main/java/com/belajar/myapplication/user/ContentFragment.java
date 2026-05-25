@@ -1,10 +1,13 @@
 package com.belajar.myapplication.user;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -23,6 +26,7 @@ public class ContentFragment extends Fragment {
     private TextView tvLabelGayaBelajar, tvPenjelasan;
     private String topicId;
     private YouTubePlayerView youTubePlayerView;
+    private VideoView nativeVideoView;
 
     @Nullable
     @Override
@@ -41,6 +45,7 @@ public class ContentFragment extends Fragment {
         TextView tvJudulTopik = view.findViewById(R.id.tv_topic_title);
         tvPenjelasan = view.findViewById(R.id.tv_explanation);
         youTubePlayerView = view.findViewById(R.id.youtube_player_view);
+        nativeVideoView = view.findViewById(R.id.native_video_view);
         
         if (youTubePlayerView != null) {
             getLifecycle().addObserver(youTubePlayerView);
@@ -129,6 +134,7 @@ public class ContentFragment extends Fragment {
         String msg = "Konten untuk gaya belajar " + style + " belum tersedia.";
         if (tvPenjelasan != null) tvPenjelasan.setText(msg);
         if (youTubePlayerView != null) youTubePlayerView.setVisibility(View.GONE);
+        if (nativeVideoView != null) nativeVideoView.setVisibility(View.GONE);
     }
 
     private void displayContent(Map<String, Object> contentMap) {
@@ -138,7 +144,6 @@ public class ContentFragment extends Fragment {
         }
         
         String videoUrl = (String) contentMap.get("video_url");
-        // Gunakan key sesuai Firestore user: "audio_url", "kin_url"
         if (videoUrl == null) videoUrl = (String) contentMap.get("audio_url");
         if (videoUrl == null) videoUrl = (String) contentMap.get("kin_url");
 
@@ -148,14 +153,47 @@ public class ContentFragment extends Fragment {
             if (videoUrl == null || videoUrl.isEmpty()) {
                 if (tvLabelVideo != null) tvLabelVideo.setVisibility(View.GONE);
                 if (youTubePlayerView != null) youTubePlayerView.setVisibility(View.GONE);
+                if (nativeVideoView != null) nativeVideoView.setVisibility(View.GONE);
             } else {
                 if (tvLabelVideo != null) tvLabelVideo.setVisibility(View.VISIBLE);
-                if (youTubePlayerView != null) {
-                    youTubePlayerView.setVisibility(View.VISIBLE);
-                    setupYouTubePlayer(videoUrl);
+                
+                if (videoUrl.contains("youtube.com") || videoUrl.contains("youtu.be")) {
+                    // YouTube Video
+                    if (nativeVideoView != null) nativeVideoView.setVisibility(View.GONE);
+                    if (youTubePlayerView != null) {
+                        youTubePlayerView.setVisibility(View.VISIBLE);
+                        setupYouTubePlayer(videoUrl);
+                    }
+                } else {
+                    // Native Video (Firebase Storage / Direct Link)
+                    if (youTubePlayerView != null) youTubePlayerView.setVisibility(View.GONE);
+                    if (nativeVideoView != null) {
+                        nativeVideoView.setVisibility(View.VISIBLE);
+                        setupNativeVideoPlayer(videoUrl);
+                    }
                 }
             }
         }
+    }
+
+    private void setupNativeVideoPlayer(String videoUrl) {
+        if (nativeVideoView == null) return;
+        
+        Uri uri = Uri.parse(videoUrl);
+        nativeVideoView.setVideoURI(uri);
+        
+        MediaController mediaController = new MediaController(getContext());
+        mediaController.setAnchorView(nativeVideoView);
+        nativeVideoView.setMediaController(mediaController);
+        
+        nativeVideoView.setOnPreparedListener(mp -> {
+            // Optional: nativeVideoView.start(); // Auto-play
+        });
+        
+        nativeVideoView.setOnErrorListener((mp, what, extra) -> {
+            // Handle error
+            return false;
+        });
     }
 
     private void setupYouTubePlayer(String videoId) {

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="#EFF3F6">
 
     <!-- Container untuk Fragments (Admin) -->
@@ -11,6 +12,7 @@
         android:id="@+id/admin_fragment_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="#EFF3F6"
         app:layout_constraintBottom_toTopOf="@+id/bottom_nav_admin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,19 +22,20 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav_admin"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/shared_bg_nav_indicator"
         app:backgroundTint="@null"
-        app:elevation="0dp"
+        app:elevation="8dp"
         app:itemIconTint="#FFFFFF"
+        app:itemIconSize="26dp"
         app:itemTextColor="#FFFFFF"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/nav_menu" />
+        app:menu="@menu/admin_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -37,7 +37,7 @@ public class AuthLoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Logging in...");
         progressDialog.setCancelable(false);
-        // ... (sisanya tetap sama)
+
 
         etEmail = findViewById(R.id.et_email);
         etPassword = findViewById(R.id.et_password);

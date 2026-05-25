@@ -14,45 +14,18 @@
         <!-- Header Cerah (Biru Muda) -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="260dp">
+            android:layout_height="220dp">
 
-            <ImageView
-                android:id="@+id/iv_subject_header_bg"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/shared_bg_header_blue" />
-
-            <ImageView
-                android:id="@+id/btn_back"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="50dp"
-                android:padding="4dp"
-                android:src="@drawable/shared_ic_back"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true" />
-
-            <TextView
-                android:id="@+id/tv_subject_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/btn_back"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="22dp"
-                android:text="Matematika"
-                android:textColor="#FFFFFF"
-                android:textSize="26sp"
-                android:textStyle="bold" />
+            <include
+                android:id="@+id/header_admin_detail"
+                layout="@layout/shared_layout_header" />
 
             <!-- Baris Statistik dengan Kartu Putih Bersih -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_subject_title"
-                android:layout_marginTop="16dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="16dp"
                 android:paddingHorizontal="20dp"
                 android:baselineAligned="false"
                 android:orientation="horizontal">

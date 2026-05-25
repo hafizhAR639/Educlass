@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Saat aktif/checked, warna icon putih bersih (solid) -->
+    <item android:color="#FFFFFF" android:state_checked="true" />
+    <!-- Saat tidak aktif, warna putih dengan transparansi agar tidak pudar (abu-abu) -->
+    <item android:color="#BFFFFFFF" />
+</selector>

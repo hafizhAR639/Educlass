@@ -1,19 +1,40 @@
 package com.belajar.myapplication.data.models;
+
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 import com.google.firebase.Timestamp;
 
+/**
+ * Model untuk Mata Pelajaran (Subject).
+ * Kelas ini berfungsi sebagai TABEL di database lokal (Room).
+ */
+@Entity(tableName = "subjects")
 public class ModelSubject {
-    private String subject_id;
+    
+    @PrimaryKey
+    @NonNull
+    private String subject_id = ""; // Default empty string agar tidak null
+    
     private String nama;
     private String icon_name;
     private String color_hex;
     private String jurusan;
+    
+    @Ignore // Room tidak mendukung Object dinamis secara default
     private Object total_moduls;
+    
     private long order;
+    
+    @Ignore // Room butuh Converter untuk Timestamp
     private Timestamp created_at;
 
     public ModelSubject() {}
+    
+    @NonNull
     public String getSubject_id() { return subject_id; }
-    public void setSubject_id(String subject_id) { this.subject_id = subject_id; }
+    public void setSubject_id(@NonNull String subject_id) { this.subject_id = subject_id; }
     public String getNama() { return nama; }
     public void setNama(String nama) { this.nama = nama; }
     public String getIcon_name() { return icon_name; }

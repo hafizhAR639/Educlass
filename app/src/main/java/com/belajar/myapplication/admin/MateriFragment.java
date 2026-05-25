@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.belajar.myapplication.R;
 import com.belajar.myapplication.data.models.ModelTopic;
+import com.belajar.myapplication.shared.AdapterTopic;
+import com.belajar.myapplication.shared.FirebaseHelper;
+import com.belajar.myapplication.shared.UIUtils;
 import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -48,14 +51,15 @@ public class MateriFragment extends Fragment {
         }
 
         // Inisialisasi UI Header
-        TextView tvTitle = view.findViewById(R.id.tv_subject_title);
-        ivHeaderBg = view.findViewById(R.id.iv_subject_header_bg);
+        View header = view.findViewById(R.id.header_admin_detail);
+        TextView tvTitle = header.findViewById(R.id.tv_shared_header_title);
+        ivHeaderBg = header.findViewById(R.id.iv_shared_header_bg);
 
         if (tvTitle != null && subjectName != null) tvTitle.setText(subjectName);
-        updateHeaderImage(subjectName); // Sesuaikan gambar header berdasarkan nama mapel
+        UIUtils.setHeaderImage(subjectName, ivHeaderBg);
 
         // Listener tombol kembali
-        View btnBack = view.findViewById(R.id.btn_back);
+        View btnBack = header.findViewById(R.id.btn_back);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
                 if (getParentFragmentManager() != null) {
@@ -69,7 +73,16 @@ public class MateriFragment extends Fragment {
         // Setup RecyclerView Daftar Topik (List)
         rvTopics = view.findViewById(R.id.rv_topics);
         rvTopics.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new AdapterTopic(filteredTopicList);
+        adapter = new AdapterTopic(filteredTopicList, true, true, new AdapterTopic.OnTopicClickListener() {
+            @Override
+            public void onTopicClick(ModelTopic topic, boolean isLocked) {
+                // Admin detail logic if any
+            }
+            @Override
+            public void onEditClick(ModelTopic topic) {
+                Toast.makeText(getContext(), "Edit: " + topic.getJudul(), Toast.LENGTH_SHORT).show();
+            }
+        });
         rvTopics.setAdapter(adapter);
 
         // Setup Filter bar (Chips)
@@ -84,21 +97,6 @@ public class MateriFragment extends Fragment {
         fetchTopics(); // Ambil data dari Firestore
 
         return view;
-    }
-
-    /**
-     * Memperbarui gambar background header sesuai dengan mata pelajaran.
-     */
-    private void updateHeaderImage(String name) {
-        if (name == null || ivHeaderBg == null) return;
-        
-        int resId = R.drawable.shared_bg_header_blue; // Default biru polos
-        String lowName = name.toLowerCase();
-        
-        if (lowName.contains("matematika")) resId = R.drawable.user_img_header_math;
-        // Tambahkan kondisi gambar lain di sini jika aset sudah tersedia
-        
-        ivHeaderBg.setImageResource(resId);
     }
 
     /**
@@ -130,33 +128,15 @@ public class MateriFragment extends Fragment {
      * Mengambil data topik yang memiliki subject_id yang cocok dari database.
      */
     private void fetchTopics() {
-        if (subjectId == null) return;
-        
-        db.collection("topics")
-          .whereEqualTo("subject_id", subjectId)
-          .get()
-          .addOnCompleteListener(task -> {
-              if (task.isSuccessful() && task.getResult() != null) {
-                  if (task.getResult().isEmpty()) {
-                      fetchTopicsFallback(); // Coba nama koleksi lain jika gagal
-                  } else {
-                      processTopics(task.getResult());
-                  }
-              } else {
-                  fetchTopicsFallback();
-              }
-          });
+        FirebaseHelper.fetchTopics(subjectId, task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                processTopics(task.getResult());
+            }
+        });
     }
 
     private void fetchTopicsFallback() {
-        db.collection("topic")
-          .whereEqualTo("subject_id", subjectId)
-          .get()
-          .addOnCompleteListener(task -> {
-              if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
-                  processTopics(task.getResult());
-              }
-          });
+        // Shared
     }
 
     /**
@@ -169,6 +149,9 @@ public class MateriFragment extends Fragment {
             topic.setTopic_id(document.getId());
             allTopicList.add(topic);
         }
+        // Urutkan berdasarkan field order
+        allTopicList.sort((a, b) -> Long.compare(a.getOrder(), b.getOrder()));
+
         applyFilter(chipGroupFilters.getCheckedChipId());
     }
 }

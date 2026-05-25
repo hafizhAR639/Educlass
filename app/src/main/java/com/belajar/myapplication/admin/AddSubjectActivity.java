@@ -1,16 +1,23 @@
 package com.belajar.myapplication.admin;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.belajar.myapplication.R;
 import com.google.android.material.textfield.TextInputEditText;
@@ -18,6 +25,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -152,20 +162,38 @@ public class AddSubjectActivity extends AppCompatActivity {
     }
 
     /**
-     * Mengunggah gambar ke Firebase Storage, lalu lanjut simpan data ke Firestore
+     * Mengunggah gambar ke Firebase Storage dengan kompresi WebP agar hemat kuota.
      */
     private void uploadImageAndSave(String name) {
-        Toast.makeText(this, "Sedang mengunggah...", Toast.LENGTH_SHORT).show();
-        
-        String fileName = UUID.randomUUID().toString() + ".png";
-        StorageReference ref = storage.getReference().child("subject_icons/" + fileName);
+        try {
+            Toast.makeText(this, "Sedang mengompres & mengunggah...", Toast.LENGTH_SHORT).show();
 
-        ref.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
-                    // Setelah dapat URL gambar, lanjut cari urutan (order) terakhir
-                    fetchNextOrderAndSave(name, uri.toString());
-                }))
-                .addOnFailureListener(e -> Toast.makeText(this, "Gagal Upload: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            // 1. Ambil Stream dari Uri
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+            // 2. Kompres ke WebP (Kualitas 75%) agar ukuran file sangat kecil tapi tetap tajam
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, 75, baos);
+            } else {
+                bitmap.compress(Bitmap.CompressFormat.WEBP, 75, baos);
+            }
+            byte[] data = baos.toByteArray();
+
+            // 3. Upload data byte array ke Firebase
+            String fileName = UUID.randomUUID().toString() + ".webp";
+            StorageReference ref = storage.getReference().child("subject_icons/" + fileName);
+
+            ref.putBytes(data)
+                    .addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                        fetchNextOrderAndSave(name, uri.toString());
+                    }))
+                    .addOnFailureListener(e -> Toast.makeText(this, "Gagal Upload: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Gagal memproses gambar: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -205,9 +233,32 @@ public class AddSubjectActivity extends AppCompatActivity {
         db.collection("subjects")
                 .add(subject)
                 .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(this, "Mata Pelajaran berhasil ditambahkan!", Toast.LENGTH_SHORT).show();
-                    finish();
+                    showSuccessDialog();
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Gagal Simpan: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * Menampilkan Pop-up Berhasil sesuai desain (KISS)
+     */
+    private void showSuccessDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.shared_dialog_success, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create();
+
+        // Membuat background dialog transparan agar sudut rounded terlihat
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnClose = dialogView.findViewById(R.id.btn_dialog_close);
+        btnClose.setOnClickListener(v -> {
+            dialog.dismiss();
+            finish(); // Tutup activity setelah dialog ditutup
+        });
+
+        dialog.show();
     }
 }

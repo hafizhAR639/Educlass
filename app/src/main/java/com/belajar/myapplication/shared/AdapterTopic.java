@@ -1,0 +1,130 @@
+package com.belajar.myapplication.shared;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import com.belajar.myapplication.R;
+import com.belajar.myapplication.data.models.ModelTopic;
+import java.util.List;
+
+public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    public interface OnTopicClickListener {
+        void onTopicClick(ModelTopic topic, boolean isLocked);
+        default void onEditClick(ModelTopic topic) {}
+    }
+
+    private final List<ModelTopic> topics;
+    private final boolean isAdmin;
+    private final boolean isPremium;
+    private final OnTopicClickListener listener;
+
+    private static final int TYPE_NORMAL = 0;
+    private static final int TYPE_LOCKED = 1;
+    private static final int TYPE_ADMIN = 2;
+
+    public AdapterTopic(List<ModelTopic> topics, boolean isAdmin, boolean isPremium, OnTopicClickListener listener) {
+        this.topics = topics;
+        this.isAdmin = isAdmin;
+        this.isPremium = isPremium;
+        this.listener = listener;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (isAdmin) return TYPE_ADMIN;
+        ModelTopic topic = topics.get(position);
+        if (!isPremium && (topic.isPremium() || topic.getOrder() >= 3)) {
+            return TYPE_LOCKED;
+        }
+        return TYPE_NORMAL;
+    }
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (viewType == TYPE_ADMIN) {
+            return new AdminViewHolder(inflater.inflate(R.layout.admin_item_topic, parent, false));
+        } else if (viewType == TYPE_LOCKED) {
+            return new LockedViewHolder(inflater.inflate(R.layout.user_item_subject_modul_locked, parent, false));
+        } else {
+            return new NormalViewHolder(inflater.inflate(R.layout.user_item_topic, parent, false));
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        ModelTopic topic = topics.get(position);
+
+        if (holder instanceof AdminViewHolder) {
+            AdminViewHolder h = (AdminViewHolder) holder;
+            h.tvJudul.setText(topic.getJudul());
+            h.tvIndex.setText(String.valueOf(position + 1));
+            h.tvDesc.setText(topic.getDeskripsi() != null ? topic.getDeskripsi() : "Kelola materi");
+            h.tvTime.setText(topic.getDurasi() != null ? "⏱ " + topic.getDurasi() : "⏱ -");
+            h.progressBar.setProgress(topic.getProgress());
+            h.tvProgress.setText(topic.getProgress() + "%");
+            h.itemView.setOnClickListener(v -> listener.onTopicClick(topic, false));
+            h.btnEdit.setOnClickListener(v -> listener.onEditClick(topic));
+        } else if (holder instanceof NormalViewHolder) {
+            NormalViewHolder h = (NormalViewHolder) holder;
+            h.tvJudul.setText(topic.getJudul());
+            h.tvIndex.setText(String.valueOf(position + 1));
+            if (h.tvDesc != null) h.tvDesc.setText(topic.getDeskripsi());
+            h.itemView.setOnClickListener(v -> listener.onTopicClick(topic, false));
+        } else if (holder instanceof LockedViewHolder) {
+            LockedViewHolder h = (LockedViewHolder) holder;
+            h.tvJudul.setText(topic.getJudul());
+            if (h.tvDesc != null) h.tvDesc.setText(topic.getDeskripsi());
+            if (h.tvTime != null) h.tvTime.setText(topic.getDurasi());
+            h.itemView.setOnClickListener(v -> listener.onTopicClick(topic, true));
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return topics.size();
+    }
+
+    static class NormalViewHolder extends RecyclerView.ViewHolder {
+        TextView tvJudul, tvIndex, tvDesc;
+        NormalViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvJudul = itemView.findViewById(R.id.tv_topic_judul);
+            tvIndex = itemView.findViewById(R.id.tv_topic_index);
+            tvDesc = itemView.findViewById(R.id.tv_topic_desc);
+        }
+    }
+
+    static class LockedViewHolder extends RecyclerView.ViewHolder {
+        TextView tvJudul, tvDesc, tvTime;
+        LockedViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvJudul = itemView.findViewById(R.id.tv_topic_judul);
+            tvDesc = itemView.findViewById(R.id.tv_topic_desc);
+            tvTime = itemView.findViewById(R.id.tv_time);
+        }
+    }
+
+    static class AdminViewHolder extends RecyclerView.ViewHolder {
+        TextView tvJudul, tvIndex, tvDesc, tvTime, tvProgress;
+        ProgressBar progressBar;
+        ImageView btnEdit;
+        AdminViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvJudul = itemView.findViewById(R.id.tv_topic_judul);
+            tvIndex = itemView.findViewById(R.id.tv_topic_index);
+            tvDesc = itemView.findViewById(R.id.tv_topic_desc);
+            tvTime = itemView.findViewById(R.id.tv_time);
+            tvProgress = itemView.findViewById(R.id.tv_progress);
+            progressBar = itemView.findViewById(R.id.progress_bar);
+            btnEdit = itemView.findViewById(R.id.btn_edit_topic);
+        }
+    }
+}

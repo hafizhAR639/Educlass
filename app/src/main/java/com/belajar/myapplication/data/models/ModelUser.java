@@ -5,6 +5,7 @@ public class ModelUser {
     private String nama;
     private String email;
     private String role;
+    private boolean isPremium;
 
     public ModelUser() {}
 
@@ -19,4 +20,7 @@ public class ModelUser {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public boolean isPremium() { return isPremium; }
+    public void setPremium(boolean premium) { isPremium = premium; }
 }

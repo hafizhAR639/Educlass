@@ -2,13 +2,12 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <item name="itemActiveIndicatorStyle">@style/App.Custom.Indicator</item>
     </style>
 
     <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
 
     <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@android:color/transparent</item>
+        <item name="android:color">#000000</item>
         <item name="android:width">44dp</item>
         <item name="android:height">44dp</item>
         <item name="marginHorizontal">0dp</item>

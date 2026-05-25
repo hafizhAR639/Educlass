@@ -66,6 +66,7 @@ public class AuthManager {
         user.put("nama", nama);
         user.put("email", email);
         user.put("role", "user"); // Default role saat daftar adalah user
+        user.put("isPremium", false); // Default status premium adalah false
 
         // Data disimpan di koleksi "users" dengan ID sesuai UID Firebase Auth
         db.collection("users").document(uid)

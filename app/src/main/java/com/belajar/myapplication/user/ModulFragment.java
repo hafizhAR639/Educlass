@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -12,6 +13,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.belajar.myapplication.R;
 import com.belajar.myapplication.data.models.ModelSubject;
+import com.belajar.myapplication.shared.AdapterSubject;
+import com.belajar.myapplication.shared.FirebaseHelper;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
@@ -29,14 +33,40 @@ public class ModulFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_fragment_modul, container, false);
 
-        View btnBack = view.findViewById(R.id.btn_back);
+        View header = view.findViewById(R.id.header_modul);
+        TextView tvTitle = header.findViewById(R.id.tv_shared_header_title);
+        if (tvTitle != null) tvTitle.setText("Mata Pelajaran");
+        
+        View btnBack = header.findViewById(R.id.btn_back);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
         }
 
         rvSubjects = view.findViewById(R.id.rv_subjects_modul);
         rvSubjects.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        adapter = new AdapterSubject(subjectList, false);
+        
+        adapter = new AdapterSubject(subjectList, R.layout.user_item_subject_modul, (subject, v) -> {
+            // Check premium status if needed here or rely on the fact that this is User side
+            // Actually the original AdapterSubject had premium check inside. 
+            // I'll add a simple premium check here by reading from Firestore or passing it.
+            
+            String uid = FirebaseAuth.getInstance().getUid();
+            if (uid != null) {
+                FirebaseFirestore.getInstance().collection("users").document(uid).get().addOnSuccessListener(doc -> {
+                    boolean isPremium = doc.exists() && Boolean.TRUE.equals(doc.getBoolean("isPremium"));
+                    if (!isPremium && subject.getOrder() >= 3) {
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.layout_fragment_container, new PremiumFragment())
+                                .addToBackStack(null)
+                                .commit();
+                    } else {
+                        navigateToMateri(subject);
+                    }
+                });
+            } else {
+                navigateToMateri(subject);
+            }
+        });
         rvSubjects.setAdapter(adapter);
 
         db = FirebaseFirestore.getInstance();
@@ -45,30 +75,29 @@ public class ModulFragment extends Fragment {
         return view;
     }
 
+    private void navigateToMateri(ModelSubject subject) {
+        MateriFragment fragment = new MateriFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("subject_id", subject.getSubject_id());
+        bundle.putString("subject_name", subject.getNama());
+        fragment.setArguments(bundle);
+
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.layout_fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
     private void fetchSubjects() {
-        db.collection("subjects")
-          .get()
-          .addOnCompleteListener(task -> {
-              if (task.isSuccessful()) {
-                  if (task.getResult().isEmpty()) {
-                      fetchSubjectsFallback();
-                  } else {
-                      processSubjects(task.getResult());
-                  }
-              } else {
-                  fetchSubjectsFallback();
-              }
-          });
+        FirebaseHelper.fetchSubjects(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                processSubjects(task.getResult());
+            }
+        });
     }
 
     private void fetchSubjectsFallback() {
-        db.collection("subject")
-          .get()
-          .addOnCompleteListener(task -> {
-              if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                  processSubjects(task.getResult());
-              }
-          });
+        // Redundant with FirebaseHelper now
     }
 
     private void processSubjects(com.google.firebase.firestore.QuerySnapshot result) {

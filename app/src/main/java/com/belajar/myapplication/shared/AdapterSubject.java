@@ -1,15 +1,12 @@
-package com.belajar.myapplication.user;
+package com.belajar.myapplication.shared;
 
 import android.graphics.Color;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import com.belajar.myapplication.R;
 import com.belajar.myapplication.data.models.ModelSubject;
@@ -18,18 +15,23 @@ import java.util.List;
 
 public class AdapterSubject extends RecyclerView.Adapter<AdapterSubject.ViewHolder> {
 
-    private final List<ModelSubject> subjects;
-    private final boolean isHorizontal;
+    public interface OnSubjectClickListener {
+        void onSubjectClick(ModelSubject subject, View view);
+    }
 
-    public AdapterSubject(List<ModelSubject> subjects, boolean isHorizontal) {
+    private final List<ModelSubject> subjects;
+    private final int layoutRes;
+    private final OnSubjectClickListener listener;
+
+    public AdapterSubject(List<ModelSubject> subjects, int layoutRes, OnSubjectClickListener listener) {
         this.subjects = subjects;
-        this.isHorizontal = isHorizontal;
+        this.layoutRes = layoutRes;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        int layoutRes = isHorizontal ? R.layout.user_item_subject_home : R.layout.user_item_subject_modul;
         View view = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
         return new ViewHolder(view);
     }
@@ -39,15 +41,17 @@ public class AdapterSubject extends RecyclerView.Adapter<AdapterSubject.ViewHold
         ModelSubject subject = subjects.get(position);
         holder.tvNama.setText(subject.getNama());
         
-        try {
-            if (holder.layoutBg != null && subject.getColor_hex() != null) {
-                holder.layoutBg.getBackground().setTint(Color.parseColor(subject.getColor_hex()));
-            }
-        } catch (Exception e) {
-            // Fallback
+        // Background color
+        View bgView = holder.viewBg != null ? holder.viewBg : holder.itemView.findViewById(R.id.layout_subject_bg);
+        if (bgView == null) bgView = holder.itemView.findViewById(R.id.view_subject_bg);
+        
+        if (bgView != null && subject.getColor_hex() != null) {
+            try {
+                bgView.getBackground().setTint(Color.parseColor(subject.getColor_hex()));
+            } catch (Exception ignored) {}
         }
 
-        // Logic to load icon (URL or drawable name)
+        // Icon
         String icon = subject.getIcon_name();
         if (icon != null) {
             if (icon.startsWith("http")) {
@@ -62,7 +66,6 @@ public class AdapterSubject extends RecyclerView.Adapter<AdapterSubject.ViewHold
                 }
             }
         } else {
-            // Default icon based on name if icon_name is null
             int resId = R.drawable.shared_ic_math; 
             if (subject.getNama() != null) {
                 String lowName = subject.getNama().toLowerCase();
@@ -78,17 +81,7 @@ public class AdapterSubject extends RecyclerView.Adapter<AdapterSubject.ViewHold
         }
 
         holder.itemView.setOnClickListener(v -> {
-            MateriFragment fragment = new MateriFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("subject_id", subject.getSubject_id());
-            bundle.putString("subject_name", subject.getNama());
-            fragment.setArguments(bundle);
-
-            ((FragmentActivity) holder.itemView.getContext()).getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.layout_fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
+            if (listener != null) listener.onSubjectClick(subject, v);
         });
     }
 
@@ -100,14 +93,16 @@ public class AdapterSubject extends RecyclerView.Adapter<AdapterSubject.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvNama, tvTotalModul;
         ImageView ivIcon;
-        LinearLayout layoutBg;
+        View viewBg;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNama = itemView.findViewById(R.id.tv_subject_name);
             ivIcon = itemView.findViewById(R.id.iv_subject_icon);
-            layoutBg = itemView.findViewById(R.id.layout_subject_bg);
             tvTotalModul = itemView.findViewById(R.id.tv_total_modul);
+            // Try to find background view with multiple common IDs
+            viewBg = itemView.findViewById(R.id.layout_subject_bg);
+            if (viewBg == null) viewBg = itemView.findViewById(R.id.view_subject_bg);
         }
     }
 }
