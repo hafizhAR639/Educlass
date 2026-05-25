@@ -17,5 +17,16 @@
     <string name="chart_desc">Lihat progress belajar kamu</string>
     <string name="profile_title">Profil Pengguna</string>
     <string name="profile_desc">Pengaturan akun dan profil</string>
+    <string name="admin_name">Admin EduClass</string>
+    <string name="admin_role">Administrator</string>
+    <string name="akun_keamanan">Akun &amp; Keamanan</string>
+    <string name="edit_profil">Edit Profil</string>
+    <string name="edit_profil_desc">Ubah nama dan foto profil</string>
+    <string name="ubah_password">Ubah Password</string>
+    <string name="ubah_password_desc">Ganti password akun Anda</string>
+    <string name="pengaturan_sistem">Pengaturan Sistem</string>
+    <string name="notifikasi_admin">Notifikasi Admin</string>
+    <string name="notifikasi_admin_desc">Kelola notifikasi sistem</string>
+    <string name="badge_count">3</string>
     <string name="google_api_key">AIzaSyAzjsyWpvDIXof0S2uLnMUQmDx4AZ0HyRY</string>
 </resources>

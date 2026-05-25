@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         menuOrder.put(R.id.nav_home, 0);
         menuOrder.put(R.id.nav_modul, 1);
         menuOrder.put(R.id.nav_chart, 2);
+        menuOrder.put(R.id.nav_profile, 3);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav_admin);
 
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new ModulFragment();
             } else if (newId == R.id.nav_chart) {
                 selectedFragment = new StatistikFragment();
+            } else if (newId == R.id.nav_profile) {
+                selectedFragment = new AdminProfileFragment();
             }
             
             if (selectedFragment != null) {
