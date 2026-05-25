@@ -17,31 +17,30 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- HEADER SECTION -->
+            <!-- BAGIAN HEADER: Foto Profil dan Search Bar -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <!-- Latar Belakang Biru Melengkung -->
                 <View
                     android:id="@+id/header_blue_bg"
                     android:layout_width="match_parent"
                     android:layout_height="220dp"
                     android:background="@drawable/shared_bg_header_rounded_pill_large" />
 
-                <!-- Profile Row -->
+                <!-- Baris Profil: Avatar dan Sapaan -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="50dp"
                     android:layout_marginHorizontal="24dp">
 
-                    <com.google.android.material.imageview.ShapeableImageView
+                    <ImageView
                         android:id="@+id/ic_profile_avatar"
                         android:layout_width="55dp"
                         android:layout_height="55dp"
-                        android:src="@drawable/shared_profile_pic"
-                        android:scaleType="centerCrop"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
+                        android:src="@drawable/shared_profile_pic" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -74,40 +73,46 @@
                         android:layout_height="24dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/shared_ic_bell_notif" />
+                        android:src="@drawable/shared_ic_bell" />
                 </RelativeLayout>
 
-                <!-- Search Bar -->
-                <LinearLayout
-                    android:id="@+id/ll_search_bar"
+                <!-- Search Bar (Floating Style) -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cv_search_bar"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_alignBottom="@id/header_blue_bg"
                     android:layout_marginHorizontal="24dp"
                     android:layout_marginBottom="-30dp"
-                    android:background="@drawable/shared_bg_search_bar"
-                    android:elevation="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="24dp">
+                    app:cardCornerRadius="30dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="#FFFFFF">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/shared_ic_search"
-                        app:tint="#B0B0B0" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="24dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:text="Cari"
-                        android:textColor="#B0B0B0"
-                        android:textSize="16sp" />
-                </LinearLayout>
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/shared_ic_search"
+                            app:tint="#B0B0B0" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Cari"
+                            android:textColor="#B0B0B0"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
             </RelativeLayout>
 
-            <!-- CONTENT SECTION -->
+            <!-- KONTEN UTAMA -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -124,40 +129,30 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <!-- Quick Access Row -->
+                <!-- AKSES CEPAT ROW -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
-                    <!-- Tambah Modul -->
+                    <!-- Tombol Tambah Modul -->
                     <LinearLayout
                         android:id="@+id/rl_btn_tambah_modul"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_card_white_r20_xml"
-                        android:backgroundTint="#D7F4E3"
-                        android:padding="12dp"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <View
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:background="@drawable/nav_item_circle"
-                            android:backgroundTint="#FFFFFF" />
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginTop="-37dp"
-                            android:src="@drawable/shared_ic_book"
-                            app:tint="#000000" />
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:src="@drawable/admin_bg_quick_add" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="18dp"
+                            android:layout_marginTop="8dp"
                             android:text="Tambah\nmodul"
                             android:gravity="center"
                             android:textColor="#000000"
@@ -165,33 +160,22 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <!-- Kelola User -->
+                    <!-- Tombol Kelola User -->
                     <LinearLayout
                         android:id="@+id/rl_btn_kelola_user"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginHorizontal="4dp"
-                        android:background="@drawable/bg_card_white_r20_xml"
-                        android:backgroundTint="#FCECD7"
-                        android:padding="12dp"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <View
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:background="@drawable/nav_item_circle"
-                            android:backgroundTint="#FFFFFF" />
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginTop="-37dp"
-                            android:src="@drawable/shared_ic_user_filled"
-                            app:tint="#000000" />
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:src="@drawable/admin_bg_quick_user" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="18dp"
+                            android:layout_marginTop="8dp"
                             android:text="Kelola User"
                             android:gravity="center"
                             android:textColor="#000000"
@@ -199,33 +183,22 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <!-- Statistik -->
+                    <!-- Tombol Statistik -->
                     <LinearLayout
                         android:id="@+id/rl_btn_statistik"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_card_white_r20_xml"
-                        android:backgroundTint="#D7E7FC"
-                        android:padding="12dp"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <View
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:background="@drawable/nav_item_circle"
-                            android:backgroundTint="#FFFFFF" />
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginTop="-37dp"
-                            android:src="@drawable/shared_ic_stats"
-                            app:tint="#000000" />
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:src="@drawable/admin_bg_quick_stats" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="18dp"
+                            android:layout_marginTop="8dp"
                             android:text="Statistik"
                             android:gravity="center"
                             android:textColor="#000000"
@@ -234,13 +207,13 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- STATISTICS GRID -->
+                <!-- GRID STATISTIK RINGKAS -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <!-- Total User -->
+                    <!-- Kartu: Total User -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -275,7 +248,7 @@
                             android:textSize="11sp" />
                     </LinearLayout>
 
-                    <!-- Total Modul -->
+                    <!-- Kartu: Total Modul -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -318,7 +291,7 @@
                     android:layout_marginBottom="100dp"
                     android:orientation="horizontal">
 
-                    <!-- Aktif Hari Ini -->
+                    <!-- Kartu: Aktif Hari Ini -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -352,7 +325,7 @@
                             android:textSize="11sp" />
                     </LinearLayout>
 
-                    <!-- Durasi Belajar -->
+                    <!-- Kartu: Durasi Belajar -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

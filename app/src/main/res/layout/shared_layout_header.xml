@@ -20,7 +20,7 @@
         android:background="@drawable/shared_bg_back_button"
         android:padding="10dp"
         android:src="@drawable/shared_ic_back"
-        app:tint="#000000"
+
         android:clickable="true"
         android:focusable="true"/>
 
