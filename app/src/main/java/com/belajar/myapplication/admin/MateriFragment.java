@@ -1,10 +1,12 @@
 package com.belajar.myapplication.admin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -21,7 +23,9 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Fragment untuk menampilkan Daftar Topik (Materi) di dalam suatu Mata Pelajaran.
@@ -37,6 +41,7 @@ public class MateriFragment extends Fragment {
     private FirebaseFirestore db;
     private ChipGroup chipGroupFilters;
     private ImageView ivHeaderBg;
+    private TextView tvStatMateri, tvStatSiswa, tvStatAvg;
 
     @Nullable
     @Override
@@ -49,6 +54,11 @@ public class MateriFragment extends Fragment {
             subjectId = getArguments().getString("subject_id");
             subjectName = getArguments().getString("subject_name");
         }
+
+        // Inisialisasi UI
+        tvStatMateri = view.findViewById(R.id.tv_stat_materi);
+        tvStatSiswa = view.findViewById(R.id.tv_stat_siswa);
+        tvStatAvg = view.findViewById(R.id.tv_stat_avg);
 
         // Inisialisasi UI Header
         View header = view.findViewById(R.id.header_admin_detail);
@@ -79,8 +89,8 @@ public class MateriFragment extends Fragment {
                 // Admin detail logic if any
             }
             @Override
-            public void onEditClick(ModelTopic topic) {
-                Toast.makeText(getContext(), "Edit: " + topic.getJudul(), Toast.LENGTH_SHORT).show();
+            public void onEditClick(View view, ModelTopic topic) {
+                showTopicOptions(view, topic);
             }
         });
         rvTopics.setAdapter(adapter);
@@ -91,12 +101,113 @@ public class MateriFragment extends Fragment {
 
         // Tombol Tambah Materi
         view.findViewById(R.id.btn_add_materi).setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Fitur tambah materi sedang dikembangkan", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getActivity(), AddTopicActivity.class);
+            intent.putExtra("subject_id", subjectId);
+            startActivity(intent);
         });
 
+        // Tombol Opsi Mapel (Titik 3)
+        View btnOptions = view.findViewById(R.id.btn_subject_options);
+        if (btnOptions != null) {
+            btnOptions.setOnClickListener(this::showSubjectOptions);
+        }
+
         fetchTopics(); // Ambil data dari Firestore
+        fetchSubjectStats(); // Ambil data statistik
 
         return view;
+    }
+
+    private void fetchSubjectStats() {
+        // 1. Total Siswa (Total Users)
+        db.collection("users").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (tvStatSiswa != null) {
+                tvStatSiswa.setText(String.valueOf(queryDocumentSnapshots.size()));
+            }
+        });
+
+        // 2. Total Materi & Rata-rata (from topics collection)
+        db.collection("topics")
+                .whereEqualTo("subject_id", subjectId)
+                .get()
+                .addOnSuccessListener(result -> {
+                    int count = result.size();
+                    if (tvStatMateri != null) tvStatMateri.setText(String.valueOf(count));
+
+                    if (count > 0) {
+                        double totalProgress = 0;
+                        for (QueryDocumentSnapshot doc : result) {
+                            Long progress = doc.getLong("progress");
+                            totalProgress += (progress != null ? progress : 0);
+                        }
+                        int avg = (int) (totalProgress / count);
+                        if (tvStatAvg != null) tvStatAvg.setText(avg + "%");
+                    } else {
+                        if (tvStatAvg != null) tvStatAvg.setText("0%");
+                    }
+                });
+    }
+
+    private void showTopicOptions(View v, ModelTopic topic) {
+        PopupMenu popup = new PopupMenu(getContext(), v);
+        popup.getMenuInflater().inflate(R.menu.pop_up_menu_topic, popup.getMenu());
+        popup.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.menu_delete_topic) {
+                deleteTopic(topic);
+                return true;
+            }
+            return false;
+        });
+        popup.show();
+    }
+
+    private void deleteTopic(ModelTopic topic) {
+        if (topic.getTopic_id() == null) return;
+        db.collection("topics").document(topic.getTopic_id()).delete().addOnSuccessListener(aVoid -> {
+            // Log Activity
+            Map<String, Object> log = new HashMap<>();
+            log.put("description", "Admin menghapus materi: " + topic.getJudul());
+            log.put("type", "delete");
+            log.put("timestamp", com.google.firebase.Timestamp.now());
+            db.collection("admin_activities").add(log);
+
+            Toast.makeText(getContext(), "Materi berhasil dihapus", Toast.LENGTH_SHORT).show();
+            fetchTopics(); // Refresh list
+        }).addOnFailureListener(e -> Toast.makeText(getContext(), "Gagal menghapus materi", Toast.LENGTH_SHORT).show());
+    }
+
+    private void showSubjectOptions(View v) {
+        PopupMenu popup = new PopupMenu(getContext(), v);
+        popup.getMenuInflater().inflate(R.menu.pop_up_menu_subject, popup.getMenu());
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.menu_edit_subject) {
+                Toast.makeText(getContext(), "Fitur Edit Mapel akan segera hadir", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.menu_delete_subject) {
+                deleteSubject();
+                return true;
+            }
+            return false;
+        });
+        popup.show();
+    }
+
+    private void deleteSubject() {
+        if (subjectId == null) return;
+        db.collection("subjects").document(subjectId).delete().addOnSuccessListener(aVoid -> {
+            // Log Activity
+            Map<String, Object> log = new HashMap<>();
+            log.put("description", "Admin menghapus mapel: " + subjectName);
+            log.put("type", "delete");
+            log.put("timestamp", com.google.firebase.Timestamp.now());
+            db.collection("admin_activities").add(log);
+
+            Toast.makeText(getContext(), "Mata pelajaran berhasil dihapus", Toast.LENGTH_SHORT).show();
+            if (getParentFragmentManager() != null) {
+                getParentFragmentManager().popBackStack();
+            }
+        }).addOnFailureListener(e -> Toast.makeText(getContext(), "Gagal menghapus mata pelajaran", Toast.LENGTH_SHORT).show());
     }
 
     /**

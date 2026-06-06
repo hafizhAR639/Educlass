@@ -6,6 +6,7 @@ public class ModelUser {
     private String email;
     private String role;
     private boolean isPremium;
+    private boolean active;
 
     public ModelUser() {}
 
@@ -23,4 +24,7 @@ public class ModelUser {
 
     public boolean isPremium() { return isPremium; }
     public void setPremium(boolean premium) { isPremium = premium; }
+
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }

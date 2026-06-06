@@ -20,6 +20,19 @@
                 android:id="@+id/header_admin_detail"
                 layout="@layout/shared_layout_header" />
 
+            <ImageView
+                android:id="@+id/btn_subject_options"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="54dp"
+                android:layout_marginEnd="24dp"
+                android:src="@drawable/shared_ic_more"
+                android:padding="4dp"
+                app:tint="#FFFFFF"
+                android:clickable="true"
+                android:focusable="true"/>
+
             <!-- Baris Statistik dengan Kartu Putih Bersih -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -30,96 +43,99 @@
                 android:baselineAligned="false"
                 android:orientation="horizontal">
 
-                <!-- Kartu: Siswa -->
+                <!-- Kartu: Progres Materi -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="80dp"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     app:cardCornerRadius="14dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="#C1E8F6">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:padding="12dp">
+                        android:padding="8dp"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tv_stat_materi"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="580"
+                            android:textColor="#000000"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Siswa"
-                            android:textColor="#347EFF"
-                            android:textSize="11sp" />
+                            android:text="Materi"
+                            android:textColor="#000000"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Kartu: Siswa -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#D5E9B2">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="8dp"
+                        android:gravity="center">
                         <TextView
                             android:id="@+id/tv_stat_siswa"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="580/905"
-                            android:textColor="#101828"
-                            android:textSize="15sp"
+                            android:text="905"
+                            android:textColor="#000000"
+                            android:textSize="22sp"
                             android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Siswa"
+                            android:textColor="#000000"
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Kartu: Rata-rata -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="80dp"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     app:cardCornerRadius="14dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="#D3BDF1">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:padding="12dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="rata-rata"
-                            android:textColor="#347EFF"
-                            android:textSize="11sp" />
+                        android:padding="8dp"
+                        android:gravity="center">
                         <TextView
                             android:id="@+id/tv_stat_avg"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="70%"
-                            android:textColor="#101828"
-                            android:textSize="15sp"
+                            android:textColor="#000000"
+                            android:textSize="22sp"
                             android:textStyle="bold" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Kartu: Progres Materi -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="4dp"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="#FFFFFF">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="12dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Materi"
-                            android:textColor="#347EFF"
-                            android:textSize="11sp" />
-                        <TextView
-                            android:id="@+id/tv_stat_materi"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="12 Topik"
-                            android:textColor="#101828"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                            android:text="rata-rata"
+                            android:textColor="#000000"
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </LinearLayout>
@@ -156,8 +172,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:background="@drawable/shared_bg_rect_rounded"
-                    android:backgroundTint="#F2F4F7"
+                    android:background="@drawable/shared_bg_nav_indicator"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:paddingHorizontal="12dp"
@@ -169,14 +184,14 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@android:drawable/ic_input_add"
-                        app:tint="#347EFF" />
+                        app:tint="#FFFFFF" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:text="Tambah Materi"
-                        android:textColor="#347EFF"
+                        android:textColor="#FFFFFF"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>

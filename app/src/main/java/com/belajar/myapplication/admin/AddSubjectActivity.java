@@ -233,6 +233,13 @@ public class AddSubjectActivity extends AppCompatActivity {
         db.collection("subjects")
                 .add(subject)
                 .addOnSuccessListener(documentReference -> {
+                    // Log Activity
+                    Map<String, Object> log = new HashMap<>();
+                    log.put("description", "Admin menambah mapel: " + name);
+                    log.put("type", "add");
+                    log.put("timestamp", com.google.firebase.Timestamp.now());
+                    db.collection("admin_activities").add(log);
+
                     showSuccessDialog();
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Gagal Simpan: " + e.getMessage(), Toast.LENGTH_SHORT).show());

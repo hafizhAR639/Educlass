@@ -6,7 +6,7 @@
     android:layout_marginBottom="16dp"
     android:background="@drawable/shared_bg_card_rounded"
     android:backgroundTint="#FFFFFF"
-    android:elevation="2dp"
+    android:elevation="4dp"
     android:orientation="vertical">
 
     <!-- Card Header (Biru) -->
@@ -15,19 +15,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#347EFF"
-        android:padding="16dp">
+        android:padding="20dp">
 
         <TextView
             android:id="@+id/tv_topic_index"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_centerVertical="true"
             android:background="@drawable/shared_bg_circle_blue"
-            android:backgroundTint="#DBEAFE"
+            android:backgroundTint="#FFFFFF"
             android:gravity="center"
             android:text="1"
             android:textColor="#347EFF"
-            android:textSize="18sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:text="Judul Topik"
                 android:textColor="#FFFFFF"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -53,8 +53,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Kelola materi di sini"
-                android:textColor="#D9DEE6"
-                android:textSize="12sp" />
+                android:textColor="#FFFFFF"
+                android:alpha="0.85"
+                android:textSize="13sp" />
         </LinearLayout>
 
         <ImageView
@@ -64,7 +65,9 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:src="@drawable/shared_ic_more"
-            app:tint="#FFFFFF" />
+            app:tint="#FFFFFF"
+            android:clickable="true"
+            android:focusable="true"/>
     </RelativeLayout>
 
     <!-- Card Body -->
@@ -119,11 +122,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/shared_bg_tag_capsule"
-                    android:backgroundTint="#D1FADF"
+                    android:backgroundTint="#FEF0C7"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="4dp"
-                    android:text="📝 Kuis"
-                    android:textColor="#027A48"
+                    android:text="✍️ Kuis"
+                    android:textColor="#B54708"
                     android:textSize="11sp"
                     android:textStyle="bold" />
             </LinearLayout>

@@ -1,35 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EFF3F6"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipChildren="false"
         android:clipToPadding="false"
         android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:orientation="vertical">
 
             <!-- BAGIAN HEADER: Foto Profil dan Search Bar -->
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
                 <!-- Latar Belakang Biru Melengkung -->
+
+                <!-- Baris Profil: Avatar dan Sapaan -->
                 <View
                     android:id="@+id/header_blue_bg"
                     android:layout_width="match_parent"
                     android:layout_height="220dp"
                     android:background="@drawable/shared_bg_header_rounded_pill_large" />
 
-                <!-- Baris Profil: Avatar dan Sapaan -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -67,13 +76,32 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <ImageView
+                    <FrameLayout
                         android:id="@+id/ic_notification_bell"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/shared_ic_bell" />
+                        android:background="@drawable/bg_card_white_r20_xml"
+                        android:backgroundTint="#30FFFFFF"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/shared_ic_bell"
+                            app:tint="#FFFFFF" />
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/nav_item_circle"
+                            android:backgroundTint="#FF5252" />
+                    </FrameLayout>
                 </RelativeLayout>
 
                 <!-- Search Bar (Floating Style) -->
@@ -101,12 +129,17 @@
                             android:src="@drawable/shared_ic_search"
                             app:tint="#B0B0B0" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                        <EditText
+                            android:id="@+id/et_search"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_marginStart="12dp"
-                            android:text="Cari"
-                            android:textColor="#B0B0B0"
+                            android:background="@android:color/transparent"
+                            android:hint="Cari modul pelajaran..."
+                            android:imeOptions="actionSearch"
+                            android:inputType="text"
+                            android:textColor="#000000"
+                            android:textColorHint="#B0B0B0"
                             android:textSize="16sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -144,10 +177,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
                         <ImageView
-                            android:layout_width="70dp"
-                            android:layout_height="70dp"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:scaleType="fitCenter"
                             android:src="@drawable/admin_bg_quick_add" />
                         <TextView
                             android:layout_width="wrap_content"
@@ -155,8 +192,8 @@
                             android:layout_marginTop="8dp"
                             android:text="Tambah\nmodul"
                             android:gravity="center"
-                            android:textColor="#000000"
-                            android:textSize="11sp"
+                            android:textColor="#101828"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -167,19 +204,23 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
                         <ImageView
-                            android:layout_width="70dp"
-                            android:layout_height="70dp"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:scaleType="fitCenter"
                             android:src="@drawable/admin_bg_quick_user" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Kelola User"
+                            android:text="Kelola\nUser"
                             android:gravity="center"
-                            android:textColor="#000000"
-                            android:textSize="11sp"
+                            android:textColor="#101828"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -190,19 +231,23 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
                         <ImageView
-                            android:layout_width="70dp"
-                            android:layout_height="70dp"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:scaleType="fitCenter"
                             android:src="@drawable/admin_bg_quick_stats" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Statistik"
+                            android:text="Data\nStatistik"
                             android:gravity="center"
-                            android:textColor="#000000"
-                            android:textSize="11sp"
+                            android:textColor="#101828"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
@@ -288,7 +333,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:layout_marginBottom="100dp"
+                    android:layout_marginBottom="8dp"
                     android:orientation="horizontal">
 
                     <!-- Kartu: Aktif Hari Ini -->
@@ -310,6 +355,7 @@
                             android:src="@drawable/shared_ic_stats"
                             app:tint="#000000" />
                         <TextView
+                            android:id="@+id/tv_active_today"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
@@ -344,6 +390,7 @@
                             android:src="@drawable/shared_ic_time"
                             app:tint="#000000" />
                         <TextView
+                            android:id="@+id/tv_avg_duration"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
@@ -359,6 +406,27 @@
                             android:textSize="11sp" />
                     </LinearLayout>
                 </LinearLayout>
+
+                <!-- SECTION: AKTIVITAS TERBARU -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="Aktivitas Terbaru"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_latest_activities"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="120dp"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/admin_item_activity" />
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

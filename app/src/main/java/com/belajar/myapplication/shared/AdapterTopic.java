@@ -16,7 +16,7 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public interface OnTopicClickListener {
         void onTopicClick(ModelTopic topic, boolean isLocked);
-        default void onEditClick(ModelTopic topic) {}
+        default void onEditClick(View view, ModelTopic topic) {}
     }
 
     private final List<ModelTopic> topics;
@@ -71,7 +71,9 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             h.progressBar.setProgress(topic.getProgress());
             h.tvProgress.setText(topic.getProgress() + "%");
             h.itemView.setOnClickListener(v -> listener.onTopicClick(topic, false));
-            h.btnEdit.setOnClickListener(v -> listener.onEditClick(topic));
+            if (h.btnEdit != null) {
+                h.btnEdit.setOnClickListener(v -> listener.onEditClick(h.btnEdit, topic));
+            }
         } else if (holder instanceof NormalViewHolder) {
             NormalViewHolder h = (NormalViewHolder) holder;
             h.tvJudul.setText(topic.getJudul());

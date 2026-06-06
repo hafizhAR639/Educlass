@@ -1,5 +1,6 @@
 package com.belajar.myapplication.admin;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +9,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.belajar.myapplication.R;
 import com.belajar.myapplication.data.models.ModelUser;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class AdapterUserAdmin extends RecyclerView.Adapter<AdapterUserAdmin.ViewHolder> {
 
-    private final List<ModelUser> userList;
+    private List<ModelUser> userList;
+    private List<ModelUser> userListFull;
+    private String selectedFilter = "Semua";
+    private String searchQuery = "";
 
     public AdapterUserAdmin(List<ModelUser> userList) {
-        this.userList = userList;
+        this.userList = new ArrayList<>(userList);
+        this.userListFull = new ArrayList<>(userList);
     }
 
     @NonNull
@@ -33,7 +40,6 @@ public class AdapterUserAdmin extends RecyclerView.Adapter<AdapterUserAdmin.View
         holder.tvName.setText(nama != null ? nama : "No Name");
         holder.tvEmail.setText(user.getEmail());
         
-        // Get initials (first two letters)
         if (nama != null && nama.length() >= 2) {
             holder.tvInitials.setText(nama.substring(0, 2).toUpperCase());
         } else if (nama != null && nama.length() == 1) {
@@ -42,13 +48,60 @@ public class AdapterUserAdmin extends RecyclerView.Adapter<AdapterUserAdmin.View
             holder.tvInitials.setText("??");
         }
 
-        // Status always "Aktif" for now as requested
-        holder.tvStatus.setText("Aktif");
+        if (user.isActive()) {
+            holder.tvStatus.setText("Aktif");
+            holder.tvStatus.setTextColor(Color.parseColor("#22C55E"));
+            holder.tvStatus.getBackground().setTint(Color.parseColor("#E8F9EF"));
+        } else {
+            holder.tvStatus.setText("Tidak Aktif");
+            holder.tvStatus.setTextColor(Color.parseColor("#EF4444"));
+            holder.tvStatus.getBackground().setTint(Color.parseColor("#FEE2E2"));
+        }
     }
 
     @Override
     public int getItemCount() {
         return userList.size();
+    }
+
+    public void updateData(List<ModelUser> newList) {
+        this.userListFull = new ArrayList<>(newList);
+        applyFilters();
+    }
+
+    public void setFilter(String filter) {
+        this.selectedFilter = filter;
+        applyFilters();
+    }
+
+    public void setSearchQuery(String query) {
+        this.searchQuery = query.toLowerCase(Locale.ROOT).trim();
+        applyFilters();
+    }
+
+    private void applyFilters() {
+        List<ModelUser> filteredList = new ArrayList<>();
+        for (ModelUser user : userListFull) {
+            boolean matchesFilter = true;
+            if (selectedFilter.equals("Aktif")) {
+                matchesFilter = user.isActive();
+            } else if (selectedFilter.equals("Tidak Aktif")) {
+                matchesFilter = !user.isActive();
+            }
+
+            boolean matchesSearch = true;
+            if (!searchQuery.isEmpty()) {
+                String name = user.getNama() != null ? user.getNama().toLowerCase(Locale.ROOT) : "";
+                String email = user.getEmail() != null ? user.getEmail().toLowerCase(Locale.ROOT) : "";
+                matchesSearch = name.contains(searchQuery) || email.contains(searchQuery);
+            }
+
+            if (matchesFilter && matchesSearch) {
+                filteredList.add(user);
+            }
+        }
+        this.userList = filteredList;
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

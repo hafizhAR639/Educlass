@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EFF3F6"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:orientation="vertical">
 
     <!-- Header Section (Node 829:977) -->
@@ -50,43 +52,56 @@
         </RelativeLayout>
 
         <!-- Floating Search Bar (Node 838:716) -->
-        <LinearLayout
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="46dp"
+            android:layout_height="48dp"
             android:layout_alignParentBottom="true"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginBottom="0dp"
-            android:background="@drawable/shared_bg_search_bar"
-            android:elevation="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp">
+            android:layout_marginBottom="-24dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#FFFFFF">
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/shared_ic_search"
-                app:tint="#B0B0B0" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="Cari nama atau email..."
-                android:textColor="#B0B0B0"
-                android:textSize="14sp" />
-        </LinearLayout>
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/shared_ic_search"
+                    app:tint="#B0B0B0" />
+
+                <EditText
+                    android:id="@+id/et_search_user"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="12dp"
+                    android:background="@android:color/transparent"
+                    android:hint="Cari nama atau email..."
+                    android:textColor="#000000"
+                    android:textColorHint="#B0B0B0"
+                    android:textSize="14sp"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLines="1" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
     </RelativeLayout>
 
     <!-- Filter Buttons (Node 837:537-539) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="60dp"
         android:layout_marginHorizontal="24dp"
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/btn_filter_semua"
             android:layout_width="88dp"
             android:layout_height="34dp"
             android:background="@drawable/shared_bg_nav_indicator"
@@ -94,29 +109,35 @@
             android:text="Semua"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true" />
 
         <TextView
+            android:id="@+id/btn_filter_aktif"
             android:layout_width="88dp"
             android:layout_height="34dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/bg_card_white_r20"
-            android:backgroundTint="#FFFFFF"
             android:gravity="center"
             android:text="Aktif"
             android:textColor="#000000"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:clickable="true"
+            android:focusable="true" />
 
         <TextView
+            android:id="@+id/btn_filter_tidak_aktif"
             android:layout_width="88dp"
             android:layout_height="34dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/bg_card_white_r20"
-            android:backgroundTint="#FFFFFF"
             android:gravity="center"
             android:text="Tidak Aktif"
             android:textColor="#000000"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:clickable="true"
+            android:focusable="true" />
     </LinearLayout>
 
     <!-- RecyclerView -->

@@ -23,12 +23,31 @@ public class MainActivity extends AppCompatActivity {
         menuOrder.put(R.id.nav_home, 0);
         menuOrder.put(R.id.nav_modul, 1);
         menuOrder.put(R.id.nav_chart, 2);
+        menuOrder.put(R.id.nav_profile, 3);
 
         NavigationBarView bottomNav = findViewById(R.id.bottom_nav_admin);
 
         if (savedInstanceState == null) {
             loadFragment(new AdminHomeFragment(), false);
         }
+
+        // Sync Navbar on Back Pressed
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.admin_fragment_container);
+            if (currentFragment instanceof AdminHomeFragment) {
+                bottomNav.getMenu().findItem(R.id.nav_home).setChecked(true);
+                currentMenuId = R.id.nav_home;
+            } else if (currentFragment instanceof ModulFragment || currentFragment instanceof MateriFragment) {
+                bottomNav.getMenu().findItem(R.id.nav_modul).setChecked(true);
+                currentMenuId = R.id.nav_modul;
+            } else if (currentFragment instanceof StatistikFragment) {
+                bottomNav.getMenu().findItem(R.id.nav_chart).setChecked(true);
+                currentMenuId = R.id.nav_chart;
+            } else if (currentFragment instanceof AdminProfileFragment) {
+                bottomNav.getMenu().findItem(R.id.nav_profile).setChecked(true);
+                currentMenuId = R.id.nav_profile;
+            }
+        });
 
         bottomNav.setOnItemSelectedListener(item -> {
             int newId = item.getItemId();
@@ -51,8 +70,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (newId == R.id.nav_chart) {
                 selectedFragment = new StatistikFragment();
             } else if (newId == R.id.nav_profile) {
-                // Profile handling (place holder)
-                return true;
+                selectedFragment = new AdminProfileFragment();
             }
             
             if (selectedFragment != null) {
