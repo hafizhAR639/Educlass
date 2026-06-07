@@ -1,94 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="161dp"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@drawable/shared_bg_card_white"
-    android:elevation="4dp"
-    android:orientation="vertical"
-    android:padding="12dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:clipChildren="false">
-
-    <RelativeLayout
-        android:id="@+id/layout_subject_image_wrapper"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipChildren="false">
-        <LinearLayout
-            android:id="@+id/layout_subject_bg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/user_bg_subject_math"
-            android:gravity="center_horizontal"
-            android:paddingTop="40dp"
-            android:paddingBottom="8dp">
-            <TextView
-                android:id="@+id/tv_subject_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Matematika"
-                android:textColor="#000000"
-                android:textSize="10sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-        <ImageView
-            android:id="@+id/iv_subject_icon"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="0dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/shared_ic_math" />
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/tv_total_modul"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="8 Modul Tersedia"
-        android:textColor="#4A5565"
-        android:textSize="11sp" />
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#FAFAFA">
 
     <LinearLayout
-        android:id="@+id/layout_progress_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/tv_progress_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Progress"
-            android:textColor="#4A5565"
-            android:textSize="10sp" />
-        <TextView
-            android:id="@+id/tv_progress_percentage"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF">
+
+        <!-- Subject Icon Area with Colored Pill and Circular Icon -->
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0%"
-            android:textColor="#347EFF"
-            android:textSize="10sp"
-            android:textStyle="bold" />
+            android:clipChildren="false">
+
+            <!-- The colored background pill -->
+            <View
+                android:id="@+id/layout_subject_bg"
+                android:layout_width="match_parent"
+                android:layout_height="110dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/shared_bg_rect_rounded"
+                android:backgroundTint="#D1E9FF" />
+
+            <!-- The circular icon container -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_icon_wrapper"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_centerHorizontal="true"
+                app:cardCornerRadius="64dp"
+                app:cardElevation="4dp"
+                app:strokeWidth="1.5dp"
+                app:strokeColor="#000000">
+
+                <ImageView
+                    android:id="@+id/iv_subject_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="85dp"
+                    android:padding="-12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/shared_ic_math" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Subject Name label at the bottom of the pill -->
+            <TextView
+                android:id="@+id/tv_subject_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/layout_subject_bg"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="25dp"
+                android:text="Mathematics"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </RelativeLayout>
+
+        <!-- Stats Section -->
+        <TextView
+            android:id="@+id/tv_total_modul"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="8 Modul Tersedia"
+            android:textColor="#808080"
+            android:textSize="11sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Progress"
+                android:textColor="#808080"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tv_progress_percentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="35%"
+                android:textColor="#347EFF"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_bar_modul"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_marginTop="6dp"
+            android:progress="35"
+            android:progressDrawable="@drawable/shared_bg_progress_fill" />
+
     </LinearLayout>
-    <LinearLayout
-        android:id="@+id/layout_progress_bar_track"
-        android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/shared_bg_progress_track"
-        android:weightSum="100">
-        <View
-            android:id="@+id/view_progress_bar_fill"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0"
-            android:background="@drawable/shared_bg_progress_fill" />
-    </LinearLayout>
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

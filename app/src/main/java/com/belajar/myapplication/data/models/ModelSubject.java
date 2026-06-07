@@ -26,6 +26,7 @@ public class ModelSubject {
     private Object total_moduls;
     
     private long order;
+    private long access_count;
     
     @Ignore // Room butuh Converter untuk Timestamp
     private Timestamp created_at;
@@ -50,6 +51,8 @@ public class ModelSubject {
     public void setTotal_moduls(Object total_moduls) { this.total_moduls = total_moduls; }
     public long getOrder() { return order; }
     public void setOrder(long order) { this.order = order; }
+    public long getAccess_count() { return access_count; }
+    public void setAccess_count(long access_count) { this.access_count = access_count; }
     public Timestamp getCreated_at() { return created_at; }
     public void setCreated_at(Timestamp created_at) { this.created_at = created_at; }
 }

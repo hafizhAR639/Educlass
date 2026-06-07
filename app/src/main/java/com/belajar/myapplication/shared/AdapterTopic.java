@@ -27,16 +27,25 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_NORMAL = 0;
     private static final int TYPE_LOCKED = 1;
     private static final int TYPE_ADMIN = 2;
+    public static final int TYPE_POPULAR = 3;
+
+    private final int viewTypeOverride;
 
     public AdapterTopic(List<ModelTopic> topics, boolean isAdmin, boolean isPremium, OnTopicClickListener listener) {
+        this(topics, isAdmin, isPremium, -1, listener);
+    }
+
+    public AdapterTopic(List<ModelTopic> topics, boolean isAdmin, boolean isPremium, int viewTypeOverride, OnTopicClickListener listener) {
         this.topics = topics;
         this.isAdmin = isAdmin;
         this.isPremium = isPremium;
+        this.viewTypeOverride = viewTypeOverride;
         this.listener = listener;
     }
 
     @Override
     public int getItemViewType(int position) {
+        if (viewTypeOverride != -1) return viewTypeOverride;
         if (isAdmin) return TYPE_ADMIN;
         ModelTopic topic = topics.get(position);
         if (!isPremium && (topic.isPremium() || topic.getOrder() >= 3)) {
@@ -53,6 +62,8 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return new AdminViewHolder(inflater.inflate(R.layout.admin_item_topic, parent, false));
         } else if (viewType == TYPE_LOCKED) {
             return new LockedViewHolder(inflater.inflate(R.layout.user_item_subject_modul_locked, parent, false));
+        } else if (viewType == TYPE_POPULAR) {
+            return new PopularViewHolder(inflater.inflate(R.layout.user_item_topic_popular, parent, false));
         } else {
             return new NormalViewHolder(inflater.inflate(R.layout.user_item_topic, parent, false));
         }
@@ -86,6 +97,18 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             if (h.tvDesc != null) h.tvDesc.setText(topic.getDeskripsi());
             if (h.tvTime != null) h.tvTime.setText(topic.getDurasi());
             h.itemView.setOnClickListener(v -> listener.onTopicClick(topic, true));
+        } else if (holder instanceof PopularViewHolder) {
+            PopularViewHolder h = (PopularViewHolder) holder;
+            h.tvJudul.setText(topic.getJudul());
+            h.tvViews.setText(topic.getViews_count());
+            h.itemView.setOnClickListener(v -> listener.onTopicClick(topic, false));
+            
+            // Handle thumbnail based on topic name/id or default
+            int resId = R.drawable.user_img_topic_aljabar;
+            if (topic.getJudul() != null && topic.getJudul().toLowerCase().contains("pertidaksamaan")) {
+                resId = R.drawable.user_img_topic_pertidaksamaan;
+            }
+            h.ivThumb.setImageResource(resId);
         }
     }
 
@@ -127,6 +150,17 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             tvProgress = itemView.findViewById(R.id.tv_progress);
             progressBar = itemView.findViewById(R.id.progress_bar);
             btnEdit = itemView.findViewById(R.id.btn_edit_topic);
+        }
+    }
+
+    static class PopularViewHolder extends RecyclerView.ViewHolder {
+        TextView tvJudul, tvViews;
+        ImageView ivThumb;
+        PopularViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvJudul = itemView.findViewById(R.id.tv_topic_title);
+            tvViews = itemView.findViewById(R.id.tv_views_count);
+            ivThumb = itemView.findViewById(R.id.iv_topic_thumb);
         }
     }
 }

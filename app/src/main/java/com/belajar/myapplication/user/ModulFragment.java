@@ -33,19 +33,14 @@ public class ModulFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_fragment_modul, container, false);
 
-        View header = view.findViewById(R.id.header_modul);
-        TextView tvTitle = header.findViewById(R.id.tv_shared_header_title);
+        TextView tvTitle = view.findViewById(R.id.tv_header_title);
         if (tvTitle != null) tvTitle.setText("Mata Pelajaran");
-        
-        View btnBack = header.findViewById(R.id.btn_back);
-        if (btnBack != null) {
-            btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
-        }
 
         rvSubjects = view.findViewById(R.id.rv_subjects_modul);
         rvSubjects.setLayoutManager(new GridLayoutManager(getContext(), 2));
         
         adapter = new AdapterSubject(subjectList, R.layout.user_item_subject_modul, (subject, v) -> {
+            incrementSubjectAccess(subject.getSubject_id());
             // Check premium status if needed here or rely on the fact that this is User side
             // Actually the original AdapterSubject had premium check inside. 
             // I'll add a simple premium check here by reading from Firestore or passing it.
@@ -88,8 +83,15 @@ public class ModulFragment extends Fragment {
                 .commit();
     }
 
+    private void incrementSubjectAccess(String subjectId) {
+        if (subjectId == null) return;
+        FirebaseFirestore.getInstance().collection("subjects").document(subjectId)
+                .update("access_count", com.google.firebase.firestore.FieldValue.increment(1));
+    }
+
     private void fetchSubjects() {
         FirebaseHelper.fetchSubjects(task -> {
+            if (getContext() == null || !isAdded()) return;
             if (task.isSuccessful() && task.getResult() != null) {
                 processSubjects(task.getResult());
             }

@@ -31,8 +31,21 @@ public class ModelTopic {
     public int getProgress() { return progress; }
     public void setProgress(int progress) { this.progress = progress; }
 
+    public long getViews_count_long() {
+        if (views_count instanceof Number) {
+            return ((Number) views_count).longValue();
+        } else if (views_count instanceof String) {
+            try {
+                return (long) Double.parseDouble((String) views_count);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        return 0;
+    }
+
     public String getViews_count() {
-        return String.valueOf(views_count != null ? views_count : 0);
+        return String.valueOf(getViews_count_long());
     }
     public void setViews_count(Object views_count) { this.views_count = views_count; }
 

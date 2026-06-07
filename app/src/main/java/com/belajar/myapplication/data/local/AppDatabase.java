@@ -11,7 +11,7 @@ import com.belajar.myapplication.data.models.ModelSubject;
  * Kelas Database Utama menggunakan Room.
  * Kita mendefinisikan tabel apa saja yang ada di dalam database ini.
  */
-@Database(entities = {ModelSubject.class}, version = 1, exportSchema = false)
+@Database(entities = {ModelSubject.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     // Akses ke DAO Subject

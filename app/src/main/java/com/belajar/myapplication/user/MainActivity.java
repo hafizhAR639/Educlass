@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (newId == R.id.nav_modul) {
                 selectedFragment = new ModulFragment();
             } else if (newId == R.id.nav_chart) {
-                selectedFragment = new PomodoroFragment();
+                selectedFragment = new StatistikFragment();
             } else if (newId == R.id.nav_profile) {
                 selectedFragment = new ProfileFragment();
             }

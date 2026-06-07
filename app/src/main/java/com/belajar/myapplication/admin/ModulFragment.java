@@ -93,6 +93,7 @@ public class ModulFragment extends Fragment {
      * Strategi Hybrid: Cek lokal dulu agar cepat, lalu update dari Firebase di background.
      */
     private void fetchSubjectsHybrid() {
+        if (getContext() == null) return;
         // 1. Ambil data dari Room (Lokal)
         List<ModelSubject> cachedSubjects = AppDatabase.getInstance(getContext()).subjectDao().getAllSubjects();
         if (!cachedSubjects.isEmpty()) {
@@ -101,6 +102,7 @@ public class ModulFragment extends Fragment {
 
         // 2. Tetap ambil data terbaru dari Firestore
         FirebaseHelper.fetchSubjects(task -> {
+            if (getContext() == null || !isAdded()) return;
             if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
                 saveAndProcessRemoteData(task.getResult());
             }

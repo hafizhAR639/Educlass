@@ -228,6 +228,7 @@ public class AddSubjectActivity extends AppCompatActivity {
         subject.put("icon_name", iconUrl); // URL dari Firebase Storage
         subject.put("order", order);
         subject.put("total_moduls", 0);
+        subject.put("access_count", 0);
         subject.put("created_at", com.google.firebase.Timestamp.now());
 
         db.collection("subjects")

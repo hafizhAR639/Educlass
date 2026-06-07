@@ -6,7 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.belajar.myapplication.R;
 import com.belajar.myapplication.data.models.ModelSubject;
@@ -41,17 +43,27 @@ public class AdapterSubject extends RecyclerView.Adapter<AdapterSubject.ViewHold
         ModelSubject subject = subjects.get(position);
         holder.tvNama.setText(subject.getNama());
         
-        // Background color
+        // Background color logic to match design
         View bgView = holder.viewBg != null ? holder.viewBg : holder.itemView.findViewById(R.id.layout_subject_bg);
         if (bgView == null) bgView = holder.itemView.findViewById(R.id.view_subject_bg);
         
-        if (bgView != null && subject.getColor_hex() != null) {
+        if (bgView != null) {
+            String colorHex = subject.getColor_hex();
+            if (colorHex == null || colorHex.isEmpty()) {
+                // Predefined light colors from design: Blue, Purple, Teal, Green, Pink, Red
+                String[] colors = {"#D1E9FF", "#E9D1FF", "#CEF7FF", "#D1FFD1", "#FFD1E9", "#FFD1D1"};
+                colorHex = colors[position % colors.length];
+            }
             try {
-                bgView.getBackground().setTint(Color.parseColor(subject.getColor_hex()));
+                Drawable background = bgView.getBackground();
+                if (background != null) {
+                    Drawable wrapped = DrawableCompat.wrap(background.mutate());
+                    DrawableCompat.setTint(wrapped, Color.parseColor(colorHex));
+                }
             } catch (Exception ignored) {}
         }
 
-        // Icon
+        // Icon logic
         String icon = subject.getIcon_name();
         if (icon != null) {
             if (icon.startsWith("http")) {

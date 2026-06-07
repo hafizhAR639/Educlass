@@ -60,6 +60,18 @@
             android:name=".admin.AddTopicActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".admin.AdminEditProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".admin.AdminChangePasswordActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".admin.AdminNotificationActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />

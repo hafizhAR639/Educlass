@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.belajar.myapplication.R;
 import com.belajar.myapplication.data.models.ModelActivity;
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,6 +32,7 @@ public class AdminHomeFragment extends Fragment {
 
     private TextView tvGreeting, tvTotalUser, tvTotalModul, tvActiveToday, tvAvgDuration;
     private EditText etSearch;
+    private ImageView ivAvatar;
     private FirebaseFirestore db;
     private RecyclerView rvActivities;
     private AdapterActivity activityAdapter;
@@ -47,6 +49,7 @@ public class AdminHomeFragment extends Fragment {
         tvActiveToday = view.findViewById(R.id.tv_active_today);
         tvAvgDuration = view.findViewById(R.id.tv_avg_duration);
         etSearch = view.findViewById(R.id.et_search);
+        ivAvatar = view.findViewById(R.id.ic_profile_avatar);
         rvActivities = view.findViewById(R.id.rv_latest_activities);
         db = FirebaseFirestore.getInstance();
 
@@ -80,7 +83,7 @@ public class AdminHomeFragment extends Fragment {
 
         // Tombol Notifikasi
         view.findViewById(R.id.ic_notification_bell).setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Fitur Notifikasi akan segera hadir", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(getActivity(), AdminNotificationActivity.class));
         });
 
         loadAdminData();
@@ -88,6 +91,12 @@ public class AdminHomeFragment extends Fragment {
         fetchActivities();
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        loadAdminData();
     }
 
     private void setupRecyclerView() {
@@ -125,10 +134,20 @@ public class AdminHomeFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             db.collection("users").document(user.getUid()).get().addOnSuccessListener(documentSnapshot -> {
+                if (getContext() == null || !isAdded()) return;
                 if (documentSnapshot.exists()) {
                     String nama = documentSnapshot.getString("nama");
+                    String photoUrl = documentSnapshot.getString("photoUrl");
+
                     if (nama != null && tvGreeting != null) {
                         tvGreeting.setText(nama + " 👋");
+                    }
+
+                    if (photoUrl != null && !photoUrl.isEmpty() && ivAvatar != null && getContext() != null) {
+                        Glide.with(this)
+                                .load(photoUrl)
+                                .placeholder(R.drawable.shared_profile_pic)
+                                .into(ivAvatar);
                     }
                 }
             });
@@ -137,6 +156,7 @@ public class AdminHomeFragment extends Fragment {
 
     private void fetchStats() {
         db.collection("users").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (getContext() == null || !isAdded()) return;
             if (tvTotalUser != null) {
                 tvTotalUser.setText(String.valueOf(queryDocumentSnapshots.size()));
             }
@@ -165,9 +185,10 @@ public class AdminHomeFragment extends Fragment {
     private void fetchActivities() {
         db.collection("admin_activities")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
-                .limit(5)
+                .limit(3)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (getContext() == null || !isAdded()) return;
                     activityList.clear();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         activityList.add(doc.toObject(ModelActivity.class));

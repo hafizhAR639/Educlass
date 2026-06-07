@@ -116,6 +116,7 @@ public class AddTopicActivity extends AppCompatActivity {
         topic.put("desc", desc);
         topic.put("subject_id", subjectId);
         topic.put("gaya_belajar", selectedStyle);
+        topic.put("views_count", 0);
         topic.put("order", System.currentTimeMillis()); // simple ordering
 
         db.collection("topics").add(topic).addOnSuccessListener(documentReference -> {

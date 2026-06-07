@@ -63,9 +63,23 @@ public class ContentFragment extends Fragment {
             
             if (tvJudulTopik != null && topicJudul != null) tvJudulTopik.setText(topicJudul);
             
+            // Update last studied topic in user profile
+            updateUserLastStudied(topicId);
+
             // Mengambil gaya belajar dulu, baru load content
             getUserLearningStyleAndLoadContent(topicJudul);
         }
+    }
+
+    private void updateUserLastStudied(String tId) {
+        String uid = mAuth.getUid();
+        if (uid == null || tId == null) return;
+
+        java.util.Map<String, Object> update = new java.util.HashMap<>();
+        update.put("last_topic_id", tId);
+        update.put("last_topic_progress", 10); // Start with 10% or some value
+
+        db.collection("users").document(uid).update(update);
     }
 
     private void getUserLearningStyleAndLoadContent(String topicJudul) {
