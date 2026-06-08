@@ -1,142 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
-    android:background="@drawable/shared_bg_card_rounded"
-    android:elevation="2dp"
-    android:orientation="vertical"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="2dp"
     android:clickable="true"
     android:focusable="true">
 
-    <!-- Header Modul (Biru/Dinamis) -->
-    <LinearLayout
-        android:id="@+id/layout_topic_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#347EFF"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="12dp">
-
-        <TextView
-            android:id="@+id/tv_topic_index"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@drawable/user_bg_subject_math"
-            android:gravity="center"
-            android:text="1"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tv_topic_judul"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Judul Topik"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_topic_desc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ketuk untuk melihat materi visual"
-                android:textColor="#D9DEE6"
-                android:textSize="11sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Konten Modul (Statis/Dinamis sesuai kebutuhan) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
+        android:orientation="vertical">
 
-        <HorizontalScrollView
+        <!-- Top Section (Blue Header) -->
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none">
+            android:background="#2563EB"
+            android:padding="20dp">
 
+            <!-- Index Circle -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_index_wrapper"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                app:cardCornerRadius="27dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#FFFFFF33">
+                <TextView
+                    android:id="@+id/tv_topic_index"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="1"
+                    android:textColor="#FFFFFF"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Title and Description -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_toEndOf="@id/card_index_wrapper"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_topic_judul"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Judul Modul"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_topic_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Deskripsi modul pembelajaran akan muncul di sini"
+                    android:textColor="#BFDBFE"
+                    android:textSize="13sp"
+                    android:lineSpacingMultiplier="1.1" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <!-- Bottom Section (White Details) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Tags Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/shared_bg_tag_capsule"
-                    android:backgroundTint="#FEE4E2"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/shared_bg_tag_ipa"
+                    android:backgroundTint="#FFF1F2"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="5dp"
                     android:text="🎥 Video"
-                    android:textColor="#D92D20"
-                    android:textSize="10sp" />
+                    android:textColor="#E11D48"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/shared_bg_tag_capsule"
-                    android:backgroundTint="#E0EAFF"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/shared_bg_tag_ipa"
+                    android:backgroundTint="#EFF6FF"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="5dp"
                     android:text="📊 Infografis"
-                    android:textColor="#3538CD"
-                    android:textSize="10sp" />
+                    android:textColor="#2563EB"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/shared_bg_tag_capsule"
-                    android:backgroundTint="#D1FADF"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="4dp"
-                    android:text="📝 Kuis"
-                    android:textColor="#027A48"
-                    android:textSize="10sp" />
+                    android:background="@drawable/shared_bg_tag_ipa"
+                    android:backgroundTint="#FFFBEB"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="5dp"
+                    android:text="✍️ Kuis"
+                    android:textColor="#D97706"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
             </LinearLayout>
-        </HorizontalScrollView>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
+            <!-- Badges Row (Duration + Progress) -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="⏱ 45 Menit"
-                android:textSize="11sp" />
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <!-- Duration Badge -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shared_bg_tag_ipa"
+                    android:backgroundTint="#F0F7FF"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp">
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/shared_ic_time"
+                        app:tint="#2563EB" />
+                    <TextView
+                        android:id="@+id/tv_topic_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="50 menit"
+                        android:textColor="#2563EB"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Progress Badge -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/shared_bg_tag_ipa"
+                    android:backgroundTint="#F0FDF4"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp">
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/shared_ic_stats"
+                        app:tint="#16A34A" />
+                    <TextView
+                        android:id="@+id/tv_topic_progress_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="40%"
+                        android:textColor="#16A34A"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Progress Bar -->
+            <SeekBar
+                android:id="@+id/pb_topic"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Selesai 0%"
-                android:textColor="#027A48"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="20dp"
+                android:max="100"
+                android:progress="40"
+                android:enabled="false"
+                android:thumbTint="#3B82F6"
+                android:progressTint="#3B82F6"
+                android:progressBackgroundTint="#E5E7EB"
+                android:splitTrack="false"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp" />
+
         </LinearLayout>
-
-        <ProgressBar
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:layout_marginTop="4dp"
-            android:progress="0"
-            android:progressDrawable="@drawable/shared_bg_progress_track" />
     </LinearLayout>
-</LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -43,6 +43,22 @@
             android:exported="false"
             android:windowSoftInputMode="adjustNothing" />
 
+        <activity
+            android:name=".user.EditProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".user.ChangePasswordActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".user.PrivacyActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".user.ChooseMajorActivity"
+            android:exported="false" />
+
         <!-- Admin Section -->
         <activity
             android:name=".admin.MainActivity"

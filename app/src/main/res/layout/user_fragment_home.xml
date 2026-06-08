@@ -17,88 +17,150 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="100dp">
+            android:paddingBottom="50dp">
 
-            <!-- HEADER BLUE AREA -->
+            <!-- ===== HEADER SECTION ===== -->
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="360dp"
-                android:clipChildren="false">
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
-                <!-- Blue Background with rounded bottom -->
+                <!-- Blue rounded background -->
                 <View
+                    android:id="@+id/view_header_bg"
                     android:layout_width="match_parent"
-                    android:layout_height="320dp"
-                    android:background="@drawable/shared_bg_header_rounded_pill_large" />
+                    android:layout_height="310dp"
+                    android:background="@drawable/shared_bg_header_rounded_pill" />
 
-                <!-- Top Bar (Profile, Greeting, Icons) -->
-                <LinearLayout
+                <!-- Top Header: Profile + Greeting + Icons -->
+                <RelativeLayout
                     android:id="@+id/layout_header_top"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="50dp"
-                    android:paddingHorizontal="24dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:paddingHorizontal="24dp">
 
+                    <!-- Profile Picture -->
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/iv_user_profile"
-                        android:layout_width="55dp"
-                        android:layout_height="55dp"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/user_ic_profile"
                         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
 
+                    <!-- Greeting Text -->
                     <TextView
                         android:id="@+id/tv_greeting"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_centerVertical="true"
                         android:layout_marginStart="12dp"
-                        android:layout_marginEnd="12dp"
-                        android:ellipsize="end"
-                        android:maxLines="1"
+                        android:layout_toEndOf="@id/iv_user_profile"
                         android:text="Hallo, Dea 👋"
                         android:textColor="#FFFFFF"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
+                    <!-- Right icons: Premium + Notification -->
+                    <!-- Right icons: Premium + Notification -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
-                        <ImageView
-                            android:id="@+id/iv_premium_badge"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_marginEnd="12dp"
-                            android:src="@drawable/shared_ic_premium" />
+                        <!-- Premium Badge (Crown) -->
 
+                        <!-- Notification Bell with red dot -->
                         <RelativeLayout
+                            android:id="@+id/layout_notif"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackgroundBorderless">
+
+                            <!-- Red dot badge -->
+
                             <ImageView
                                 android:id="@+id/iv_notification_bell"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginRight="5dp"
                                 android:src="@drawable/shared_ic_bell"
                                 app:tint="#FFFFFF" />
+
+                            <ImageView
+                                android:id="@+id/iv_premium_badge"
+                                android:layout_width="31dp"
+                                android:layout_height="31dp"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginRight="45dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:src="@drawable/shared_ic_premium"
+                                app:tint="#FFD700" />
+
                             <View
-                                android:layout_width="8dp"
-                                android:layout_height="8dp"
-                                android:layout_alignParentEnd="true"
+                                android:layout_width="9dp"
+                                android:layout_height="9dp"
                                 android:layout_alignParentTop="true"
-                                android:layout_marginTop="-2dp"
-                                android:layout_marginEnd="-2dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginTop="-1dp"
+                                android:layout_marginEnd="5dp"
+                                android:layout_alignParentRight="true"
                                 android:background="@drawable/nav_item_circle"
                                 android:backgroundTint="#FF5252" />
-                        </RelativeLayout>
 
-                        <LinearLayout
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <!-- ===== HIGHLIGHT / RESUME CARD ===== -->
+                <!--
+                    PERUBAHAN: visibility diubah dari "gone" ke "visible"
+                    agar card progress muncul seperti di desain.
+                    Tampilkan/sembunyikan secara programatik dari Fragment/ViewModel
+                -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/layout_highlight_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_below="@id/layout_header_top"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginTop="20dp"
+                    android:visibility="visible"
+                    app:cardBackgroundColor="#2D3E50"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="6dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <!-- Background image with overlay -->
+                        <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:alpha="0.35"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/user_img_header_math" />
+
+                        <!-- Text content: title + progress -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:layout_toStartOf="@+id/btn_continue"
                             android:orientation="vertical"
                             android:padding="20dp">
 
@@ -117,131 +179,156 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:text="65% completed"
-                                android:textColor="#E0E0E0"
-                                android:textSize="14sp" />
+                                android:textColor="#CCCCCC"
+                                android:textSize="13sp" />
 
-                            <LinearLayout
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:id="@+id/pb_highlight"
                                 android:layout_width="match_parent"
-                                android:layout_height="10dp"
-                                android:layout_marginTop="16dp"
-                                android:layout_marginEnd="100dp"
-                                android:background="@drawable/shared_bg_progress_track"
-                                android:weightSum="100">
-
-                                <View
-                                    android:id="@+id/view_progress_fill"
-                                    android:layout_width="0dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_weight="65"
-                                    android:background="@drawable/shared_bg_progress_fill" />
-                            </LinearLayout>
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:progress="65"
+                                app:indicatorColor="#FFFFFF"
+                                app:trackColor="#40FFFFFF"
+                                app:trackCornerRadius="4dp"
+                                app:trackThickness="7dp" />
                         </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
 
-                <!-- Progress Card (Dashboard) -->
-                <RelativeLayout
-                    android:id="@+id/layout_highlight_card"
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:layout_below="@id/layout_header_top"
-                    android:layout_marginHorizontal="24dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/user_bg_card_highlight"
-                    android:clipChildren="false">
+                        <!-- Continue Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_continue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_margin="16dp"
+                            android:paddingHorizontal="18dp"
+                            android:paddingVertical="8dp"
+                            android:text="Lanjutkan"
+                            android:textAllCaps="false"
+                            android:textColor="#000000"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            app:backgroundTint="#FFFFFF"
+                            app:cornerRadius="20dp" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:alpha="0.2"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/user_img_header_math" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_continue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="16dp"
-                        android:paddingHorizontal="16dp"
-                        android:text="Lanjutkan"
-                        android:textAllCaps="false"
-                        android:textColor="#000000"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:backgroundTint="#FFFFFF"
-                        app:cornerRadius="18dp"
-                        app:elevation="4dp" />
-                </RelativeLayout>
-
-                <!-- Search Bar (Floating) -->
-                <LinearLayout
+                <!-- ===== SEARCH BAR ===== -->
+                <!--
+                    PERUBAHAN: Search bar ditempatkan di luar RelativeLayout header
+                    dan diberi marginTop agar "mengapung" di batas biru-putih
+                -->
+                <androidx.cardview.widget.CardView
                     android:id="@+id/layout_search_bar"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_alignParentBottom="true"
+                    android:layout_height="52dp"
+                    android:layout_below="@id/layout_highlight_card"
                     android:layout_marginHorizontal="24dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/shared_bg_search_bar"
-                    android:elevation="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp">
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="26dp"
+                    app:cardElevation="8dp">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/shared_ic_search"
-                        app:tint="#B0B0B0" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="18dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:text="Cari topik yang ingin dipelajari"
-                        android:textColor="#B0B0B0"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/shared_ic_search"
+                            app:tint="#B0B0B0" />
+
+                        <EditText
+                            android:id="@+id/et_search_home"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="10dp"
+                            android:background="@android:color/transparent"
+                            android:hint="Cari topik yang ingin dipelajari..."
+                            android:imeOptions="actionSearch"
+                            android:importantForAutofill="no"
+                            android:inputType="text"
+                            android:textColor="#1A1A1A"
+                            android:textColorHint="#AAAAAA"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
             </RelativeLayout>
+            <!-- END HEADER -->
 
-            <!-- MATA PELAJARAN TERPOPULER -->
+            <!-- ===== POPULAR SUBJECTS SECTION ===== -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="14dp"
                 android:text="Mata Pelajaran Terpopuler"
-                android:textColor="#000000"
-                android:textSize="18sp"
+                android:textColor="#1A1A1A"
+                android:textSize="17sp"
                 android:textStyle="bold" />
 
+            <!--
+                RecyclerView horizontal untuk subject icons (Mathematics, Chemistry, Biology, Physics).
+                Setiap item berupa: lingkaran berwarna + icon + label di bawah.
+                Gunakan item layout baru: user_item_subject_home.xml
+            -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_subjects_home"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:orientation="horizontal"
-                android:paddingHorizontal="24dp" />
+                android:paddingHorizontal="16dp"
+                tools:listitem="@layout/user_item_subject_home" />
 
-            <!-- MATERI TERPOPULER -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- ===== POPULAR TOPICS SECTION ===== -->
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp"
-                android:text="Materi Terpopuler"
-                android:textColor="#000000"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="15dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="Materi Terpopuler"
+                    android:textColor="#1A1A1A"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <!-- Optional: "Lihat Semua" link -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="Lihat Semua"
+                    android:textColor="#4A90D9"
+                    android:textSize="13sp" />
+            </RelativeLayout>
+
+            <!--
+                PERUBAHAN: Popular topics menggunakan GridLayoutManager 2 kolom.
+                Set di Fragment: GridLayoutManager(context, 2)
+                Item layout: user_item_topic_popular.xml (kartu dengan gambar + judul + badge)
+            -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_popular_topics"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
                 android:paddingHorizontal="16dp"
                 tools:listitem="@layout/user_item_topic_popular" />
 

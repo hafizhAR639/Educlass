@@ -81,10 +81,17 @@ public class AuthLoginActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                                 if (documentSnapshot.exists()) {
                                     String role = documentSnapshot.getString("role");
+                                    String jurusan = documentSnapshot.getString("jurusan");
+                                    
                                     if (role != null && role.equals("admin")) {
                                         startActivity(new Intent(AuthLoginActivity.this, com.belajar.myapplication.admin.MainActivity.class));
                                     } else {
-                                        startActivity(new Intent(AuthLoginActivity.this, MainActivity.class));
+                                        // Cek apakah sudah pilih jurusan
+                                        if (jurusan == null || jurusan.isEmpty()) {
+                                            startActivity(new Intent(AuthLoginActivity.this, com.belajar.myapplication.user.ChooseMajorActivity.class));
+                                        } else {
+                                            startActivity(new Intent(AuthLoginActivity.this, MainActivity.class));
+                                        }
                                     }
                                     finish();
                                 } else {

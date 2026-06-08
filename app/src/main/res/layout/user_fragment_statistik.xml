@@ -20,7 +20,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="17dp"
+            android:layout_marginStart="4dp"
             android:background="@drawable/shared_bg_back_button"
             android:clickable="true"
             android:contentDescription="Kembali"
@@ -84,23 +84,24 @@
 
                         <!-- Sun -->
                         <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                            <View android:layout_width="28dp" android:layout_height="100dp" android:background="#D1E9FF" android:backgroundTint="#D1E9FF" />
+                            <View android:id="@+id/bar_sun" android:layout_width="28dp" android:layout_height="100dp" android:background="#D1E9FF" android:backgroundTint="#D1E9FF" />
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Sun" android:textSize="12sp" android:textColor="#000000" />
                         </LinearLayout>
                         <!-- Mon -->
                         <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                            <View android:layout_width="28dp" android:layout_height="120dp" android:background="#D1E9FF" />
+                            <View android:id="@+id/bar_mon" android:layout_width="28dp" android:layout_height="120dp" android:background="#D1E9FF" />
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Mon" android:textSize="12sp" android:textColor="#000000" />
                         </LinearLayout>
                         <!-- Tue -->
                         <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                            <View android:layout_width="28dp" android:layout_height="90dp" android:background="#D1E9FF" />
+                            <View android:id="@+id/bar_tue" android:layout_width="28dp" android:layout_height="90dp" android:background="#D1E9FF" />
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Tue" android:textSize="12sp" android:textColor="#000000" />
                         </LinearLayout>
                         <!-- Wed -->
                         <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
 
                             <View
+                                android:id="@+id/bar_wed"
                                 android:layout_width="28dp"
                                 android:layout_height="130dp"
                                 android:background="#D1E9FF" />
@@ -109,17 +110,17 @@
                         </LinearLayout>
                         <!-- Thu (Highlighted) -->
                         <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                            <View android:layout_width="28dp" android:layout_height="160dp" android:background="#337DFF" />
+                            <View android:id="@+id/bar_thu" android:layout_width="28dp" android:layout_height="160dp" android:background="#337DFF" />
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Thu" android:textSize="12sp" android:textColor="#000000" android:textStyle="bold" />
                         </LinearLayout>
                         <!-- Fri -->
                         <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                            <View android:layout_width="28dp" android:layout_height="70dp" android:background="#D1E9FF" />
+                            <View android:id="@+id/bar_fri" android:layout_width="28dp" android:layout_height="70dp" android:background="#D1E9FF" />
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Fri" android:textSize="12sp" android:textColor="#000000" />
                         </LinearLayout>
                         <!-- Sat -->
                         <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                            <View android:layout_width="28dp" android:layout_height="110dp" android:background="#D1E9FF" />
+                            <View android:id="@+id/bar_sat" android:layout_width="28dp" android:layout_height="110dp" android:background="#D1E9FF" />
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Sat" android:textSize="12sp" android:textColor="#000000" />
                         </LinearLayout>
 
@@ -166,6 +167,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tv_weekly_study_time"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
@@ -210,6 +212,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tv_study_streak"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
@@ -229,6 +232,7 @@
                 app:cardElevation="2dp">
 
                 <LinearLayout
+                    android:id="@+id/layout_mastery_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -243,74 +247,12 @@
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
-                    <!-- Science Section -->
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="SCIENCES (IPA)"
-                            android:textColor="#808080"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:text="88%"
-                            android:textColor="#337DFF"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-                    </RelativeLayout>
-
-                    <!-- Physics Subject -->
+                    <!-- Container for dynamic subject mastery rows -->
                     <LinearLayout
+                        android:id="@+id/layout_subject_mastery_list"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:orientation="vertical">
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Physics"
-                                android:textColor="#000000"
-                                android:textSize="14sp" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:text="92/100"
-                                android:textColor="#808080"
-                                android:textSize="12sp" />
-                        </RelativeLayout>
-
-                        <ProgressBar
-                            style="@android:style/Widget.ProgressBar.Horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="8dp"
-                            android:layout_marginTop="8dp"
-                            android:progress="92"
-                            android:progressDrawable="@drawable/shared_bg_progress_fill" />
-                    </LinearLayout>
-
-                    <!-- Social Studies Section -->
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="SOCIAL STUDIES (IPS)"
-                            android:textColor="#808080"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-                    </RelativeLayout>
+                        android:orientation="vertical" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

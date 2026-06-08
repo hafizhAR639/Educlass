@@ -4,74 +4,167 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.belajar.myapplication.R;
-import com.belajar.myapplication.data.local.AppDatabase;
 import com.belajar.myapplication.data.models.ModelSubject;
 import com.belajar.myapplication.data.models.ModelTopic;
 import com.belajar.myapplication.shared.AdapterSubject;
 import com.belajar.myapplication.shared.AdapterTopic;
 import com.bumptech.glide.Glide;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    private RecyclerView rvSubjects, rvPopularTopics;
-    private AdapterSubject subjectAdapter;
-    private AdapterTopic popularTopicAdapter;
-    private final List<ModelSubject> subjectList = new ArrayList<>();
-    private final List<ModelTopic> popularTopicList = new ArrayList<>();
+    private RecyclerView rvSubjects, rvPopular;
+    private EditText etSearch;
+    private CardView cardHighlight;
+    private TextView tvHighlightTitle, tvHighlightProgress, tvGreeting;
+    private LinearProgressIndicator pbHighlight;
+    private ImageView ivProfile;
     private FirebaseFirestore db;
-    private TextView tvGreeting, tvHighlightTitle, tvHighlightProgressText;
-    private View viewProgressFill;
-    private ImageView ivUserProfile;
-    private String lastTopicId;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.user_fragment_home, container, false);
+        return inflater.inflate(R.layout.user_fragment_home, container, false);
+    }
 
-        tvGreeting = view.findViewById(R.id.tv_greeting);
-        tvHighlightTitle = view.findViewById(R.id.tv_highlight_title);
-        tvHighlightProgressText = view.findViewById(R.id.tv_highlight_progress_text);
-        viewProgressFill = view.findViewById(R.id.view_progress_fill);
-        ivUserProfile = view.findViewById(R.id.iv_user_profile);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        // Continue Button Logic
-        view.findViewById(R.id.btn_continue).setOnClickListener(v -> {
-            if (lastTopicId != null) {
-                navigateToContent(lastTopicId);
-            }
-        });
-
-        // Dashboard Card also clickable
-        view.findViewById(R.id.layout_highlight_card).setOnClickListener(v -> {
-            if (lastTopicId != null) {
-                navigateToContent(lastTopicId);
-            }
-        });
-
-        // Subjects RecyclerView
         rvSubjects = view.findViewById(R.id.rv_subjects_home);
-        rvSubjects.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        subjectAdapter = new AdapterSubject(subjectList, R.layout.user_item_subject_home, (subject, v) -> {
-            incrementSubjectAccess(subject.getSubject_id());
+        rvPopular = view.findViewById(R.id.rv_popular_topics);
+        etSearch = view.findViewById(R.id.et_search_home);
+        
+        cardHighlight = view.findViewById(R.id.layout_highlight_card);
+        tvHighlightTitle = view.findViewById(R.id.tv_highlight_title);
+        tvHighlightProgress = view.findViewById(R.id.tv_highlight_progress_text);
+        pbHighlight = view.findViewById(R.id.pb_highlight);
+        
+        tvGreeting = view.findViewById(R.id.tv_greeting);
+        ivProfile = view.findViewById(R.id.iv_user_profile);
+        db = FirebaseFirestore.getInstance();
+
+        loadUserData();
+        setupHighlight();
+        setupSubjects();
+        setupPopularTopics();
+        
+        view.findViewById(R.id.btn_continue).setOnClickListener(v -> 
+            Toast.makeText(getContext(), "Melanjutkan materi...", Toast.LENGTH_SHORT).show()
+        );
+
+        // Notif and Premium clicks
+        View btnNotif = view.findViewById(R.id.layout_notif);
+        if (btnNotif != null) {
+            btnNotif.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                        .replace(R.id.layout_fragment_container, new NotificationFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
+        View btnPremium = view.findViewById(R.id.iv_premium_badge);
+        if (btnPremium != null) {
+            btnPremium.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                        .replace(R.id.layout_fragment_container, new PremiumFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+    }
+
+    private void loadUserData() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        db.collection("users").document(uid).get().addOnSuccessListener(doc -> {
+            if (doc.exists() && isAdded()) {
+                String name = doc.getString("nama");
+                String photoUrl = doc.getString("photoUrl");
+
+                if (name != null && tvGreeting != null) {
+                    tvGreeting.setText("Hallo, " + name + " 👋");
+                }
+
+                if (photoUrl != null && !photoUrl.isEmpty() && ivProfile != null) {
+                    Glide.with(this).load(photoUrl).into(ivProfile);
+                }
+            }
+        });
+    }
+
+    private void setupHighlight() {
+        // Logic: Menampilkan dashboard hanya jika ada materi yang terakhir diakses
+        ModelTopic lastAccessed = getLastAccessedFromDatabase();
+        
+        if (lastAccessed != null && lastAccessed.getProgress() > 0) {
+            cardHighlight.setVisibility(View.VISIBLE);
+            tvHighlightTitle.setText(lastAccessed.getJudul());
+            tvHighlightProgress.setText(lastAccessed.getProgress() + "% completed");
+            pbHighlight.setProgress(lastAccessed.getProgress());
+        } else {
+            cardHighlight.setVisibility(View.GONE);
+        }
+    }
+
+    private ModelTopic getLastAccessedFromDatabase() {
+        // Simulasi pengambilan data terakhir diakses
+        // Return null jika user belum pernah membuka materi
+        ModelTopic dummy = new ModelTopic();
+        dummy.setJudul("Hukum Newton");
+        dummy.setProgress(65);
+        return dummy; 
+    }
+
+    private void setupSubjects() {
+        List<ModelSubject> list = new ArrayList<>();
+        
+        ModelSubject math = new ModelSubject();
+        math.setNama("Mathematics");
+        math.setIcon_name("shared_ic_math");
+        math.setColor_hex("#D1E9FF");
+        list.add(math);
+
+        ModelSubject chem = new ModelSubject();
+        chem.setNama("Chemistry");
+        chem.setIcon_name("shared_ic_chem");
+        chem.setColor_hex("#CEF7FF");
+        list.add(chem);
+
+        ModelSubject bio = new ModelSubject();
+        bio.setNama("Biology");
+        bio.setIcon_name("shared_ic_bio");
+        bio.setColor_hex("#D1FFD1");
+        list.add(bio);
+
+        ModelSubject phys = new ModelSubject();
+        phys.setNama("Physics");
+        phys.setIcon_name("shared_ic_phys");
+        phys.setColor_hex("#E9D1FF");
+        list.add(phys);
+
+        AdapterSubject adapter = new AdapterSubject(list, R.layout.user_item_subject_home, (subject, v) -> {
             MateriFragment fragment = new MateriFragment();
             Bundle bundle = new Bundle();
             bundle.putString("subject_id", subject.getSubject_id());
@@ -79,203 +172,48 @@ public class HomeFragment extends Fragment {
             fragment.setArguments(bundle);
 
             getParentFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
                     .replace(R.id.layout_fragment_container, fragment)
                     .addToBackStack(null)
                     .commit();
         });
-        rvSubjects.setAdapter(subjectAdapter);
 
-        // Popular Topics RecyclerView
-        rvPopularTopics = view.findViewById(R.id.rv_popular_topics);
-        rvPopularTopics.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        popularTopicAdapter = new AdapterTopic(popularTopicList, false, true, AdapterTopic.TYPE_POPULAR, new AdapterTopic.OnTopicClickListener() {
+        rvSubjects.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        rvSubjects.setAdapter(adapter);
+    }
+
+    private void setupPopularTopics() {
+        List<ModelTopic> list = new ArrayList<>();
+
+        ModelTopic aljabar = new ModelTopic();
+        aljabar.setJudul("Aljabar");
+        aljabar.setViews_count(10000);
+        aljabar.setPremium(false);
+        list.add(aljabar);
+
+        ModelTopic pertidaksamaan = new ModelTopic();
+        pertidaksamaan.setJudul("Pertidaksamaan");
+        pertidaksamaan.setViews_count(15000);
+        pertidaksamaan.setPremium(false);
+        list.add(pertidaksamaan);
+        
+        ModelTopic trigonometri = new ModelTopic();
+        trigonometri.setJudul("Trigonometri");
+        trigonometri.setViews_count(8000);
+        trigonometri.setPremium(true);
+        list.add(trigonometri);
+
+        // Mengurutkan berdasarkan views_count secara descending (Materi Terpopuler)
+        Collections.sort(list, (t1, t2) -> Long.compare(t2.getViews_count_long(), t1.getViews_count_long()));
+
+        AdapterTopic adapter = new AdapterTopic(list, false, false, AdapterTopic.TYPE_POPULAR, new AdapterTopic.OnTopicClickListener() {
             @Override
             public void onTopicClick(ModelTopic topic, boolean isLocked) {
-                navigateToContent(topic.getTopic_id());
-            }
-        });
-        rvPopularTopics.setAdapter(popularTopicAdapter);
-
-        view.findViewById(R.id.layout_search_bar).setOnClickListener(v -> {
-            if (getActivity() != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.layout_fragment_container, com.belajar.myapplication.admin.SearchFragment.newInstance(""))
-                        .addToBackStack(null)
-                        .commit();
+                Toast.makeText(getContext(), "Buka " + topic.getJudul(), Toast.LENGTH_SHORT).show();
             }
         });
 
-        view.findViewById(R.id.iv_premium_badge).setOnClickListener(v -> {
-            if (getActivity() != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .replace(R.id.layout_fragment_container, new PremiumFragment())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-
-        db = FirebaseFirestore.getInstance();
-        fetchSubjectsHybrid();
-        loadUserData();
-        loadUserProgress();
-        fetchPopularTopics();
-
-        return view;
-    }
-
-    private void navigateToContent(String topicId) {
-        ContentFragment fragment = new ContentFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("topic_id", topicId);
-        fragment.setArguments(bundle);
-
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.layout_fragment_container, fragment)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void fetchSubjectsHybrid() {
-        if (getContext() == null) return;
-        // 1. Local
-        List<ModelSubject> cached = AppDatabase.getInstance(getContext()).subjectDao().getAllSubjects();
-        if (!cached.isEmpty()) {
-            updateList(cached);
-        }
-
-        // 2. Remote
-        db.collection("subjects")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<ModelSubject> remote = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        ModelSubject s = document.toObject(ModelSubject.class);
-                        s.setSubject_id(document.getId());
-                        remote.add(s);
-                    }
-                    remote.sort((a, b) -> {
-                        int res = Long.compare(b.getAccess_count(), a.getAccess_count());
-                        if (res == 0) return Long.compare(a.getOrder(), b.getOrder());
-                        return res;
-                    });
-                    
-                    AppDatabase.getInstance(getContext()).subjectDao().insertSubjects(remote);
-                    updateList(remote);
-                });
-    }
-
-    private void updateList(List<ModelSubject> list) {
-        subjectList.clear();
-        subjectList.addAll(list);
-        if (subjectAdapter != null) subjectAdapter.notifyDataSetChanged();
-    }
-
-    private void incrementSubjectAccess(String subjectId) {
-        if (subjectId == null) return;
-        db.collection("subjects").document(subjectId)
-                .update("access_count", com.google.firebase.firestore.FieldValue.increment(1));
-    }
-
-    private void loadUserData() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            db.collection("users").document(user.getUid()).get().addOnSuccessListener(documentSnapshot -> {
-                if (getContext() == null || !isAdded()) return;
-                if (documentSnapshot.exists()) {
-                    String nama = documentSnapshot.getString("nama");
-                    String photoUrl = documentSnapshot.getString("photoUrl");
-                    if (nama != null && tvGreeting != null) {
-                        tvGreeting.setText("Hallo, " + nama + " 👋 ");
-                    }
-                    if (photoUrl != null && !photoUrl.isEmpty() && ivUserProfile != null && getContext() != null) {
-                        Glide.with(this).load(photoUrl).placeholder(R.drawable.user_ic_profile).into(ivUserProfile);
-                    }
-                }
-            });
-        }
-    }
-
-    private void loadUserProgress() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            db.collection("users").document(user.getUid()).get().addOnSuccessListener(documentSnapshot -> {
-                if (getContext() == null || !isAdded()) return;
-                
-                String lastId = null;
-                long progress = 0;
-                
-                if (documentSnapshot.exists()) {
-                    lastId = documentSnapshot.getString("last_topic_id");
-                    Long p = documentSnapshot.getLong("last_topic_progress");
-                    if (p != null) progress = p;
-                }
-
-                if (lastId != null) {
-                    this.lastTopicId = lastId;
-                    final long finalProgress = progress;
-                    db.collection("topics").document(lastId).get().addOnSuccessListener(topicDoc -> {
-                        if (topicDoc.exists()) {
-                            String title = topicDoc.getString("judul");
-                            updateDashboardUI(title, finalProgress);
-                        } else {
-                            setDefaultDashboard();
-                        }
-                    });
-                } else {
-                    setDefaultDashboard();
-                }
-            });
-        }
-    }
-
-    private void setDefaultDashboard() {
-        // Placeholder "Hukum Newton"
-        db.collection("topics").whereEqualTo("judul", "Hukum Newton").limit(1).get().addOnSuccessListener(querySnapshot -> {
-            if (!querySnapshot.isEmpty()) {
-                com.google.firebase.firestore.DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
-                this.lastTopicId = doc.getId();
-                updateDashboardUI("Hukum Newton", 65); // Just a placeholder progress
-            } else {
-                updateDashboardUI("Hukum Newton", 65);
-            }
-        });
-    }
-
-    private void updateDashboardUI(String title, long progress) {
-        if (tvHighlightTitle != null) tvHighlightTitle.setText(title);
-        if (tvHighlightProgressText != null) tvHighlightProgressText.setText(progress + "% completed");
-        if (viewProgressFill != null) {
-            viewProgressFill.post(() -> {
-                ViewGroup.LayoutParams params = viewProgressFill.getLayoutParams();
-                if (params instanceof LinearLayout.LayoutParams) {
-                    ((LinearLayout.LayoutParams) params).weight = progress;
-                    viewProgressFill.setLayoutParams(params);
-                }
-            });
-        }
-    }
-
-    private void fetchPopularTopics() {
-        db.collection("topics")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (getContext() == null || !isAdded()) return;
-                    List<ModelTopic> allTopics = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        ModelTopic topic = doc.toObject(ModelTopic.class);
-                        topic.setTopic_id(doc.getId());
-                        allTopics.add(topic);
-                    }
-                    
-                    allTopics.sort((a, b) -> Long.compare(b.getViews_count_long(), a.getViews_count_long()));
-
-                    popularTopicList.clear();
-                    for (int i = 0; i < Math.min(allTopics.size(), 6); i++) {
-                        popularTopicList.add(allTopics.get(i));
-                    }
-
-                    if (popularTopicAdapter != null) popularTopicAdapter.notifyDataSetChanged();
-                });
+        rvPopular.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        rvPopular.setAdapter(adapter);
     }
 }

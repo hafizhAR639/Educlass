@@ -38,6 +38,21 @@ public class ModulFragment extends Fragment {
 
         rvSubjects = view.findViewById(R.id.rv_subjects_modul);
         rvSubjects.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+        View btnBack = view.findViewById(R.id.btn_back_modul);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> {
+                if (getParentFragmentManager().getBackStackEntryCount() > 0) {
+                    getParentFragmentManager().popBackStack();
+                } else {
+                    // Jika tidak ada backstack (datang dari bottom nav), pindah ke Home
+                    getParentFragmentManager().beginTransaction()
+                            .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
+                            .replace(R.id.layout_fragment_container, new HomeFragment())
+                            .commit();
+                }
+            });
+        }
         
         adapter = new AdapterSubject(subjectList, R.layout.user_item_subject_modul, (subject, v) -> {
             incrementSubjectAccess(subject.getSubject_id());
@@ -90,26 +105,43 @@ public class ModulFragment extends Fragment {
     }
 
     private void fetchSubjects() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid != null) {
+            db.collection("users").document(uid).get().addOnSuccessListener(doc -> {
+                if (doc.exists() && isAdded()) {
+                    String chosenJurusan = doc.getString("jurusan");
+                    fetchSubjectsFiltered(chosenJurusan);
+                } else {
+                    fetchSubjectsFiltered(null);
+                }
+            });
+        } else {
+            fetchSubjectsFiltered(null);
+        }
+    }
+
+    private void fetchSubjectsFiltered(String chosenJurusan) {
         FirebaseHelper.fetchSubjects(task -> {
             if (getContext() == null || !isAdded()) return;
             if (task.isSuccessful() && task.getResult() != null) {
-                processSubjects(task.getResult());
+                subjectList.clear();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    ModelSubject subject = document.toObject(ModelSubject.class);
+                    subject.setSubject_id(document.getId());
+                    
+                    // Filter berdasarkan jurusan jika tersedia
+                    if (chosenJurusan != null && !chosenJurusan.isEmpty()) {
+                        String subjectJurusan = subject.getJurusan();
+                        if (subjectJurusan == null || subjectJurusan.isEmpty() || subjectJurusan.equalsIgnoreCase(chosenJurusan)) {
+                            subjectList.add(subject);
+                        }
+                    } else {
+                        subjectList.add(subject);
+                    }
+                }
+                subjectList.sort((a, b) -> Long.compare(a.getOrder(), b.getOrder()));
+                adapter.notifyDataSetChanged();
             }
         });
-    }
-
-    private void fetchSubjectsFallback() {
-        // Redundant with FirebaseHelper now
-    }
-
-    private void processSubjects(com.google.firebase.firestore.QuerySnapshot result) {
-        subjectList.clear();
-        for (QueryDocumentSnapshot document : result) {
-            ModelSubject subject = document.toObject(ModelSubject.class);
-            subject.setSubject_id(document.getId());
-            subjectList.add(subject);
-        }
-        subjectList.sort((a, b) -> Long.compare(a.getOrder(), b.getOrder()));
-        adapter.notifyDataSetChanged();
     }
 }

@@ -5,12 +5,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.belajar.myapplication.R;
 import com.belajar.myapplication.data.models.ModelTopic;
 import java.util.List;
+import java.util.Locale;
 
 public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -80,7 +82,7 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             h.tvDesc.setText(topic.getDeskripsi() != null ? topic.getDeskripsi() : "Kelola materi");
             h.tvTime.setText(topic.getDurasi() != null ? "⏱ " + topic.getDurasi() : "⏱ -");
             h.progressBar.setProgress(topic.getProgress());
-            h.tvProgress.setText(topic.getProgress() + "%");
+            h.tvProgress.setText(String.format(Locale.getDefault(), "%d%%", topic.getProgress()));
             h.itemView.setOnClickListener(v -> listener.onTopicClick(topic, false));
             if (h.btnEdit != null) {
                 h.btnEdit.setOnClickListener(v -> listener.onEditClick(h.btnEdit, topic));
@@ -89,7 +91,28 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             NormalViewHolder h = (NormalViewHolder) holder;
             h.tvJudul.setText(topic.getJudul());
             h.tvIndex.setText(String.valueOf(position + 1));
-            if (h.tvDesc != null) h.tvDesc.setText(topic.getDeskripsi());
+            
+            // Bind Deskripsi
+            if (h.tvDesc != null) {
+                String desc = topic.getDeskripsi();
+                h.tvDesc.setText(desc != null && !desc.isEmpty() ? desc : "Pelajari materi ini untuk memahami konsep lebih dalam.");
+            }
+            
+            // Bind Durasi
+            if (h.tvDuration != null) {
+                String dur = topic.getDurasi();
+                h.tvDuration.setText(dur != null && !dur.isEmpty() ? dur : "45 menit");
+            }
+            
+            // Bind Progress
+            int progress = topic.getProgress();
+            if (h.tvProgress != null) {
+                h.tvProgress.setText(String.format(Locale.getDefault(), "%d%%", progress));
+            }
+            if (h.progressBar != null) {
+                h.progressBar.setProgress(progress);
+            }
+            
             h.itemView.setOnClickListener(v -> listener.onTopicClick(topic, false));
         } else if (holder instanceof LockedViewHolder) {
             LockedViewHolder h = (LockedViewHolder) holder;
@@ -103,7 +126,6 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             h.tvViews.setText(topic.getViews_count());
             h.itemView.setOnClickListener(v -> listener.onTopicClick(topic, false));
             
-            // Handle thumbnail based on topic name/id or default
             int resId = R.drawable.user_img_topic_aljabar;
             if (topic.getJudul() != null && topic.getJudul().toLowerCase().contains("pertidaksamaan")) {
                 resId = R.drawable.user_img_topic_pertidaksamaan;
@@ -118,12 +140,16 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     static class NormalViewHolder extends RecyclerView.ViewHolder {
-        TextView tvJudul, tvIndex, tvDesc;
+        TextView tvJudul, tvIndex, tvDesc, tvDuration, tvProgress;
+        SeekBar progressBar;
         NormalViewHolder(@NonNull View itemView) {
             super(itemView);
             tvJudul = itemView.findViewById(R.id.tv_topic_judul);
             tvIndex = itemView.findViewById(R.id.tv_topic_index);
             tvDesc = itemView.findViewById(R.id.tv_topic_desc);
+            tvDuration = itemView.findViewById(R.id.tv_topic_duration);
+            tvProgress = itemView.findViewById(R.id.tv_topic_progress_text);
+            progressBar = itemView.findViewById(R.id.pb_topic);
         }
     }
 

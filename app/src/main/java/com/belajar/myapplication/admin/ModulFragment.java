@@ -94,11 +94,14 @@ public class ModulFragment extends Fragment {
      */
     private void fetchSubjectsHybrid() {
         if (getContext() == null) return;
-        // 1. Ambil data dari Room (Lokal)
-        List<ModelSubject> cachedSubjects = AppDatabase.getInstance(getContext()).subjectDao().getAllSubjects();
-        if (!cachedSubjects.isEmpty()) {
-            processListToAdapter(cachedSubjects); // Langsung tampilkan yang ada di memori HP
-        }
+
+        // 1. Ambil data dari Room (Lokal) - Harus di Background Thread agar tidak crash
+        new Thread(() -> {
+            List<ModelSubject> cachedSubjects = AppDatabase.getInstance(requireContext()).subjectDao().getAllSubjects();
+            if (getActivity() != null && !cachedSubjects.isEmpty()) {
+                getActivity().runOnUiThread(() -> processListToAdapter(cachedSubjects));
+            }
+        }).start();
 
         // 2. Tetap ambil data terbaru dari Firestore
         FirebaseHelper.fetchSubjects(task -> {
@@ -117,10 +120,14 @@ public class ModulFragment extends Fragment {
             remoteList.add(subject);
         }
 
-        // Simpan ke Room agar besok bisa dibuka secara offline
-        AppDatabase.getInstance(getContext()).subjectDao().insertSubjects(remoteList);
+        // Simpan ke Room di Background Thread
+        new Thread(() -> {
+            if (getContext() != null) {
+                AppDatabase.getInstance(requireContext()).subjectDao().insertSubjects(remoteList);
+            }
+        }).start();
         
-        // Update tampilan UI
+        // Update tampilan UI (Firebase callback sudah di UI Thread)
         processListToAdapter(remoteList);
     }
 

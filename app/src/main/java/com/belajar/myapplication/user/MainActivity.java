@@ -2,8 +2,10 @@ package com.belajar.myapplication.user;
 
 import android.os.Bundle;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import com.belajar.myapplication.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int currentMenuId = R.id.nav_home;
     private final Map<Integer, Integer> menuOrder = new HashMap<>();
+    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,16 +28,20 @@ public class MainActivity extends AppCompatActivity {
         menuOrder.put(R.id.nav_chart, 2);
         menuOrder.put(R.id.nav_profile, 3);
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav_main);
+        bottomNav = findViewById(R.id.bottom_nav_main);
+
+        // Register Lifecycle Callbacks to automatically update Navbar
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
+            @Override
+            public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
+                super.onFragmentResumed(fm, f);
+                updateBottomNavVisibility(f, bottomNav);
+            }
+        }, false);
 
         if (savedInstanceState == null) {
-            loadFragment(new HomeFragment(), bottomNav, false);
+            loadFragment(new HomeFragment(), false);
         }
-
-        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
-            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.layout_fragment_container);
-            updateBottomNavVisibility(currentFragment, bottomNav);
-        });
 
         bottomNav.setOnItemSelectedListener(item -> {
             int newId = item.getItemId();
@@ -58,34 +65,50 @@ public class MainActivity extends AppCompatActivity {
 
             if (selectedFragment != null) {
                 currentMenuId = newId;
-                loadFragment(selectedFragment, bottomNav, slideRight);
+                loadFragment(selectedFragment, slideRight);
             }
             return true;
         });
     }
 
-    private void loadFragment(Fragment fragment, BottomNavigationView bottomNav, boolean slideRight) {
+    private void loadFragment(Fragment fragment, boolean slideRight) {
         if (slideRight) {
             getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
                     .replace(R.id.layout_fragment_container, fragment)
                     .commit();
         } else {
             getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
+                    .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left)
                     .replace(R.id.layout_fragment_container, fragment)
                     .commit();
         }
-
-        updateBottomNavVisibility(fragment, bottomNav);
     }
 
     private void updateBottomNavVisibility(Fragment fragment, BottomNavigationView bottomNav) {
         if (bottomNav == null) return;
-        if (fragment instanceof PremiumFragment) {
+        
+        if (fragment instanceof PremiumFragment || fragment instanceof NotificationFragment) {
             bottomNav.setVisibility(View.GONE);
         } else {
             bottomNav.setVisibility(View.VISIBLE);
+        }
+
+        // Update selected item based on fragment type
+        int targetId = -1;
+        if (fragment instanceof HomeFragment) {
+            targetId = R.id.nav_home;
+        } else if (fragment instanceof ModulFragment || fragment instanceof MateriFragment || fragment instanceof ContentFragment) {
+            targetId = R.id.nav_modul;
+        } else if (fragment instanceof StatistikFragment) {
+            targetId = R.id.nav_chart;
+        } else if (fragment instanceof ProfileFragment) {
+            targetId = R.id.nav_profile;
+        }
+
+        if (targetId != -1 && targetId != currentMenuId) {
+            currentMenuId = targetId;
+            bottomNav.getMenu().findItem(targetId).setChecked(true);
         }
     }
 }

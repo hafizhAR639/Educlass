@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#F8FAFC"
     android:orientation="vertical">
 
     <ScrollView
@@ -18,10 +19,52 @@
             android:orientation="vertical"
             android:paddingBottom="100dp">
 
-            <!-- Header Section -->
-            <include
-                android:id="@+id/header_materi"
-                layout="@layout/shared_layout_header" />
+            <!-- Header Section with decorative background -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <ImageView
+                    android:id="@+id/iv_materi_header_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/user_img_header_math" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#40000000" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btn_back_materi"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="40dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="2dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/shared_ic_back" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/tv_materi_header_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="45dp"
+                    android:text="Fisika"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
 
             <!-- Gaya Belajar Section -->
             <androidx.cardview.widget.CardView
@@ -31,56 +74,97 @@
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="-40dp"
                 app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="24dp"
                 app:cardElevation="8dp">
 
                 <LinearLayout
-                    android:id="@+id/layout_learning_style_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <ImageView
-                        android:id="@+id/iv_learning_style_icon"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/shared_ic_math" />
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
                     <LinearLayout
-                        android:id="@+id/layout_learning_style_text_wrapper"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            app:cardCornerRadius="35dp"
+                            app:cardElevation="4dp"
+                            app:strokeColor="#E5E7EB"
+                            app:strokeWidth="1dp">
+                            <ImageView
+                                android:id="@+id/iv_learning_style_icon"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="12dp"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/shared_ic_phys" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/shared_ic_stats"
+                                    app:tint="#A855F7" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="Gaya Belajar"
+                                    android:textColor="#667085"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_current_learning_style"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Visual"
+                                android:textColor="#101828"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
 
                         <TextView
-                            android:id="@+id/tv_learning_style_label"
+                            android:id="@+id/btn_change_style"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Gaya Belajar"
-                            android:textColor="#4A5565"
-                            android:textSize="14sp" />
-
-                        <TextView
-                            android:id="@+id/tv_current_learning_style"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Visual"
-                            android:textColor="#101828"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:text="Ubah"
+                            android:textColor="#3B82F6"
+                            android:textStyle="bold"
+                            android:clickable="true"
+                            android:focusable="true" />
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/btn_change_style"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tv_module_count_badge"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Ubah"
-                        android:textColor="#347EFF"
-                        android:textStyle="bold" />
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/shared_bg_tag_ipa"
+                        android:gravity="center"
+                        android:paddingVertical="10dp"
+                        android:text="4 Modul Sesuai Gaya Belajarmu"
+                        android:textColor="#2563EB"
+                        android:textStyle="bold"
+                        android:textSize="13sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -90,8 +174,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:clipToPadding="false"
                 android:paddingHorizontal="20dp"
-                android:clipToPadding="false" />
+                tools:listitem="@layout/user_item_topic" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
