@@ -147,22 +147,40 @@ public class StatistikFragment extends Fragment {
         if (layoutMasteryList == null) return;
         layoutMasteryList.removeAllViews();
 
-        db.collection("subjects").orderBy("order").get().addOnSuccessListener(result -> {
-            if (isAdded()) {
-                if (result.isEmpty()) {
-                    // Dummy fallback if no subjects yet
-                    addDummyMasteryRow("Mathematics", 85);
-                    addDummyMasteryRow("Physics", 70);
-                    addDummyMasteryRow("Chemistry", 45);
-                } else {
-                    for (QueryDocumentSnapshot doc : result) {
-                        ModelSubject subject = doc.toObject(ModelSubject.class);
-                        // For mastery, we normally track per user, for now we simulate or use access_count
-                        int randomProgress = (int) (Math.random() * 50 + 40); 
-                        addActualMasteryRow(subject.getNama(), randomProgress);
-                    }
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        // Get completed topics to calculate mastery
+        db.collection("users").document(uid).collection("completed_topics").get().addOnSuccessListener(completedSnap -> {
+            java.util.Map<String, Integer> completedCounts = new HashMap<>();
+            for (QueryDocumentSnapshot doc : completedSnap) {
+                String subjectId = doc.getString("subject_id");
+                if (subjectId != null) {
+                    completedCounts.put(subjectId, completedCounts.getOrDefault(subjectId, 0) + 1);
                 }
             }
+
+            // Get all subjects
+            db.collection("subjects").orderBy("order").get().addOnSuccessListener(result -> {
+                if (isAdded()) {
+                    for (QueryDocumentSnapshot doc : result) {
+                        ModelSubject subject = doc.toObject(ModelSubject.class);
+                        String sId = doc.getId();
+                        
+                        // Calculate percentage: (completed modules in subject / total modules in subject) * 100
+                        int completed = completedCounts.getOrDefault(sId, 0);
+                        int total = 0;
+                        Object totalObj = doc.get("total_moduls");
+                        if (totalObj instanceof Number) total = ((Number) totalObj).intValue();
+                        else if (totalObj instanceof String) try { total = Integer.parseInt((String)totalObj); } catch(Exception e){}
+
+                        int mastery = total > 0 ? (completed * 100 / total) : 0;
+                        if (mastery > 100) mastery = 100;
+
+                        addActualMasteryRow(subject.getNama(), mastery);
+                    }
+                }
+            });
         });
     }
 

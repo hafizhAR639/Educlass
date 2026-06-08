@@ -153,6 +153,7 @@ public class MateriFragment extends Fragment {
         Bundle bundle = new Bundle();
         bundle.putString("topic_id", topic.getTopic_id());
         bundle.putString("topic_judul", topic.getJudul());
+        bundle.putString("subject_id", subjectId); // Pass subject_id for mastery tracking
         bundle.putBoolean("use_pomodoro", usePomodoro);
         bundle.putInt("focus_time", focus);
         bundle.putInt("break_time", breakT);
@@ -176,7 +177,6 @@ public class MateriFragment extends Fragment {
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid == null) return;
 
-        // Ambil data topik yang sudah diselesaikan oleh user ini
         db.collection("users").document(uid).collection("completed_topics").get().addOnSuccessListener(completedSnap -> {
             java.util.Set<String> completedIds = new java.util.HashSet<>();
             for (QueryDocumentSnapshot doc : completedSnap) {
@@ -188,7 +188,6 @@ public class MateriFragment extends Fragment {
                 ModelTopic topic = document.toObject(ModelTopic.class);
                 topic.setTopic_id(document.getId());
                 
-                // Set progres 100% jika ID ada di koleksi selesai
                 if (completedIds.contains(topic.getTopic_id())) {
                     topic.setProgress(100);
                 } else {
@@ -199,7 +198,7 @@ public class MateriFragment extends Fragment {
             }
             topicList.sort((a, b) -> Long.compare(a.getOrder(), b.getOrder()));
             if (adapter != null) adapter.notifyDataSetChanged();
-            updateModuleCountText();
+            updateModuleCountText(completedIds.size());
         });
     }
 
@@ -225,13 +224,18 @@ public class MateriFragment extends Fragment {
             else if (lowName.contains("fisika") || lowName.contains("phys")) resId = R.drawable.shared_ic_phys;
             ivStyleIcon.setImageResource(resId);
         }
-        updateModuleCountText();
+        // Count will be updated once topics are processed
     }
 
-    private void updateModuleCountText() {
+    private void updateModuleCountText(int completedCount) {
         if (tvModuleCount != null) {
             String style = tvCurrentStyle != null ? tvCurrentStyle.getText().toString() : "Visual";
-            tvModuleCount.setText(String.format(Locale.getDefault(), "%d Modul Sesuai Gaya Belajar %s", topicList.size(), style));
+            int total = topicList.size();
+            int progressPercent = total > 0 ? (completedCount * 100 / total) : 0;
+            
+            tvModuleCount.setText(String.format(Locale.getDefault(), 
+                "%d Modul • %d%% Selesai • Gaya: %s", 
+                total, progressPercent, style));
         }
     }
 

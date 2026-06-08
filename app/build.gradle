@@ -36,6 +36,7 @@ dependencies {
     implementation libs.firebase.auth
     implementation libs.glide
     implementation libs.youtube.player
+    implementation libs.youtube.player.custom.ui
     
     // Room
     implementation "androidx.room:room-runtime:2.6.1"

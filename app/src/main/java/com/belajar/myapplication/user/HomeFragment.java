@@ -24,9 +24,12 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import android.text.Editable;
+import android.text.TextWatcher;
 
 public class HomeFragment extends Fragment {
 
@@ -65,10 +68,15 @@ public class HomeFragment extends Fragment {
         setupHighlight();
         setupSubjects();
         setupPopularTopics();
+        setupSearch();
         
-        view.findViewById(R.id.btn_continue).setOnClickListener(v -> 
-            Toast.makeText(getContext(), "Melanjutkan materi...", Toast.LENGTH_SHORT).show()
-        );
+        view.findViewById(R.id.btn_continue).setOnClickListener(v -> {
+            if (cardHighlight.getVisibility() == View.VISIBLE) {
+                cardHighlight.performClick();
+            } else {
+                Toast.makeText(getContext(), "Belum ada materi terakhir", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // Notif and Premium clicks
         View btnNotif = view.findViewById(R.id.layout_notif);
@@ -115,31 +123,134 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupHighlight() {
-        // Logic: Menampilkan dashboard hanya jika ada materi yang terakhir diakses
-        ModelTopic lastAccessed = getLastAccessedFromDatabase();
-        
-        if (lastAccessed != null && lastAccessed.getProgress() > 0) {
-            cardHighlight.setVisibility(View.VISIBLE);
-            tvHighlightTitle.setText(lastAccessed.getJudul());
-            tvHighlightProgress.setText(lastAccessed.getProgress() + "% completed");
-            pbHighlight.setProgress(lastAccessed.getProgress());
-        } else {
-            cardHighlight.setVisibility(View.GONE);
-        }
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        db.collection("users").document(uid).get().addOnSuccessListener(doc -> {
+            if (doc.exists() && isAdded()) {
+                String lastTopicId = doc.getString("last_topic_id");
+                String lastTopicTitle = doc.getString("last_topic_title");
+                Long progress = doc.getLong("last_topic_progress");
+
+                if (lastTopicId != null && lastTopicTitle != null) {
+                    cardHighlight.setVisibility(View.VISIBLE);
+                    tvHighlightTitle.setText(lastTopicTitle);
+                    int p = progress != null ? progress.intValue() : 0;
+                    tvHighlightProgress.setText(p + "% completed");
+                    pbHighlight.setProgress(p);
+
+                    cardHighlight.setOnClickListener(v -> {
+                        ContentFragment fragment = new ContentFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("topic_id", lastTopicId);
+                        bundle.putString("topic_judul", lastTopicTitle);
+                        fragment.setArguments(bundle);
+
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.layout_fragment_container, fragment)
+                                .addToBackStack(null)
+                                .commit();
+                    });
+                } else {
+                    cardHighlight.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
-    private ModelTopic getLastAccessedFromDatabase() {
-        // Simulasi pengambilan data terakhir diakses
-        // Return null jika user belum pernah membuka materi
-        ModelTopic dummy = new ModelTopic();
-        dummy.setJudul("Hukum Newton");
-        dummy.setProgress(65);
-        return dummy; 
+    private void setupSearch() {
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 2) {
+                    performSearch(s.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void performSearch(String query) {
+        db.collection("topics")
+                .whereGreaterThanOrEqualTo("judul", query)
+                .whereLessThanOrEqualTo("judul", query + "\uf8ff")
+                .limit(5)
+                .get()
+                .addOnSuccessListener(result -> {
+                    List<ModelTopic> list = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : result) {
+                        ModelTopic t = doc.toObject(ModelTopic.class);
+                        t.setTopic_id(doc.getId());
+                        list.add(t);
+                    }
+                    if (!list.isEmpty()) {
+                        showSearchResults(list);
+                    }
+                });
+    }
+
+    private void showSearchResults(List<ModelTopic> results) {
+        // Implementasi sederhana: ganti list terpopuler dengan hasil pencarian
+        AdapterTopic adapter = new AdapterTopic(results, false, false, AdapterTopic.TYPE_POPULAR, new AdapterTopic.OnTopicClickListener() {
+            @Override
+            public void onTopicClick(ModelTopic topic, boolean isLocked) {
+                ContentFragment fragment = new ContentFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("topic_id", topic.getTopic_id());
+                bundle.putString("topic_judul", topic.getJudul());
+                fragment.setArguments(bundle);
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.layout_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+        rvPopular.setAdapter(adapter);
     }
 
     private void setupSubjects() {
-        List<ModelSubject> list = new ArrayList<>();
-        
+        db.collection("subjects").orderBy("access_count", Query.Direction.DESCENDING).get().addOnSuccessListener(result -> {
+            List<ModelSubject> list = new ArrayList<>();
+            for (QueryDocumentSnapshot doc : result) {
+                ModelSubject s = doc.toObject(ModelSubject.class);
+                s.setSubject_id(doc.getId());
+                list.add(s);
+            }
+
+            if (list.isEmpty()) {
+                // Fallback jika DB kosong
+                addFallbackSubjects(list);
+            }
+
+            AdapterSubject adapter = new AdapterSubject(list, R.layout.user_item_subject_home, (subject, v) -> {
+                // Increment access count
+                db.collection("subjects").document(subject.getSubject_id())
+                        .update("access_count", com.google.firebase.firestore.FieldValue.increment(1));
+
+                MateriFragment fragment = new MateriFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("subject_id", subject.getSubject_id());
+                bundle.putString("subject_name", subject.getNama());
+                fragment.setArguments(bundle);
+
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                        .replace(R.id.layout_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            });
+
+            rvSubjects.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+            rvSubjects.setAdapter(adapter);
+        });
+    }
+
+    private void addFallbackSubjects(List<ModelSubject> list) {
         ModelSubject math = new ModelSubject();
         math.setNama("Mathematics");
         math.setIcon_name("shared_ic_math");
@@ -151,69 +262,36 @@ public class HomeFragment extends Fragment {
         chem.setIcon_name("shared_ic_chem");
         chem.setColor_hex("#CEF7FF");
         list.add(chem);
-
-        ModelSubject bio = new ModelSubject();
-        bio.setNama("Biology");
-        bio.setIcon_name("shared_ic_bio");
-        bio.setColor_hex("#D1FFD1");
-        list.add(bio);
-
-        ModelSubject phys = new ModelSubject();
-        phys.setNama("Physics");
-        phys.setIcon_name("shared_ic_phys");
-        phys.setColor_hex("#E9D1FF");
-        list.add(phys);
-
-        AdapterSubject adapter = new AdapterSubject(list, R.layout.user_item_subject_home, (subject, v) -> {
-            MateriFragment fragment = new MateriFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("subject_id", subject.getSubject_id());
-            bundle.putString("subject_name", subject.getNama());
-            fragment.setArguments(bundle);
-
-            getParentFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
-                    .replace(R.id.layout_fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        });
-
-        rvSubjects.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        rvSubjects.setAdapter(adapter);
     }
 
     private void setupPopularTopics() {
-        List<ModelTopic> list = new ArrayList<>();
+        db.collection("topics").orderBy("views_count", com.google.firebase.firestore.Query.Direction.DESCENDING).limit(10).get()
+                .addOnSuccessListener(result -> {
+                    List<ModelTopic> list = new ArrayList<>();
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : result) {
+                        ModelTopic topic = doc.toObject(ModelTopic.class);
+                        topic.setTopic_id(doc.getId());
+                        list.add(topic);
+                    }
 
-        ModelTopic aljabar = new ModelTopic();
-        aljabar.setJudul("Aljabar");
-        aljabar.setViews_count(10000);
-        aljabar.setPremium(false);
-        list.add(aljabar);
+                    AdapterTopic adapter = new AdapterTopic(list, false, false, AdapterTopic.TYPE_POPULAR, new AdapterTopic.OnTopicClickListener() {
+                        @Override
+                        public void onTopicClick(ModelTopic topic, boolean isLocked) {
+                            MateriFragment fragment = new MateriFragment();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("subject_id", topic.getSubject_id());
+                            bundle.putString("subject_name", "Materi"); // Bisa diupdate jika ada data subject_name di topic
+                            fragment.setArguments(bundle);
 
-        ModelTopic pertidaksamaan = new ModelTopic();
-        pertidaksamaan.setJudul("Pertidaksamaan");
-        pertidaksamaan.setViews_count(15000);
-        pertidaksamaan.setPremium(false);
-        list.add(pertidaksamaan);
-        
-        ModelTopic trigonometri = new ModelTopic();
-        trigonometri.setJudul("Trigonometri");
-        trigonometri.setViews_count(8000);
-        trigonometri.setPremium(true);
-        list.add(trigonometri);
+                            getParentFragmentManager().beginTransaction()
+                                    .replace(R.id.layout_fragment_container, fragment)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    });
 
-        // Mengurutkan berdasarkan views_count secara descending (Materi Terpopuler)
-        Collections.sort(list, (t1, t2) -> Long.compare(t2.getViews_count_long(), t1.getViews_count_long()));
-
-        AdapterTopic adapter = new AdapterTopic(list, false, false, AdapterTopic.TYPE_POPULAR, new AdapterTopic.OnTopicClickListener() {
-            @Override
-            public void onTopicClick(ModelTopic topic, boolean isLocked) {
-                Toast.makeText(getContext(), "Buka " + topic.getJudul(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        rvPopular.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        rvPopular.setAdapter(adapter);
+                    rvPopular.setLayoutManager(new GridLayoutManager(getContext(), 2));
+                    rvPopular.setAdapter(adapter);
+                });
     }
 }
