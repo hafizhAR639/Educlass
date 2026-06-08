@@ -86,7 +86,13 @@ public class MateriFragment extends Fragment {
         adapter = new AdapterTopic(filteredTopicList, true, true, new AdapterTopic.OnTopicClickListener() {
             @Override
             public void onTopicClick(ModelTopic topic, boolean isLocked) {
-                // Admin detail logic if any
+                Intent intent = new Intent(getActivity(), EditTopicActivity.class);
+                intent.putExtra("topic_id", topic.getTopic_id());
+                intent.putExtra("subject_id", subjectId);
+                intent.putExtra("subject_name", subjectName);
+                intent.putExtra("topic_title", topic.getJudul());
+                intent.putExtra("topic_desc", topic.getDeskripsi());
+                startActivity(intent);
             }
             @Override
             public void onEditClick(View view, ModelTopic topic) {
@@ -225,12 +231,19 @@ public class MateriFragment extends Fragment {
      */
     private void applyFilter(int chipId) {
         filteredTopicList.clear();
-        if (chipId == R.id.chip_semua) {
+        String style = "";
+        if (chipId == R.id.chip_visual) style = "visual";
+        else if (chipId == R.id.chip_audio) style = "audio";
+        else if (chipId == R.id.chip_kinestetik) style = "kinestetik";
+
+        if (chipId == R.id.chip_semua || style.isEmpty()) {
             filteredTopicList.addAll(allTopicList);
         } else {
-            // Logika filter (Contoh: hanya tampilkan jika memiliki konten V/A/K)
-            filteredTopicList.addAll(allTopicList);
-            // Anda dapat menambahkan logika pencocokan field khusus di sini di masa mendatang
+            for (ModelTopic topic : allTopicList) {
+                if (topic.getLearning_styles() != null && topic.getLearning_styles().contains(style)) {
+                    filteredTopicList.add(topic);
+                }
+            }
         }
         adapter.notifyDataSetChanged();
     }
@@ -239,11 +252,14 @@ public class MateriFragment extends Fragment {
      * Mengambil data topik yang memiliki subject_id yang cocok dari database.
      */
     private void fetchTopics() {
-        FirebaseHelper.fetchTopics(subjectId, task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                processTopics(task.getResult());
-            }
-        });
+        db.collection("topics")
+                .whereEqualTo("subject_id", subjectId)
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) return;
+                    if (value != null) {
+                        processTopics(value);
+                    }
+                });
     }
 
     private void fetchTopicsFallback() {

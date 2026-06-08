@@ -176,22 +176,35 @@ public class HomeFragment extends Fragment {
     }
 
     private void performSearch(String query) {
-        db.collection("topics")
-                .whereGreaterThanOrEqualTo("judul", query)
-                .whereLessThanOrEqualTo("judul", query + "\uf8ff")
-                .limit(5)
-                .get()
-                .addOnSuccessListener(result -> {
-                    List<ModelTopic> list = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : result) {
-                        ModelTopic t = doc.toObject(ModelTopic.class);
-                        t.setTopic_id(doc.getId());
-                        list.add(t);
-                    }
-                    if (!list.isEmpty()) {
-                        showSearchResults(list);
-                    }
-                });
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        db.collection("users").document(uid).get().addOnSuccessListener(userDoc -> {
+            String userStyle = userDoc.getString("gaya_belajar");
+            if (userStyle == null) userStyle = "Visual";
+            final String finalStyle = userStyle.toLowerCase();
+
+            db.collection("topics")
+                    .whereGreaterThanOrEqualTo("judul", query)
+                    .whereLessThanOrEqualTo("judul", query + "\uf8ff")
+                    .limit(10)
+                    .get()
+                    .addOnSuccessListener(result -> {
+                        List<ModelTopic> list = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : result) {
+                            ModelTopic t = doc.toObject(ModelTopic.class);
+                            t.setTopic_id(doc.getId());
+                            
+                            List<String> styles = t.getLearning_styles();
+                            if (styles != null && styles.contains(finalStyle)) {
+                                list.add(t);
+                            }
+                        }
+                        if (!list.isEmpty()) {
+                            showSearchResults(list);
+                        }
+                    });
+        });
     }
 
     private void showSearchResults(List<ModelTopic> results) {
@@ -265,33 +278,46 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupPopularTopics() {
-        db.collection("topics").orderBy("views_count", com.google.firebase.firestore.Query.Direction.DESCENDING).limit(10).get()
-                .addOnSuccessListener(result -> {
-                    List<ModelTopic> list = new ArrayList<>();
-                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : result) {
-                        ModelTopic topic = doc.toObject(ModelTopic.class);
-                        topic.setTopic_id(doc.getId());
-                        list.add(topic);
-                    }
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
 
-                    AdapterTopic adapter = new AdapterTopic(list, false, false, AdapterTopic.TYPE_POPULAR, new AdapterTopic.OnTopicClickListener() {
-                        @Override
-                        public void onTopicClick(ModelTopic topic, boolean isLocked) {
-                            MateriFragment fragment = new MateriFragment();
-                            Bundle bundle = new Bundle();
-                            bundle.putString("subject_id", topic.getSubject_id());
-                            bundle.putString("subject_name", "Materi"); // Bisa diupdate jika ada data subject_name di topic
-                            fragment.setArguments(bundle);
+        db.collection("users").document(uid).get().addOnSuccessListener(userDoc -> {
+            String userStyle = userDoc.getString("gaya_belajar");
+            if (userStyle == null) userStyle = "Visual";
+            final String finalStyle = userStyle.toLowerCase();
 
-                            getParentFragmentManager().beginTransaction()
-                                    .replace(R.id.layout_fragment_container, fragment)
-                                    .addToBackStack(null)
-                                    .commit();
+            db.collection("topics").orderBy("views_count", com.google.firebase.firestore.Query.Direction.DESCENDING).limit(20).get()
+                    .addOnSuccessListener(result -> {
+                        List<ModelTopic> list = new ArrayList<>();
+                        for (com.google.firebase.firestore.QueryDocumentSnapshot doc : result) {
+                            ModelTopic topic = doc.toObject(ModelTopic.class);
+                            topic.setTopic_id(doc.getId());
+                            
+                            List<String> styles = topic.getLearning_styles();
+                            if (styles != null && styles.contains(finalStyle)) {
+                                list.add(topic);
+                            }
                         }
-                    });
 
-                    rvPopular.setLayoutManager(new GridLayoutManager(getContext(), 2));
-                    rvPopular.setAdapter(adapter);
-                });
+                        AdapterTopic adapter = new AdapterTopic(list, false, false, AdapterTopic.TYPE_POPULAR, new AdapterTopic.OnTopicClickListener() {
+                            @Override
+                            public void onTopicClick(ModelTopic topic, boolean isLocked) {
+                                MateriFragment fragment = new MateriFragment();
+                                Bundle bundle = new Bundle();
+                                bundle.putString("subject_id", topic.getSubject_id());
+                                bundle.putString("subject_name", "Materi");
+                                fragment.setArguments(bundle);
+
+                                getParentFragmentManager().beginTransaction()
+                                        .replace(R.id.layout_fragment_container, fragment)
+                                        .addToBackStack(null)
+                                        .commit();
+                            }
+                        });
+
+                        rvPopular.setLayoutManager(new GridLayoutManager(getContext(), 2));
+                        rvPopular.setAdapter(adapter);
+                    });
+        });
     }
 }

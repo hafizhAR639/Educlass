@@ -17,10 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.belajar.myapplication.R;
 import com.belajar.myapplication.data.models.ModelTopic;
 import com.belajar.myapplication.shared.AdapterTopic;
-import com.belajar.myapplication.shared.FirebaseHelper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +36,7 @@ public class MateriFragment extends Fragment {
     private TextView tvCurrentStyle, btnChangeStyle, tvModuleCount, tvHeaderTitle;
     private ImageView ivStyleIcon, ivHeaderBg;
     private final String[] learningStyles = {"Visual", "Audio", "Kinestetik"};
+    private ListenerRegistration topicsListener;
 
     @Nullable
     @Override
@@ -71,7 +72,6 @@ public class MateriFragment extends Fragment {
         rvTopics.setLayoutManager(new LinearLayoutManager(getContext()));
         
         checkPremiumAndSetupAdapter();
-        fetchTopics();
 
         return view;
     }
@@ -87,9 +87,11 @@ public class MateriFragment extends Fragment {
             db.collection("users").document(uid).get().addOnSuccessListener(doc -> {
                 boolean isPremium = doc.exists() && Boolean.TRUE.equals(doc.getBoolean("isPremium"));
                 setupAdapter(isPremium);
+                startTopicsListener();
             });
         } else {
             setupAdapter(false);
+            startTopicsListener();
         }
     }
 
@@ -138,7 +140,6 @@ public class MateriFragment extends Fragment {
         
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-            // Ensure centered
             android.view.WindowManager.LayoutParams lp = new android.view.WindowManager.LayoutParams();
             lp.copyFrom(dialog.getWindow().getAttributes());
             lp.width = android.view.WindowManager.LayoutParams.MATCH_PARENT;
@@ -153,7 +154,7 @@ public class MateriFragment extends Fragment {
         Bundle bundle = new Bundle();
         bundle.putString("topic_id", topic.getTopic_id());
         bundle.putString("topic_judul", topic.getJudul());
-        bundle.putString("subject_id", subjectId); // Pass subject_id for mastery tracking
+        bundle.putString("subject_id", subjectId);
         bundle.putBoolean("use_pomodoro", usePomodoro);
         bundle.putInt("focus_time", focus);
         bundle.putInt("break_time", breakT);
@@ -165,17 +166,26 @@ public class MateriFragment extends Fragment {
                 .commit();
     }
 
-    private void fetchTopics() {
-        FirebaseHelper.fetchTopics(subjectId, task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                processTopics(task.getResult());
-            }
-        });
+    private void startTopicsListener() {
+        if (subjectId == null) return;
+        
+        topicsListener = db.collection("topics")
+                .whereEqualTo("subject_id", subjectId)
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) return;
+                    if (value != null) {
+                        processTopics(value);
+                    }
+                });
     }
 
     private void processTopics(com.google.firebase.firestore.QuerySnapshot result) {
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid == null) return;
+
+        // Use the current style from UI for faster response
+        String userStyle = tvCurrentStyle != null ? tvCurrentStyle.getText().toString() : "Visual";
+        final String finalStyle = userStyle;
 
         db.collection("users").document(uid).collection("completed_topics").get().addOnSuccessListener(completedSnap -> {
             java.util.Set<String> completedIds = new java.util.HashSet<>();
@@ -187,14 +197,22 @@ public class MateriFragment extends Fragment {
             for (QueryDocumentSnapshot document : result) {
                 ModelTopic topic = document.toObject(ModelTopic.class);
                 topic.setTopic_id(document.getId());
-                
-                if (completedIds.contains(topic.getTopic_id())) {
-                    topic.setProgress(100);
-                } else {
-                    topic.setProgress(0);
+
+                // Strict Filtering Logic: only show topics that explicitly contain the user's style
+                boolean matches = false;
+                java.util.List<String> styles = topic.getLearning_styles();
+                if (styles != null && styles.contains(finalStyle.toLowerCase())) {
+                    matches = true;
                 }
-                
-                topicList.add(topic);
+
+                if (matches) {
+                    if (completedIds.contains(topic.getTopic_id())) {
+                        topic.setProgress(100);
+                    } else {
+                        topic.setProgress(0);
+                    }
+                    topicList.add(topic);
+                }
             }
             topicList.sort((a, b) -> Long.compare(a.getOrder(), b.getOrder()));
             if (adapter != null) adapter.notifyDataSetChanged();
@@ -224,7 +242,6 @@ public class MateriFragment extends Fragment {
             else if (lowName.contains("fisika") || lowName.contains("phys")) resId = R.drawable.shared_ic_phys;
             ivStyleIcon.setImageResource(resId);
         }
-        // Count will be updated once topics are processed
     }
 
     private void updateModuleCountText(int completedCount) {
@@ -264,7 +281,18 @@ public class MateriFragment extends Fragment {
         db.collection("users").document(uid).update("gaya_belajar", newStyle)
                 .addOnSuccessListener(aVoid -> {
                     updateStyleUI(newStyle);
+                    // Refresh topics when style changes
+                    if (topicsListener != null) {
+                        topicsListener.remove();
+                        startTopicsListener();
+                    }
                     Toast.makeText(getContext(), "Gaya belajar diubah ke " + newStyle, Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (topicsListener != null) topicsListener.remove();
     }
 }

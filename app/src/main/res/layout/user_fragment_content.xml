@@ -310,6 +310,15 @@
                                 android:src="@android:drawable/ic_lock_silent_mode_off"
                                 app:tint="#FFFFFF" />
 
+                            <TextView
+                                android:id="@+id/tv_video_current_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="00:00"
+                                android:textColor="#FFFFFF"
+                                android:textSize="10sp" />
+
                             <SeekBar
                                 android:id="@+id/video_seekbar"
                                 android:layout_width="0dp"
@@ -319,6 +328,15 @@
                                 android:thumbTint="#FFFFFF"
                                 android:progressTint="#FFFFFF"
                                 android:max="100" />
+
+                            <TextView
+                                android:id="@+id/tv_video_total_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:text="00:00"
+                                android:textColor="#FFFFFF"
+                                android:textSize="10sp" />
 
                             <ImageView
                                 android:id="@+id/btn_skip_back"
@@ -471,6 +489,15 @@
                                 android:src="@android:drawable/ic_lock_silent_mode_off"
                                 app:tint="#FFFFFF" />
 
+                            <TextView
+                                android:id="@+id/tv_audio_current_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="00:00"
+                                android:textColor="#FFFFFF"
+                                android:textSize="10sp" />
+
                             <SeekBar
                                 android:id="@+id/audio_seekbar"
                                 android:layout_width="0dp"
@@ -480,6 +507,15 @@
                                 android:thumbTint="#FFFFFF"
                                 android:progressTint="#FFFFFF"
                                 android:max="100" />
+
+                            <TextView
+                                android:id="@+id/tv_audio_total_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:text="00:00"
+                                android:textColor="#FFFFFF"
+                                android:textSize="10sp" />
 
                             <ImageView
                                 android:id="@+id/btn_audio_skip_back"

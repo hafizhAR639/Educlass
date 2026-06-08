@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical">
+
+    <!-- Header Section -->
+    <RelativeLayout
+        android:id="@+id/header_section"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@drawable/admin_bg_header_rounded">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
+            android:padding="8dp"
+            android:background="@drawable/shared_bg_circle_white_alpha"
+            android:src="@drawable/shared_ic_back" />
+
+        <TextView
+            android:id="@+id/tv_header_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="48dp"
+            android:text="Tambah Materi Baru"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="40dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="20dp">
+
+            <!-- Judul Materi Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Judul Materi"
+                        android:textColor="#1E293B"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/et_topic_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/shared_bg_input_field"
+                        android:hint="Contoh: Materi Aljabar Dasar"
+                        android:paddingHorizontal="16dp"
+                        android:textColor="#334155"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Deskripsi Singkat Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Deskripsi Singkat"
+                        android:textColor="#1E293B"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/et_topic_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/shared_bg_input_field"
+                        android:gravity="top"
+                        android:hint="Tulisa Deskripsi disini.."
+                        android:padding="16dp"
+                        android:textColor="#334155"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Gaya Belajar Selection Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gaya Belajar"
+                        android:textColor="#1E293B"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <!-- Container for Dynamic Content -->
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chip_group_learning_styles"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:chipSpacingHorizontal="8dp"
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_semua"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Semua" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_visual"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Visual" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_audio"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Audio" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_kinestetik"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kinestetik" />
+                    </com.google.android.material.chip.ChipGroup>
+
+                    <LinearLayout
+                        android:id="@+id/container_dynamic_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical">
+
+                        <!-- Visual Content Section -->
+                        <LinearLayout
+                            android:id="@+id/layout_visual_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <include layout="@layout/admin_item_upload_section"
+                                android:id="@+id/section_visual_upload" />
+
+                            <EditText
+                                android:id="@+id/et_visual_youtube_url"
+                                android:layout_width="match_parent"
+                                android:layout_height="56dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/shared_bg_input_field"
+                                android:hint="Atau Link Video YouTube"
+                                android:paddingHorizontal="16dp"
+                                android:textColor="#334155"
+                                android:textSize="14sp" />
+
+                            <EditText
+                                android:id="@+id/et_visual_explanation"
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                android:layout_marginTop="12dp"
+                                android:background="@drawable/shared_bg_input_field"
+                                android:hint="Penjelasan Materi Visual"
+                                android:gravity="top"
+                                android:padding="16dp" />
+                        </LinearLayout>
+
+                        <!-- Audio Content Section -->
+                        <LinearLayout
+                            android:id="@+id/layout_audio_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <include layout="@layout/admin_item_upload_section"
+                                android:id="@+id/section_audio_upload" />
+
+                            <EditText
+                                android:id="@+id/et_audio_youtube_url"
+                                android:layout_width="match_parent"
+                                android:layout_height="56dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/shared_bg_input_field"
+                                android:hint="Atau Link Audio YouTube"
+                                android:paddingHorizontal="16dp"
+                                android:textColor="#334155"
+                                android:textSize="14sp" />
+
+                            <EditText
+                                android:id="@+id/et_audio_explanation"
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                android:layout_marginTop="12dp"
+                                android:background="@drawable/shared_bg_input_field"
+                                android:hint="Penjelasan Audio"
+                                android:gravity="top"
+                                android:padding="16dp" />
+                        </LinearLayout>
+
+                        <!-- Kinestetik Content Section -->
+                        <LinearLayout
+                            android:id="@+id/layout_kin_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <include layout="@layout/admin_item_upload_section"
+                                android:id="@+id/section_kin_upload" />
+
+                            <EditText
+                                android:id="@+id/et_kin_youtube_url"
+                                android:layout_width="match_parent"
+                                android:layout_height="56dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/shared_bg_input_field"
+                                android:hint="Atau Link Materi YouTube"
+                                android:paddingHorizontal="16dp"
+                                android:textColor="#334155"
+                                android:textSize="14sp" />
+
+                            <EditText
+                                android:id="@+id/et_kin_explanation"
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                android:layout_marginTop="12dp"
+                                android:background="@drawable/shared_bg_input_field"
+                                android:hint="Instruksi Aktivitas"
+                                android:gravity="top"
+                                android:padding="16dp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_save_topic"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:backgroundTint="#3B82F6"
+                android:text="Simpan Materi"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="16dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_delete_topic"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="8dp"
+                android:text="Hapus Materi"
+                android:textColor="#EF4444"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

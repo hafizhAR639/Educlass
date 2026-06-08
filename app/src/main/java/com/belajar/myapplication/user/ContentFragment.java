@@ -22,10 +22,14 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import com.belajar.myapplication.R;
+import com.belajar.myapplication.data.models.ModelTopic;
+import com.belajar.myapplication.data.models.ModelContent;
 import com.google.android.material.button.MaterialButton;
+import android.content.Intent;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
@@ -39,6 +43,7 @@ public class ContentFragment extends Fragment {
     private FirebaseAuth mAuth;
     
     private TextView tvTopicTitle, tvTimer, tvTimerMode, tvSessions, tvTypeLabel, tvStep, tvExplanation, tvVideoSpeed, tvReadingTitle;
+    private TextView tvVideoCurrentTime, tvVideoTotalTime, tvAudioCurrentTime, tvAudioTotalTime;
     private ImageView ivTypeIcon, ivVideoPlayPause, ivVideoLandscape, ivVideoVolume, btnSkipBack, btnSkipForward;
     private ImageView btnAudioPlayPause, btnAudioSkipBack, btnAudioSkipForward;
     private MaterialCardView cardTypeIcon, btnVideoSpeed;
@@ -61,6 +66,7 @@ public class ContentFragment extends Fragment {
     private boolean isVideoPlaying = false;
     private YouTubePlayer activeYouTubePlayer;
     private MediaPlayer nativeMediaPlayer;
+    private ListenerRegistration userListener, contentListener;
     private final float[] speeds = {0.5f, 1.0f, 1.5f, 2.0f};
     
     // Timer Variables
@@ -145,8 +151,10 @@ public class ContentFragment extends Fragment {
                 if (fromUser) {
                     if (activeYouTubePlayer != null) {
                         activeYouTubePlayer.seekTo(progress);
-                    } else if (nativeVideoView.getVisibility() == View.VISIBLE || cardPodcast.getVisibility() == View.VISIBLE) {
+                    } else if (nativeVideoView != null && nativeVideoView.getVisibility() == View.VISIBLE) {
                         nativeVideoView.seekTo(progress * 1000);
+                    } else if (nativeMediaPlayer != null) {
+                        nativeMediaPlayer.seekTo(progress * 1000);
                     }
                 }
             }
@@ -164,14 +172,46 @@ public class ContentFragment extends Fragment {
     private final Runnable updateSeekBar = new Runnable() {
         @Override
         public void run() {
-            if (nativeVideoView != null && nativeVideoView.isPlaying()) {
-                int progress = nativeVideoView.getCurrentPosition() / 1000;
-                if (videoSeekBar != null) videoSeekBar.setProgress(progress);
-                if (audioSeekBar != null) audioSeekBar.setProgress(progress);
+            int currentPos = 0;
+            int totalPos = 0;
+            boolean isPlaying = false;
+
+            if (nativeVideoView != null && nativeVideoView.getVisibility() == View.VISIBLE) {
+                currentPos = nativeVideoView.getCurrentPosition() / 1000;
+                totalPos = nativeVideoView.getDuration() / 1000;
+                isPlaying = nativeVideoView.isPlaying();
+            } else if (nativeMediaPlayer != null) {
+                try {
+                    currentPos = nativeMediaPlayer.getCurrentPosition() / 1000;
+                    totalPos = nativeMediaPlayer.getDuration() / 1000;
+                    isPlaying = nativeMediaPlayer.isPlaying();
+                } catch (Exception ignored) {}
+            }
+
+            if (currentPos >= 0) {
+                if (videoSeekBar != null) videoSeekBar.setProgress(currentPos);
+                if (audioSeekBar != null) audioSeekBar.setProgress(currentPos);
+                
+                String timeStr = formatTime(currentPos);
+                if (tvVideoCurrentTime != null) tvVideoCurrentTime.setText(timeStr);
+                if (tvAudioCurrentTime != null) tvAudioCurrentTime.setText(timeStr);
+                
+                if (totalPos > 0) {
+                    if (tvVideoTotalTime != null) tvVideoTotalTime.setText(formatTime(totalPos));
+                    if (tvAudioTotalTime != null) tvAudioTotalTime.setText(formatTime(totalPos));
+                    if (videoSeekBar != null) videoSeekBar.setMax(totalPos);
+                    if (audioSeekBar != null) audioSeekBar.setMax(totalPos);
+                }
             }
             seekHandler.postDelayed(this, 1000);
         }
     };
+
+    private String formatTime(int seconds) {
+        int m = seconds / 60;
+        int s = seconds % 60;
+        return String.format(Locale.getDefault(), "%02d:%02d", m, s);
+    }
 
     private void toggleVideoPlayPause() {
         if (activeYouTubePlayer != null) {
@@ -185,7 +225,7 @@ public class ContentFragment extends Fragment {
                 btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_pause);
             }
             isVideoPlaying = !isVideoPlaying;
-        } else if (nativeVideoView != null) {
+        } else if (nativeVideoView != null && nativeVideoView.getVisibility() == View.VISIBLE) {
             if (nativeVideoView.isPlaying()) {
                 nativeVideoView.pause();
                 ivVideoPlayPause.setImageResource(android.R.drawable.ic_media_play);
@@ -195,7 +235,35 @@ public class ContentFragment extends Fragment {
                 ivVideoPlayPause.setImageResource(android.R.drawable.ic_media_pause);
                 btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_pause);
             }
+        } else if (nativeMediaPlayer != null) {
+            if (nativeMediaPlayer.isPlaying()) {
+                nativeMediaPlayer.pause();
+                ivVideoPlayPause.setImageResource(android.R.drawable.ic_media_play);
+                btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_play);
+            } else {
+                nativeMediaPlayer.start();
+                ivVideoPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+                btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+            }
         }
+    }
+
+    private void stopMedia() {
+        if (activeYouTubePlayer != null) {
+            activeYouTubePlayer.pause();
+            activeYouTubePlayer.seekTo(0);
+            isVideoPlaying = false;
+        } else if (nativeVideoView != null && nativeVideoView.getVisibility() == View.VISIBLE) {
+            nativeVideoView.pause();
+            nativeVideoView.seekTo(0);
+        } else if (nativeMediaPlayer != null) {
+            nativeMediaPlayer.pause();
+            nativeMediaPlayer.seekTo(0);
+        }
+        ivVideoPlayPause.setImageResource(android.R.drawable.ic_media_play);
+        btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_play);
+        if (videoSeekBar != null) videoSeekBar.setProgress(0);
+        if (audioSeekBar != null) audioSeekBar.setProgress(0);
     }
 
     private void toggleLandscape() {
@@ -329,6 +397,11 @@ public class ContentFragment extends Fragment {
 
         tvVideoSpeed = v.findViewById(R.id.tv_video_speed);
         btnVideoSpeed = v.findViewById(R.id.btn_video_speed);
+
+        tvVideoCurrentTime = v.findViewById(R.id.tv_video_current_time);
+        tvVideoTotalTime = v.findViewById(R.id.tv_video_total_time);
+        tvAudioCurrentTime = v.findViewById(R.id.tv_audio_current_time);
+        tvAudioTotalTime = v.findViewById(R.id.tv_audio_total_time);
     }
 
     private void setupLifecycle() {
@@ -344,11 +417,16 @@ public class ContentFragment extends Fragment {
             float newTime = youtubeCurrentTime + seconds;
             if (newTime < 0) newTime = 0;
             activeYouTubePlayer.seekTo(newTime);
-        } else if (nativeVideoView != null && nativeVideoView.isPlaying()) {
+        } else if (nativeVideoView != null && nativeVideoView.getVisibility() == View.VISIBLE) {
             int currentPos = nativeVideoView.getCurrentPosition();
             int newPos = currentPos + (seconds * 1000);
             if (newPos < 0) newPos = 0;
             nativeVideoView.seekTo(newPos);
+        } else if (nativeMediaPlayer != null) {
+            int currentPos = nativeMediaPlayer.getCurrentPosition();
+            int newPos = currentPos + (seconds * 1000);
+            if (newPos < 0) newPos = 0;
+            nativeMediaPlayer.seekTo(newPos);
         }
     }
 
@@ -359,6 +437,10 @@ public class ContentFragment extends Fragment {
         updateUIForStep();
     }
 
+    private boolean isVideoActive = false;
+    private boolean isAudioActive = false;
+    private boolean isReadingActive = false;
+
     private void updateUIForStep() {
         pbContent.setProgress(currentStep * 50);
         tvStep.setText("Konten " + currentStep + " dari " + totalSteps);
@@ -366,7 +448,13 @@ public class ContentFragment extends Fragment {
         String style = (tvTopicTitle.getTag() != null) ? (String) tvTopicTitle.getTag() : "Visual";
 
         if (currentStep == 1) {
-            // Konten 1: Media (Dinamis berdasarkan gaya belajar)
+            // Reset common visibility first
+            layoutVideo.setVisibility(View.GONE);
+            cardPodcast.setVisibility(View.GONE);
+            cardReading.setVisibility(View.GONE);
+            btnPrev.setVisibility(View.GONE);
+            btnNext.setText("Selanjutnya →");
+
             if (style.equalsIgnoreCase("Audio")) {
                 tvTypeLabel.setText("Podcast Pembelajaran");
                 ivTypeIcon.setImageResource(android.R.drawable.ic_lock_silent_mode_off); 
@@ -374,8 +462,8 @@ public class ContentFragment extends Fragment {
                 btnVideoSpeed.setVisibility(View.GONE);
                 ivVideoLandscape.setVisibility(View.GONE);
                 
-                layoutVideo.setVisibility(View.GONE);
-                cardPodcast.setVisibility(View.VISIBLE);
+                if (isAudioActive) cardPodcast.setVisibility(View.VISIBLE);
+                else if (isVideoActive) layoutVideo.setVisibility(View.VISIBLE);
                 
                 // Audio style specific (Purple/Indigo)
                 cardTypeIcon.setCardBackgroundColor(Color.parseColor("#EEF2FF"));
@@ -386,8 +474,8 @@ public class ContentFragment extends Fragment {
                 tvVideoSpeed.setVisibility(View.VISIBLE);
                 btnVideoSpeed.setVisibility(View.VISIBLE);
                 
-                layoutVideo.setVisibility(View.VISIBLE);
-                cardPodcast.setVisibility(View.GONE);
+                if (isVideoActive) layoutVideo.setVisibility(View.VISIBLE);
+                else if (isAudioActive) cardPodcast.setVisibility(View.VISIBLE);
 
                 // Kinestetik style specific (Orange/Amber)
                 cardTypeIcon.setCardBackgroundColor(Color.parseColor("#FFF7ED"));
@@ -398,17 +486,12 @@ public class ContentFragment extends Fragment {
                 tvVideoSpeed.setVisibility(View.VISIBLE);
                 btnVideoSpeed.setVisibility(View.VISIBLE);
                 
-                layoutVideo.setVisibility(View.VISIBLE);
-                cardPodcast.setVisibility(View.GONE);
+                if (isVideoActive) layoutVideo.setVisibility(View.VISIBLE);
 
                 // Visual style specific (Red/Rose)
                 cardTypeIcon.setCardBackgroundColor(Color.parseColor("#FEE4E2"));
                 ImageViewCompat.setImageTintList(ivTypeIcon, ColorStateList.valueOf(Color.parseColor("#D92D20")));
             }
-            
-            cardReading.setVisibility(View.GONE);
-            btnPrev.setVisibility(View.GONE);
-            btnNext.setText("Selanjutnya →");
         } else {
             // Konten 2: Bacaan
             tvTypeLabel.setText("Materi Bacaan");
@@ -537,7 +620,13 @@ public class ContentFragment extends Fragment {
     private void getUserLearningStyleAndLoad(String tId) {
         String uid = mAuth.getUid();
         if (uid == null) return;
-        db.collection("users").document(uid).get().addOnSuccessListener(doc -> {
+        
+        // Use a listener to make it responsive to style changes
+        if (userListener != null) userListener.remove();
+        
+        userListener = db.collection("users").document(uid).addSnapshotListener((doc, error) -> {
+            if (error != null || doc == null || !doc.exists()) return;
+            
             String style = doc.getString("gaya_belajar");
             if (style == null) style = "Visual";
             
@@ -558,85 +647,102 @@ public class ContentFragment extends Fragment {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private void loadActualContent(String tId, String style) {
-        db.collection("content").whereEqualTo("topic_id", tId).get().addOnSuccessListener(result -> {
-            boolean contentFound = false;
-            for (QueryDocumentSnapshot doc : result) {
-                // strict mapping based on admin's upload
-                String styleKey = style.toLowerCase();
-                if (styleKey.equals("kinestetik")) {
-                    if (doc.get("kinestetik") == null && doc.get("kinetetik") != null) styleKey = "kinetetik";
-                }
-                
-                Map<String, Object> styleMap = (Map<String, Object>) doc.get(styleKey);
-                
-                if (styleMap != null) {
-                    String video = (String) styleMap.get("video_url");
-                    String audio = (String) styleMap.get("audio_url");
-                    String text = (String) styleMap.get("text_content");
-                    
-                    // Only proceed if at least one media or text is present for this specific style
-                    if ((video != null && !video.isEmpty()) || (audio != null && !audio.isEmpty()) || (text != null && !text.isEmpty())) {
-                        contentFound = true;
-                        if (tvExplanation != null && text != null) tvExplanation.setText(text.replace("\\n", "\n"));
-                        
-                        if (style.equalsIgnoreCase("Audio")) {
-                            setupAudio(audio != null && !audio.isEmpty() ? audio : video);
-                        } else {
-                            setupVideo(video);
+        if (contentListener != null) contentListener.remove();
+        
+        contentListener = db.collection("content").document(tId).addSnapshotListener((doc, error) -> {
+            if (error != null || doc == null || !doc.exists()) {
+                db.collection("topics").document(tId).get().addOnSuccessListener(topicDoc -> {
+                    if (topicDoc.exists()) {
+                        String penjelasan = topicDoc.getString("deskripsi");
+                        if (tvExplanation != null && penjelasan != null) {
+                            tvExplanation.setText(penjelasan.replace("\\n", "\n"));
                         }
-                        break; 
                     }
-                }
+                });
+                return;
             }
-            
-            if (!contentFound) {
-                // Fallback content to ensure material is ALWAYS visible
-                String mockText;
-                String mockUrl;
-                
-                if (style.equalsIgnoreCase("Audio")) {
-                    mockText = "🎧 **Sesi Podcast Pembelajaran**\n\n" +
-                            "Selamat datang di sesi podcast untuk materi: " + (topicJudul != null ? topicJudul : "Topik Ini") + ".\n\n" +
-                            "Dalam sesi ini, kita akan membahas konsep secara mendalam melalui audio. " +
-                            "Gunakan tombol skip 15 detik jika Anda ingin mengulang bagian tertentu.\n\n" +
-                            "**Daftar Bahasan:**\n" +
-                            "1. Pengenalan Konsep Utama\n" +
-                            "2. Pembahasan Detail & Contoh\n" +
-                            "3. Kesimpulan & Poin Penting\n\n" +
-                            "Tips: Fokuslah pada suara dan cobalah memvisualisasikan apa yang dijelaskan.";
-                    mockUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
-                    setupAudio(mockUrl);
-                } else if (style.equalsIgnoreCase("Kinestetik")) {
-                    mockText = "🛠️ **Panduan Praktik Mandiri**\n\n" +
-                            "Materi: " + (topicJudul != null ? topicJudul : "Topik Ini") + " (Versi Praktik)\n\n" +
-                            "Silakan ikuti tutorial video di atas sambil mempraktikkannya langsung. " +
-                            "Metode belajar ini dirancang agar Anda lebih cepat memahami dengan cara mencoba.\n\n" +
-                            "**Langkah Kegiatan:**\n" +
-                            "1. Siapkan peralatan atau aplikasi yang diperlukan.\n" +
-                            "2. Amati demonstrasi langkah demi langkah di video.\n" +
-                            "3. Coba lakukan hal yang sama secara mandiri.\n" +
-                            "4. Catat jika ada kendala atau temuan menarik.";
-                    mockUrl = "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4";
-                    setupVideo(mockUrl);
-                } else {
-                    mockText = "📺 **Video Pembelajaran Visual**\n\n" +
-                            "Selamat datang di materi video untuk: " + (topicJudul != null ? topicJudul : "Topik Ini") + ".\n\n" +
-                            "Saksikan penjelasan visual di atas untuk memahami ilustrasi dan diagram penting dalam materi ini.\n\n" +
-                            "**Poin Visual:**\n" +
-                            "• Diagram alur proses utama\n" +
-                            "• Ilustrasi grafis perbandingan data\n" +
-                            "• Rangkuman poin-poin kunci di akhir video";
-                    mockUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // Rick Roll as stable placeholder
-                    setupVideo(mockUrl);
-                }
 
-                if (tvExplanation != null) tvExplanation.setText(mockText);
+            ModelContent content = doc.toObject(ModelContent.class);
+            if (content == null) return;
+
+            // Reset active states
+            isVideoActive = false;
+            isAudioActive = false;
+            isReadingActive = false;
+
+            if (style.equalsIgnoreCase("Visual") && content.getVisual() != null) {
+                if (tvExplanation != null) tvExplanation.setText(content.getVisual().getText_content());
+                String yUrl = content.getVisual().getYoutube_url();
+                String vUrl = content.getVisual().getVideo_url();
+                
+                if (yUrl != null && !yUrl.trim().isEmpty()) {
+                    isVideoActive = true;
+                    setupVideo(yUrl);
+                } else if (vUrl != null && !vUrl.trim().isEmpty()) {
+                    isVideoActive = true;
+                    setupVideo(vUrl);
+                } else showEmptyMedia("Video");
+            } else if (style.equalsIgnoreCase("Audio") && content.getAudio() != null) {
+                if (tvExplanation != null) tvExplanation.setText(content.getAudio().getDescription());
+                String yUrl = content.getAudio().getYoutube_url();
+                String aUrl = content.getAudio().getAudio_url();
+                
+                if (yUrl != null && !yUrl.trim().isEmpty()) {
+                    isAudioActive = true;
+                    setupAudio(yUrl);
+                } else if (aUrl != null && !aUrl.trim().isEmpty()) {
+                    isAudioActive = true;
+                    setupAudio(aUrl);
+                } else showEmptyMedia("Audio");
+            } else if (style.equalsIgnoreCase("Kinestetik") && content.getKinestetik() != null) {
+                if (tvExplanation != null) tvExplanation.setText(content.getKinestetik().getDescription());
+                String yUrl = content.getKinestetik().getYoutube_url();
+                String fUrl = content.getKinestetik().getFile_url();
+                
+                if (yUrl != null && !yUrl.trim().isEmpty()) {
+                    isVideoActive = true;
+                    setupVideo(yUrl);
+                } else if (fUrl != null && !fUrl.trim().isEmpty()) {
+                    String lowUrl = fUrl.toLowerCase();
+                    if (lowUrl.contains(".mp4") || lowUrl.contains(".mkv") || lowUrl.contains(".webm") || lowUrl.contains("video")) {
+                        isVideoActive = true;
+                        setupVideo(fUrl);
+                    } else {
+                        setupKinestetik(fUrl, true);
+                    }
+                } else {
+                    showEmptyMedia("Materi Kinestetik");
+                }
             }
 
             updateUIForStep();
             updateLastAccessed();
+        });
+    }
+
+    private void showEmptyMedia(String type) {
+        Toast.makeText(getContext(), type + " belum tersedia.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void setupKinestetik(String url, boolean isFile) {
+        layoutVideo.setVisibility(View.GONE);
+        cardPodcast.setVisibility(View.GONE);
+        
+        // Custom UI for Kinestetik if needed, or just a button in the explanation
+        if (tvExplanation != null) {
+            String current = tvExplanation.getText().toString();
+            tvExplanation.setText(current + "\n\n[Klik tombol di bawah untuk membuka materi]");
+        }
+        
+        btnNext.setText(isFile ? "Buka File" : "Buka Link");
+        btnNext.setOnClickListener(v -> {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(intent);
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Gagal membuka materi", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -655,16 +761,13 @@ public class ContentFragment extends Fragment {
         if (url == null || url.isEmpty()) return;
         
         // Podcast style (Audio)
-        layoutVideo.setVisibility(View.INVISIBLE); 
-        ViewGroup.LayoutParams lp = layoutVideo.getLayoutParams();
-        lp.height = 1; 
-        layoutVideo.setLayoutParams(lp);
-        
+        layoutVideo.setVisibility(View.GONE); 
         cardPodcast.setVisibility(View.VISIBLE);
+        
         if (tvPodcastTitle != null) tvPodcastTitle.setText("Podcast: " + (topicJudul != null ? topicJudul : "Materi"));
         if (tvPodcastSubtitle != null) tvPodcastSubtitle.setText("Podcast Pembelajaran");
         
-        setupVideo(url);
+        playMedia(url);
     }
 
     private void setupVideo(String url) {
@@ -680,13 +783,34 @@ public class ContentFragment extends Fragment {
             lp.height = (int) (220 * getResources().getDisplayMetrics().density);
             layoutVideo.setLayoutParams(lp);
         } else {
-            layoutVideo.setVisibility(View.INVISIBLE);
+            layoutVideo.setVisibility(View.GONE);
         }
 
-        if (url.contains("youtube.com") || url.contains("youtu.be")) {
+        playMedia(url);
+    }
+
+    private void playMedia(String url) {
+        if (url == null || url.isEmpty()) {
+            layoutVideo.setVisibility(View.GONE);
+            cardPodcast.setVisibility(View.GONE);
+            return;
+        }
+
+        final String videoId = extractId(url);
+        // Better detection: if it has youtube in it or a valid 11 char ID was found
+        boolean isYouTube = !videoId.isEmpty() || url.contains("youtube.com") || url.contains("youtu.be");
+
+        // Stop any current playback
+        stopMedia();
+        if (nativeMediaPlayer != null) {
+            nativeMediaPlayer.release();
+            nativeMediaPlayer = null;
+        }
+
+        if (isYouTube) {
             youTubePlayerView.setVisibility(View.VISIBLE);
             nativeVideoView.setVisibility(View.GONE);
-
+            
             if (!isYouTubePlayerInitialized) {
                 IFramePlayerOptions options = new IFramePlayerOptions.Builder()
                         .controls(0)
@@ -697,79 +821,159 @@ public class ContentFragment extends Fragment {
                     public void onReady(@NonNull YouTubePlayer player) {
                         activeYouTubePlayer = player;
                         isYouTubePlayerInitialized = true;
-                        
-                        // Disable default library UI properly
-                        try {
-                            youTubePlayerView.setCustomPlayerUi(new View(getContext()));
-                        } catch (Exception ignored) {}
-
-                        player.cueVideo(extractId(url), 0);
-                        player.setPlaybackRate(com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlaybackRate.RATE_1);
+                        player.loadVideo(videoId, 0);
                     }
 
                     @Override
                     public void onCurrentSecond(@NonNull YouTubePlayer youTubePlayer, float second) {
                         youtubeCurrentTime = second;
-                        if (videoSeekBar != null) videoSeekBar.setProgress((int) second);
-                        if (audioSeekBar != null) audioSeekBar.setProgress((int) second);
+                        int s = (int) second;
+                        if (videoSeekBar != null) videoSeekBar.setProgress(s);
+                        if (audioSeekBar != null) audioSeekBar.setProgress(s);
+                        String timeStr = formatTime(s);
+                        if (tvVideoCurrentTime != null) tvVideoCurrentTime.setText(timeStr);
+                        if (tvAudioCurrentTime != null) tvAudioCurrentTime.setText(timeStr);
                     }
 
                     @Override
                     public void onVideoDuration(@NonNull YouTubePlayer youTubePlayer, float duration) {
-                        if (videoSeekBar != null) videoSeekBar.setMax((int) duration);
-                        if (audioSeekBar != null) audioSeekBar.setMax((int) duration);
+                        int d = (int) duration;
+                        if (videoSeekBar != null) videoSeekBar.setMax(d);
+                        if (audioSeekBar != null) audioSeekBar.setMax(d);
+                        String durationStr = formatTime(d);
+                        if (tvVideoTotalTime != null) tvVideoTotalTime.setText(durationStr);
+                        if (tvAudioTotalTime != null) tvAudioTotalTime.setText(durationStr);
                     }
 
                     @Override
                     public void onStateChange(@NonNull YouTubePlayer youTubePlayer, @NonNull com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState state) {
                         if (state == com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState.PLAYING) {
                             isVideoPlaying = true;
-                            ivVideoPlayPause.setImageResource(android.R.drawable.ic_media_pause);
-                            btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+                            if (ivVideoPlayPause != null) ivVideoPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+                            if (btnAudioPlayPause != null) btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_pause);
                         } else {
                             isVideoPlaying = false;
-                            ivVideoPlayPause.setImageResource(android.R.drawable.ic_media_play);
-                            btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_play);
+                            if (ivVideoPlayPause != null) ivVideoPlayPause.setImageResource(android.R.drawable.ic_media_play);
+                            if (btnAudioPlayPause != null) btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_play);
                         }
                     }
                 }, options);
             } else if (activeYouTubePlayer != null) {
-                activeYouTubePlayer.cueVideo(extractId(url), 0);
+                activeYouTubePlayer.loadVideo(videoId, 0);
             }
         } else {
-            youTubePlayerView.setVisibility(View.GONE);
-            nativeVideoView.setVisibility(View.VISIBLE);
-            nativeVideoView.setVideoURI(Uri.parse(url));
-            
-            nativeVideoView.setOnPreparedListener(mp -> {
-                nativeMediaPlayer = mp;
-                int durationSec = nativeVideoView.getDuration() / 1000;
-                if (videoSeekBar != null) videoSeekBar.setMax(durationSec);
-                if (audioSeekBar != null) audioSeekBar.setMax(durationSec);
-                seekHandler.post(updateSeekBar);
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    try {
-                        mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(currentPlaybackRate));
-                    } catch (Exception ignored) {}
+            if (cardPodcast.getVisibility() == View.VISIBLE) {
+                // Play Audio using MediaPlayer directly for robustness
+                youTubePlayerView.setVisibility(View.GONE);
+                nativeVideoView.setVisibility(View.GONE);
+                
+                try {
+                    nativeMediaPlayer = new MediaPlayer();
+                    nativeMediaPlayer.setDataSource(getContext(), Uri.parse(url));
+                    nativeMediaPlayer.setOnPreparedListener(mp -> {
+                        int durationSec = mp.getDuration() / 1000;
+                        if (audioSeekBar != null) audioSeekBar.setMax(durationSec);
+                        mp.start();
+                        isVideoPlaying = true;
+                        if (btnAudioPlayPause != null) btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+                        seekHandler.post(updateSeekBar);
+                    });
+                    nativeMediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                        Toast.makeText(getContext(), "Gagal memutar audio", Toast.LENGTH_SHORT).show();
+                        return true;
+                    });
+                    nativeMediaPlayer.setOnCompletionListener(mp -> {
+                        if (btnAudioPlayPause != null) btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_play);
+                    });
+                    nativeMediaPlayer.prepareAsync();
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "Format link audio tidak valid", Toast.LENGTH_SHORT).show();
                 }
-            });
+            } else {
+                // Play Video using VideoView
+                youTubePlayerView.setVisibility(View.GONE);
+                nativeVideoView.setVisibility(View.VISIBLE);
+                
+                try {
+                    // Ensure the URL is clean and parsed as Uri
+                    Uri videoUri = Uri.parse(url);
+                    nativeVideoView.setVideoURI(videoUri);
+                    
+                    nativeVideoView.setOnPreparedListener(mp -> {
+                        nativeMediaPlayer = mp;
+                        int durationSec = nativeVideoView.getDuration() / 1000;
+                        if (videoSeekBar != null) videoSeekBar.setMax(durationSec);
+                        
+                        // Setup playback speed if supported
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                            try {
+                                mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(currentPlaybackRate));
+                            } catch (Exception ignored) {}
+                        }
+                        
+                        nativeVideoView.start();
+                        isVideoPlaying = true;
+                        if (ivVideoPlayPause != null) ivVideoPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+                        
+                        seekHandler.post(updateSeekBar);
+                    });
 
-            MediaController mc = new MediaController(getContext());
-            mc.setAnchorView(nativeVideoView);
-            nativeVideoView.setMediaController(mc);
+                    nativeVideoView.setOnErrorListener((mp, what, extra) -> {
+                        String errorMsg = "Gagal memutar video";
+                        if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) errorMsg += ": Server died";
+                        else if (what == MediaPlayer.MEDIA_ERROR_UNKNOWN) errorMsg += ": Format tidak didukung atau kendala jaringan";
+                        
+                        Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        return true;
+                    });
+                    
+                    nativeVideoView.setOnCompletionListener(mp -> {
+                        isVideoPlaying = false;
+                        if (ivVideoPlayPause != null) ivVideoPlayPause.setImageResource(android.R.drawable.ic_media_play);
+                    });
+                    
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "Format link video tidak valid", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 
     private String extractId(String url) {
+        if (url == null || url.trim().isEmpty()) return "";
+        
+        url = url.trim();
+        
+        // Handle direct 11-char ID
+        if (url.length() == 11 && !url.contains("/") && !url.contains("=")) {
+            return url;
+        }
+
+        // Extremely robust regex for YouTube ID extraction
+        String pattern = "(?i)(?:youtube\\.com\\/(?:[^\\/\\n\\s]+\\/\\S+\\/|(?:v|e(?:mbed)?)\\/|\\S*?[?&]v=)|youtu\\.be\\/|youtube\\.com\\/shorts\\/)([a-zA-Z0-9_-]{11})";
+        java.util.regex.Pattern compiledPattern = java.util.regex.Pattern.compile(pattern);
+        java.util.regex.Matcher matcher = compiledPattern.matcher(url);
+        
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        
+        // Manual parsing fallbacks for common formats
         if (url.contains("v=")) {
             int start = url.indexOf("v=") + 2;
-            return url.substring(start, Math.min(start + 11, url.length()));
+            int end = url.indexOf("&", start);
+            if (end == -1) end = url.length();
+            String id = url.substring(start, end);
+            return id.length() >= 11 ? id.substring(0, 11) : "";
+        } else if (url.contains("youtu.be/")) {
+            int start = url.indexOf("youtu.be/") + 9;
+            int end = url.indexOf("?", start);
+            if (end == -1) end = url.length();
+            String id = url.substring(start, end);
+            return id.length() >= 11 ? id.substring(0, 11) : "";
         }
-        if (url.contains("be/")) {
-            int start = url.indexOf("be/") + 3;
-            return url.substring(start, Math.min(start + 11, url.length()));
-        }
-        return url;
+
+        return "";
     }
 
     private void cyclePlaybackRate() {
@@ -806,9 +1010,46 @@ public class ContentFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        // Resume media if it was playing
+        if (nativeVideoView != null && nativeVideoView.getVisibility() == View.VISIBLE && isVideoPlaying) {
+            nativeVideoView.start();
+        } else if (nativeMediaPlayer != null && isVideoPlaying) {
+            nativeMediaPlayer.start();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (nativeVideoView != null && nativeVideoView.isPlaying()) {
+            nativeVideoView.pause();
+        }
+        if (nativeMediaPlayer != null && nativeMediaPlayer.isPlaying()) {
+            nativeMediaPlayer.pause();
+        }
+        if (activeYouTubePlayer != null) {
+            activeYouTubePlayer.pause();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        pauseTimer();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (countDownTimer != null) countDownTimer.cancel();
         seekHandler.removeCallbacks(updateSeekBar);
+        if (userListener != null) userListener.remove();
+        if (contentListener != null) contentListener.remove();
+        if (nativeVideoView != null) {
+            nativeVideoView.stopPlayback();
+        }
+        nativeMediaPlayer = null;
     }
 }

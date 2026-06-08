@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/header_add_topic"
+        android:id="@+id/header_edit_materi"
         layout="@layout/shared_layout_header" />
 
     <ScrollView
@@ -41,7 +41,7 @@
                         android:textStyle="bold"
                         android:textColor="#000000" />
                     <EditText
-                        android:id="@+id/et_topic_title"
+                        android:id="@+id/et_edit_materi_title"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginTop="8dp"
@@ -50,7 +50,7 @@
                         android:background="@drawable/shared_bg_rect_rounded"
                         android:backgroundTint="#F2F4F7" />
                     <EditText
-                        android:id="@+id/et_topic_desc"
+                        android:id="@+id/et_edit_materi_desc"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:layout_marginTop="8dp"
@@ -60,7 +60,7 @@
                         android:background="@drawable/shared_bg_rect_rounded"
                         android:backgroundTint="#F2F4F7" />
                     <EditText
-                        android:id="@+id/et_topic_duration"
+                        android:id="@+id/et_edit_materi_duration"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginTop="8dp"
@@ -89,7 +89,7 @@
                         android:textStyle="bold"
                         android:textColor="#D92D20" />
                     <EditText
-                        android:id="@+id/et_visual_text"
+                        android:id="@+id/et_edit_visual_text"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
                         android:layout_marginTop="8dp"
@@ -99,11 +99,11 @@
                         android:background="@drawable/shared_bg_rect_rounded"
                         android:backgroundTint="#F2F4F7" />
                     <EditText
-                        android:id="@+id/et_visual_video_url"
+                        android:id="@+id/et_edit_visual_video_url"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginTop="8dp"
-                        android:hint="Video URL (YouTube/Direct)"
+                        android:hint="Video URL"
                         android:paddingHorizontal="12dp"
                         android:background="@drawable/shared_bg_rect_rounded"
                         android:backgroundTint="#F2F4F7" />
@@ -128,7 +128,7 @@
                         android:textStyle="bold"
                         android:textColor="#3538CD" />
                     <EditText
-                        android:id="@+id/et_audio_url"
+                        android:id="@+id/et_edit_audio_url"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginTop="8dp"
@@ -157,7 +157,7 @@
                         android:textStyle="bold"
                         android:textColor="#B54708" />
                     <EditText
-                        android:id="@+id/et_kin_url"
+                        android:id="@+id/et_edit_kin_url"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginTop="8dp"
@@ -168,13 +168,24 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <Button
-                android:id="@+id/btn_save_topic"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_save_materi"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="Simpan Materi"
+                android:text="Update Materi"
                 android:textStyle="bold"
                 android:backgroundTint="#347EFF"
+                app:cornerRadius="16dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_delete_materi"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:text="Hapus Materi"
+                android:textColor="#D92D20"
+                app:strokeColor="#D92D20"
                 app:cornerRadius="16dp" />
 
         </LinearLayout>
