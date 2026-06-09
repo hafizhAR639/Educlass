@@ -4,14 +4,11 @@
 
     <!-- Izin Internet untuk Glide (jika load gambar dari URL) -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <queries>
         <package android:name="com.google.android.gms" />
         <package android:name="com.android.vending" />
-        <package android:name="com.google.android.providers.gsf" />
-        <intent>
-            <action android:name="com.google.android.gms.common.service.START" />
-        </intent>
     </queries>
 
     <application
@@ -23,7 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.MyApplication">
+        android:theme="@style/Theme.MyApplication"
+        android:enableOnBackInvokedCallback="true">
 
         <!-- SplashActivity sebagai pintu masuk utama -->
         <activity
@@ -98,14 +96,6 @@
         <activity
             android:name=".admin.AdminNotificationActivity"
             android:exported="false" />
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_api_key" />
-
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
 
         <!-- Fragment tidak perlu didaftarkan di AndroidManifest.xml,
              hanya Activity saja yang didaftarkan -->

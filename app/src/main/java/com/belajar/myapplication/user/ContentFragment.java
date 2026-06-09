@@ -600,28 +600,37 @@ public class ContentFragment extends Fragment {
             @Override
             public void onFinish() {
                 timerRunning = false;
-                btnTimerControl.setText("Mulai");
-                btnTimerControl.setIcon(ContextCompat.getDrawable(requireContext(), android.R.drawable.ic_media_play));
+                
+                if (!isAdded() || getContext() == null) return;
+                
+                if (btnTimerControl != null) {
+                    btnTimerControl.setText("Mulai");
+                    btnTimerControl.setIcon(ContextCompat.getDrawable(getContext(), android.R.drawable.ic_media_play));
+                }
                 
                 if (isFocusMode) {
                     sessionsCompleted++;
-                    tvSessions.setText("🍅 " + sessionsCompleted + " Selesai");
+                    if (tvSessions != null) tvSessions.setText("🍅 " + sessionsCompleted + " Selesai");
                     
-                    // Pause video when focus ends
+                    // Pause video/audio when focus ends
                     wasVideoPlayingBeforeBreak = isVideoPlaying;
                     if (isVideoPlaying) toggleVideoPlayPause();
                     
                     startBreak();
                     showBreakPopup();
                 } else {
-                    if (breakDialog != null) breakDialog.dismiss();
+                    if (breakDialog != null && breakDialog.isShowing()) {
+                        breakDialog.dismiss();
+                    }
                     currentBreakTimerTextView = null;
                     
                     startFocus();
                     startTimer(); // Auto resume focus
                     
-                    // Resume video after break if it was playing
-                    if (wasVideoPlayingBeforeBreak && !isVideoPlaying) toggleVideoPlayPause();
+                    // Resume video/audio after break if it was playing
+                    if (wasVideoPlayingBeforeBreak && !isVideoPlaying) {
+                        toggleVideoPlayPause();
+                    }
                     wasVideoPlayingBeforeBreak = false;
                 }
             }
@@ -633,35 +642,43 @@ public class ContentFragment extends Fragment {
     }
 
     private void showBreakPopup() {
-        if (getActivity() == null) return;
+        if (getActivity() == null || !isAdded()) return;
 
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.user_dialog_break_timer, null);
-        currentBreakTimerTextView = dialogView.findViewById(R.id.tv_break_timer);
-        MaterialButton btnSkip = dialogView.findViewById(R.id.btn_skip_break);
+        try {
+            View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.user_dialog_break_timer, null);
+            currentBreakTimerTextView = dialogView.findViewById(R.id.tv_break_timer);
+            MaterialButton btnSkip = dialogView.findViewById(R.id.btn_skip_break);
 
-        breakDialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
-                .setView(dialogView)
-                .setCancelable(false)
-                .create();
+            if (breakDialog != null && breakDialog.isShowing()) {
+                breakDialog.dismiss();
+            }
 
-        if (breakDialog.getWindow() != null) {
-            breakDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            breakDialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                    .setView(dialogView)
+                    .setCancelable(false)
+                    .create();
+
+            if (breakDialog.getWindow() != null) {
+                breakDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            }
+
+            btnSkip.setOnClickListener(v -> {
+                if (countDownTimer != null) countDownTimer.cancel();
+                timerRunning = false;
+                if (breakDialog != null) breakDialog.dismiss();
+                currentBreakTimerTextView = null;
+                startFocus();
+                startTimer();
+                if (wasVideoPlayingBeforeBreak && !isVideoPlaying) toggleVideoPlayPause();
+                wasVideoPlayingBeforeBreak = false;
+            });
+
+            updatePopupCountdownText(currentBreakTimerTextView);
+            breakDialog.show();
+            startTimer(); // Auto play break timer
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        btnSkip.setOnClickListener(v -> {
-            if (countDownTimer != null) countDownTimer.cancel();
-            timerRunning = false;
-            breakDialog.dismiss();
-            currentBreakTimerTextView = null;
-            startFocus();
-            startTimer();
-            if (wasVideoPlayingBeforeBreak && !isVideoPlaying) toggleVideoPlayPause();
-            wasVideoPlayingBeforeBreak = false;
-        });
-
-        updatePopupCountdownText(currentBreakTimerTextView);
-        breakDialog.show();
-        startTimer(); // Auto play break timer
     }
 
     private void updatePopupCountdownText(TextView textView) {
@@ -783,15 +800,33 @@ public class ContentFragment extends Fragment {
             } else if (style.equalsIgnoreCase("Kinestetik") && content.getKinestetik() != null) {
                 if (tvExplanation != null) tvExplanation.setText(content.getKinestetik().getDescription());
                 String yUrl = content.getKinestetik().getYoutube_url();
+                String kUrl = content.getKinestetik().getKin_url();
                 String fUrl = content.getKinestetik().getFile_url();
                 
+                // Prioritas YouTube
                 if (yUrl != null && !yUrl.trim().isEmpty()) {
                     isVideoActive = true;
                     setupVideo(yUrl);
-                } else if (fUrl != null && !fUrl.trim().isEmpty()) {
-                    // Deteksi apakah file_url ini video atau audio/dokumen
+                } 
+                // Prioritas Kin URL (Biasanya video tutorial)
+                else if (kUrl != null && !kUrl.trim().isEmpty()) {
+                    String lowUrl = kUrl.toLowerCase();
+                    if (lowUrl.contains("youtube.com") || lowUrl.contains("youtu.be")) {
+                        isVideoActive = true;
+                        setupVideo(kUrl);
+                    } else if (lowUrl.contains(".mp4") || lowUrl.contains(".mkv") || lowUrl.contains(".webm") || lowUrl.contains("video")) {
+                        isVideoActive = true;
+                        setupVideo(kUrl);
+                    } else {
+                        // Jika link biasa, tampilkan di teks
+                        setupKinestetik(kUrl, false);
+                    }
+                }
+                // Prioritas File URL (Storage)
+                else if (fUrl != null && !fUrl.trim().isEmpty()) {
                     String lowUrl = fUrl.toLowerCase();
-                    if (lowUrl.contains(".mp4") || lowUrl.contains(".mkv") || lowUrl.contains(".webm") || lowUrl.contains("video")) {
+                    // Jika URL storage mengandung tanda video
+                    if (lowUrl.contains(".mp4") || lowUrl.contains(".mkv") || lowUrl.contains(".webm") || lowUrl.contains("video") || lowUrl.contains("firebasestorage.googleapis.com")) {
                         isVideoActive = true;
                         setupVideo(fUrl);
                     } else if (lowUrl.contains(".mp3") || lowUrl.contains(".wav") || lowUrl.contains(".m4a") || lowUrl.contains("audio")) {
@@ -815,24 +850,17 @@ public class ContentFragment extends Fragment {
     }
 
     private void setupKinestetik(String url, boolean isFile) {
+        if (url == null || url.isEmpty()) return;
+        
         layoutVideo.setVisibility(View.GONE);
         cardPodcast.setVisibility(View.GONE);
         
-        // Custom UI for Kinestetik if needed, or just a button in the explanation
+        // Custom UI for Kinestetik: Tambahkan teks petunjuk
         if (tvExplanation != null) {
             String current = tvExplanation.getText().toString();
-            tvExplanation.setText(current + "\n\n[Klik tombol di bawah untuk membuka materi]");
+            String linkLabel = isFile ? "[Materi ini berupa file eksternal]" : "[Materi ini berupa tautan web]";
+            tvExplanation.setText(current + "\n\n" + linkLabel + "\nURL: " + url);
         }
-        
-        btnNext.setText(isFile ? "Buka File" : "Buka Link");
-        btnNext.setOnClickListener(v -> {
-            try {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                startActivity(intent);
-            } catch (Exception e) {
-                Toast.makeText(getContext(), "Gagal membuka materi", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void updateLastAccessed() {
@@ -983,11 +1011,28 @@ public class ContentFragment extends Fragment {
                         seekHandler.post(updateSeekBar);
                     });
                     nativeMediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                        String msg = "Gagal memutar audio";
-                        if (extra == -1010) msg += ": Format tidak didukung";
-                        else if (extra == -1004) msg += ": Kesalahan jaringan";
-                        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-                        return true;
+                        // Log internal error untuk debugging (tidak terlihat oleh user)
+                        android.util.Log.w("AudioPlayer", "MediaPlayer message: what=" + what + " extra=" + extra);
+
+                        // Abaikan error jika audio sebenarnya sedang berputar (false positive)
+                        try {
+                            if (mp.isPlaying()) return true;
+                        } catch (Exception ignored) {}
+
+                        // Filter error spesifik yang sering muncul di perangkat tertentu (seperti Vivo/Oppo) 
+                        // tapi tidak benar-benar merusak pemutaran
+                        if (what == 1 && (extra == -38 || extra == -2147483648 || extra == 0)) {
+                            return true;
+                        }
+
+                        // Jika memang fatal (misal: server mati atau koneksi putus total)
+                        if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
+                            if (getContext() != null) {
+                                Toast.makeText(getContext(), "Koneksi server audio terputus", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        
+                        return true; // Return true agar sistem tidak memunculkan dialog error bawaan Android
                     });
                     nativeMediaPlayer.setOnCompletionListener(mp -> {
                         isVideoPlaying = false;
