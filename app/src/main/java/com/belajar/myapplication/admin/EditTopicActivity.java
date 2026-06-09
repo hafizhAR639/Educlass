@@ -41,6 +41,8 @@ public class EditTopicActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private ModelContent existingContent;
 
+    private android.app.ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -242,7 +244,11 @@ public class EditTopicActivity extends AppCompatActivity {
     }
 
     private void updateContent(String title, String desc, List<String> styles) {
-        Toast.makeText(this, "Memperbarui materi...", Toast.LENGTH_SHORT).show();
+        progressDialog = new android.app.ProgressDialog(this);
+        progressDialog.setMessage("Memperbarui materi & mengunggah file...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        
         Map<String, Object> content = new HashMap<>();
         content.put("topic_id", topicId);
         content.put("title", title);
@@ -261,12 +267,19 @@ public class EditTopicActivity extends AppCompatActivity {
             
             if (visualUri != null) {
                 StorageReference ref = storage.getReference().child("content/" + topicId + "/visual_" + UUID.randomUUID().toString());
-                ref.putFile(visualUri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                com.google.firebase.storage.UploadTask uploadTask = ref.putFile(visualUri);
+                
+                uploadTask.addOnProgressListener(snapshot -> {
+                    double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
+                    if (progressDialog != null) {
+                        progressDialog.setMessage("Memperbarui Video Visual: " + (int) progress + "%");
+                    }
+                }).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
                     visualMap.put("video_url", uri.toString());
                     content.put("visual", visualMap);
                     updateAudio(content, styles);
                 })).addOnFailureListener(e -> {
-                    Toast.makeText(this, "Gagal upload video baru", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Gagal upload video baru: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     updateAudio(content, styles);
                 });
             } else {
@@ -289,12 +302,19 @@ public class EditTopicActivity extends AppCompatActivity {
             
             if (audioUri != null) {
                 StorageReference ref = storage.getReference().child("content/" + topicId + "/audio_" + UUID.randomUUID().toString());
-                ref.putFile(audioUri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                com.google.firebase.storage.UploadTask uploadTask = ref.putFile(audioUri);
+                
+                uploadTask.addOnProgressListener(snapshot -> {
+                    double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
+                    if (progressDialog != null) {
+                        progressDialog.setMessage("Memperbarui Audio: " + (int) progress + "%");
+                    }
+                }).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
                     audioMap.put("audio_url", uri.toString());
                     content.put("audio", audioMap);
                     updateKin(content, styles);
                 })).addOnFailureListener(e -> {
-                    Toast.makeText(this, "Gagal upload audio baru", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Gagal upload audio baru: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     updateKin(content, styles);
                 });
             } else {
@@ -317,12 +337,19 @@ public class EditTopicActivity extends AppCompatActivity {
             
             if (kinUri != null) {
                 StorageReference ref = storage.getReference().child("content/" + topicId + "/kin_" + UUID.randomUUID().toString());
-                ref.putFile(kinUri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                com.google.firebase.storage.UploadTask uploadTask = ref.putFile(kinUri);
+                
+                uploadTask.addOnProgressListener(snapshot -> {
+                    double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
+                    if (progressDialog != null) {
+                        progressDialog.setMessage("Memperbarui File Kinestetik: " + (int) progress + "%");
+                    }
+                }).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
                     kinMap.put("file_url", uri.toString());
                     content.put("kinestetik", kinMap);
                     saveFinalUpdate(content);
                 })).addOnFailureListener(e -> {
-                    Toast.makeText(this, "Gagal upload file baru", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Gagal upload file baru: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     saveFinalUpdate(content);
                 });
             } else {
@@ -340,8 +367,12 @@ public class EditTopicActivity extends AppCompatActivity {
 
     private void saveFinalUpdate(Map<String, Object> content) {
         db.collection("content").document(topicId).set(content).addOnSuccessListener(aVoid -> {
+            if (progressDialog != null) progressDialog.dismiss();
             Toast.makeText(this, "Materi berhasil diperbarui", Toast.LENGTH_SHORT).show();
             finish();
+        }).addOnFailureListener(e -> {
+            if (progressDialog != null) progressDialog.dismiss();
+            Toast.makeText(this, "Gagal memperbarui content", Toast.LENGTH_SHORT).show();
         });
     }
 

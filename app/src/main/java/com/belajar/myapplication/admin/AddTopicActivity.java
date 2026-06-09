@@ -207,7 +207,14 @@ public class AddTopicActivity extends AppCompatActivity {
     private void uploadVisual(String topicId, Map<String, Object> content, List<String> styles) {
         if (styles.contains("visual") && visualUri != null) {
             StorageReference ref = storage.getReference().child("content/" + topicId + "/visual_" + UUID.randomUUID().toString());
-            ref.putFile(visualUri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+            com.google.firebase.storage.UploadTask uploadTask = ref.putFile(visualUri);
+            
+            uploadTask.addOnProgressListener(snapshot -> {
+                double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
+                if (progressDialog != null) {
+                    progressDialog.setMessage("Mengunggah Video Visual: " + (int) progress + "%");
+                }
+            }).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
                 Map<String, String> visualMap = new HashMap<>();
                 visualMap.put("text_content", etVisualExp.getText().toString());
                 visualMap.put("youtube_url", etVisualYoutube.getText().toString());
@@ -215,7 +222,7 @@ public class AddTopicActivity extends AppCompatActivity {
                 content.put("visual", visualMap);
                 uploadAudio(topicId, content, styles);
             })).addOnFailureListener(e -> {
-                Toast.makeText(this, "Gagal upload video: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Gagal upload video visual: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 uploadAudio(topicId, content, styles);
             });
         } else {
@@ -232,7 +239,14 @@ public class AddTopicActivity extends AppCompatActivity {
     private void uploadAudio(String topicId, Map<String, Object> content, List<String> styles) {
         if (styles.contains("audio") && audioUri != null) {
             StorageReference ref = storage.getReference().child("content/" + topicId + "/audio_" + UUID.randomUUID().toString());
-            ref.putFile(audioUri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+            com.google.firebase.storage.UploadTask uploadTask = ref.putFile(audioUri);
+
+            uploadTask.addOnProgressListener(snapshot -> {
+                double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
+                if (progressDialog != null) {
+                    progressDialog.setMessage("Mengunggah Audio: " + (int) progress + "%");
+                }
+            }).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
                 Map<String, String> audioMap = new HashMap<>();
                 audioMap.put("description", etAudioExp.getText().toString());
                 audioMap.put("youtube_url", etAudioYoutube.getText().toString());
@@ -257,7 +271,14 @@ public class AddTopicActivity extends AppCompatActivity {
     private void uploadKin(String topicId, Map<String, Object> content, List<String> styles) {
         if (styles.contains("kinestetik") && kinUri != null) {
             StorageReference ref = storage.getReference().child("content/" + topicId + "/kin_" + UUID.randomUUID().toString());
-            ref.putFile(kinUri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+            com.google.firebase.storage.UploadTask uploadTask = ref.putFile(kinUri);
+
+            uploadTask.addOnProgressListener(snapshot -> {
+                double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
+                if (progressDialog != null) {
+                    progressDialog.setMessage("Mengunggah File Kinestetik: " + (int) progress + "%");
+                }
+            }).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
                 Map<String, String> kinMap = new HashMap<>();
                 kinMap.put("description", etKinExp.getText().toString());
                 kinMap.put("youtube_url", etKinYoutube.getText().toString());
@@ -265,7 +286,7 @@ public class AddTopicActivity extends AppCompatActivity {
                 content.put("kinestetik", kinMap);
                 saveFinalContent(topicId, content);
             })).addOnFailureListener(e -> {
-                Toast.makeText(this, "Gagal upload file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Gagal upload file kinestetik: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 saveFinalContent(topicId, content);
             });
         } else {
