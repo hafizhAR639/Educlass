@@ -235,24 +235,17 @@ public class MateriFragment extends Fragment {
     private void applyFilter(int chipId) {
         filteredTopicList.clear();
         String style = "";
+        
         if (chipId == R.id.chip_visual) style = "visual";
         else if (chipId == R.id.chip_audio) style = "audio";
-        else if (chipId == R.id.chip_kinestetik) style = "kinestetik";
+        else if (chipId == R.id.chip_kinestik) style = "kinestetik"; // Sesuaikan ID layout dengan value DB
 
         if (chipId == R.id.chip_semua || style.isEmpty()) {
             filteredTopicList.addAll(allTopicList);
         } else {
             for (ModelTopic topic : allTopicList) {
                 if (topic.getLearning_styles() != null && topic.getLearning_styles().contains(style)) {
-                    // Filter Tambahan Khusus Kinestetik: Hanya tampilkan Aljabar (Bukan Aljabar Dasar/Aljabar 2)
-                    if (style.equals("kinestetik")) {
-                        String judul = topic.getJudul().toLowerCase().trim();
-                        if (judul.equals("aljabar")) {
-                            filteredTopicList.add(topic);
-                        }
-                    } else {
-                        filteredTopicList.add(topic);
-                    }
+                    filteredTopicList.add(topic);
                 }
             }
         }
