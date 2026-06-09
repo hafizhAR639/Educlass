@@ -37,6 +37,7 @@ public class MateriFragment extends Fragment {
     private ImageView ivStyleIcon, ivHeaderBg;
     private final String[] learningStyles = {"Visual", "Audio", "Kinestetik"};
     private ListenerRegistration topicsListener;
+    private String userJurusan;
 
     @Nullable
     @Override
@@ -64,6 +65,7 @@ public class MateriFragment extends Fragment {
         tvModuleCount = view.findViewById(R.id.tv_module_count_badge);
 
         loadLearningStyle();
+        loadUserJurusan();
         if (btnChangeStyle != null) {
             btnChangeStyle.setOnClickListener(v -> showStyleSelectionDialog());
         }
@@ -78,7 +80,7 @@ public class MateriFragment extends Fragment {
 
     private void updateHeaderImage(String name) {
         if (ivHeaderBg == null || name == null) return;
-        ivHeaderBg.setImageResource(R.drawable.user_img_header_math);
+        com.belajar.myapplication.shared.UIUtils.setHeaderImage(name, ivHeaderBg);
     }
 
     private void checkPremiumAndSetupAdapter() {
@@ -109,6 +111,12 @@ public class MateriFragment extends Fragment {
                 }
             }
         });
+        
+        // Set initial style if already loaded
+        if (tvCurrentStyle != null) {
+            adapter.setLearningStyle(tvCurrentStyle.getText().toString());
+        }
+        
         rvTopics.setAdapter(adapter);
     }
 
@@ -234,13 +242,42 @@ public class MateriFragment extends Fragment {
 
     private void updateStyleUI(String style) {
         if (tvCurrentStyle != null) tvCurrentStyle.setText(style);
+        if (adapter != null) adapter.setLearningStyle(style);
         if (ivStyleIcon != null && subjectName != null) {
             String lowName = subjectName.toLowerCase();
-            int resId = R.drawable.shared_ic_math;
+            int resId = R.drawable.shared_ic_math; // Fallback icon
+            
             if (lowName.contains("kimia") || lowName.contains("chem")) resId = R.drawable.shared_ic_chem;
             else if (lowName.contains("biologi") || lowName.contains("bio")) resId = R.drawable.shared_ic_bio;
             else if (lowName.contains("fisika") || lowName.contains("phys")) resId = R.drawable.shared_ic_phys;
+            else if (lowName.contains("ekonomi") || lowName.contains("econ")) resId = R.drawable.shared_ic_stats;
+            else if (lowName.contains("geografi") || lowName.contains("geo")) resId = R.drawable.shared_ic_degree;
+            else if (lowName.contains("sejarah") || lowName.contains("hist")) resId = R.drawable.shared_ic_book;
+            else if (lowName.contains("sosiologi") || lowName.contains("sos")) resId = R.drawable.shared_ic_people;
+            
             ivStyleIcon.setImageResource(resId);
+        }
+    }
+
+    private void loadUserJurusan() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+        db.collection("users").document(uid).get().addOnSuccessListener(doc -> {
+            if (doc.exists() && isAdded()) {
+                userJurusan = doc.getString("jurusan");
+                updateBadgeBackground();
+            }
+        });
+    }
+
+    private void updateBadgeBackground() {
+        if (tvModuleCount != null && userJurusan != null) {
+            if ("IPS".equalsIgnoreCase(userJurusan)) {
+                tvModuleCount.setBackgroundResource(R.drawable.shared_bg_tag_ips);
+                tvModuleCount.setTextColor(0xFF2563EB); // Keep blue or change to IPS color? TagStyleIPS uses a different bg.
+            } else {
+                tvModuleCount.setBackgroundResource(R.drawable.shared_bg_tag_ipa);
+            }
         }
     }
 

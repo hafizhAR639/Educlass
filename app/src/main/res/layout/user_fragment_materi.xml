@@ -31,11 +31,6 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/user_img_header_math" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#40000000" />
-
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btn_back_materi"
                     android:layout_width="36dp"
@@ -67,6 +62,11 @@
             </RelativeLayout>
 
             <!-- Gaya Belajar Section -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#40000000" />
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/card_learning_style"
                 android:layout_width="match_parent"

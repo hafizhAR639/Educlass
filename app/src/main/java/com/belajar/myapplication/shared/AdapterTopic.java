@@ -24,6 +24,7 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final List<ModelTopic> topics;
     private final boolean isAdmin;
     private final boolean isPremium;
+    private String learningStyle = "Visual";
     private final OnTopicClickListener listener;
 
     private static final int TYPE_NORMAL = 0;
@@ -43,6 +44,11 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.isPremium = isPremium;
         this.viewTypeOverride = viewTypeOverride;
         this.listener = listener;
+    }
+
+    public void setLearningStyle(String style) {
+        this.learningStyle = style;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -114,6 +120,22 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             }
             
             h.itemView.setOnClickListener(v -> listener.onTopicClick(topic, false));
+            
+            // Dynamic Tags based on Learning Style
+            if (h.layoutTags != null) {
+                h.layoutTags.removeAllViews();
+                if (learningStyle.equalsIgnoreCase("Visual")) {
+                    addTag(h.layoutTags, "🎥 Video", 0xFFFFF1F2, 0xFFE11D48);
+                    addTag(h.layoutTags, "📖 Bacaan", 0xFFEFF6FF, 0xFF2563EB);
+                } else if (learningStyle.equalsIgnoreCase("Audio")) {
+                    addTag(h.layoutTags, "🎧 Audio", 0xFFFDF4FF, 0xFFA21CAF);
+                    addTag(h.layoutTags, "📖 Bacaan", 0xFFEFF6FF, 0xFF2563EB);
+                } else if (learningStyle.equalsIgnoreCase("Kinestetik")) {
+                    addTag(h.layoutTags, "🎥 Video", 0xFFFFF1F2, 0xFFE11D48);
+                    addTag(h.layoutTags, "📖 Bacaan", 0xFFEFF6FF, 0xFF2563EB);
+                    addTag(h.layoutTags, "✍️ Kuis", 0xFFFFF7ED, 0xFFEA580C);
+                }
+            }
         } else if (holder instanceof LockedViewHolder) {
             LockedViewHolder h = (LockedViewHolder) holder;
             h.tvJudul.setText(topic.getJudul());
@@ -123,15 +145,45 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         } else if (holder instanceof PopularViewHolder) {
             PopularViewHolder h = (PopularViewHolder) holder;
             h.tvJudul.setText(topic.getJudul());
-            h.tvViews.setText(topic.getViews_count());
+            h.tvViews.setText(topic.getViews_count() + " views");
             h.itemView.setOnClickListener(v -> listener.onTopicClick(topic, false));
             
-            int resId = R.drawable.user_img_topic_aljabar;
-            if (topic.getJudul() != null && topic.getJudul().toLowerCase().contains("pertidaksamaan")) {
+            int resId = R.drawable.user_img_topic_aljabar; // Default
+            String judul = topic.getJudul() != null ? topic.getJudul().toLowerCase() : "";
+            
+            if (judul.contains("pertidaksamaan")) {
                 resId = R.drawable.user_img_topic_pertidaksamaan;
+            } else if (judul.contains("geograf") || judul.contains("letak") || judul.contains("peta")) {
+                // Use a generic IPS/Geography image if available, or stay consistent with colored circles if no specific image
+                resId = R.drawable.shared_bg_grad_blue; 
+            } else if (judul.contains("ekonom") || judul.contains("pasar") || judul.contains("uang")) {
+                resId = R.drawable.shared_bg_grad_orange;
+            } else if (judul.contains("sejarah") || judul.contains("kerajaan") || judul.contains("praaksara")) {
+                resId = R.drawable.shared_bg_grad_pink;
             }
+            
             h.ivThumb.setImageResource(resId);
+            h.ivThumb.setScaleType(ImageView.ScaleType.CENTER_CROP);
         }
+    }
+
+    private void addTag(ViewGroup parent, String text, int bgColor, int textColor) {
+        TextView tv = new TextView(parent.getContext());
+        android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, 0, (int) (10 * parent.getContext().getResources().getDisplayMetrics().density), 0);
+        tv.setLayoutParams(lp);
+        tv.setText(text);
+        tv.setTextColor(textColor);
+        tv.setTextSize(12);
+        tv.setTypeface(null, android.graphics.Typeface.BOLD);
+        tv.setPadding((int) (12 * parent.getContext().getResources().getDisplayMetrics().density),
+                (int) (5 * parent.getContext().getResources().getDisplayMetrics().density),
+                (int) (12 * parent.getContext().getResources().getDisplayMetrics().density),
+                (int) (5 * parent.getContext().getResources().getDisplayMetrics().density));
+        tv.setBackgroundResource(R.drawable.shared_bg_tag_ipa);
+        tv.setBackgroundTintList(android.content.res.ColorStateList.valueOf(bgColor));
+        parent.addView(tv);
     }
 
     @Override
@@ -142,6 +194,7 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     static class NormalViewHolder extends RecyclerView.ViewHolder {
         TextView tvJudul, tvIndex, tvDesc, tvDuration, tvProgress;
         SeekBar progressBar;
+        ViewGroup layoutTags;
         NormalViewHolder(@NonNull View itemView) {
             super(itemView);
             tvJudul = itemView.findViewById(R.id.tv_topic_judul);
@@ -150,6 +203,7 @@ public class AdapterTopic extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             tvDuration = itemView.findViewById(R.id.tv_topic_duration);
             tvProgress = itemView.findViewById(R.id.tv_topic_progress_text);
             progressBar = itemView.findViewById(R.id.pb_topic);
+            layoutTags = itemView.findViewById(R.id.layout_tags);
         }
     }
 

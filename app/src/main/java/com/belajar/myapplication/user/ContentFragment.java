@@ -49,7 +49,7 @@ public class ContentFragment extends Fragment {
     private MaterialCardView cardTypeIcon, btnVideoSpeed;
     private YouTubePlayerView youTubePlayerView;
     private VideoView nativeVideoView;
-    private View cardPomodoro, layoutVideo, cardReading, cardPodcast;
+    private View cardPomodoro, layoutVideo, cardReading, cardPodcast, cardQuiz;
     private MaterialButton btnTimerControl, btnNext, btnPrev;
     private ProgressBar pbContent;
     private SeekBar videoSeekBar, audioSeekBar;
@@ -57,8 +57,9 @@ public class ContentFragment extends Fragment {
     private TextView tvPodcastTitle, tvPodcastSubtitle;
 
     private String topicId, topicJudul;
+    private String currentMediaUrl = null;
     private int currentStep = 1;
-    private final int totalSteps = 2;
+    private int totalSteps = 2;
 
     private float currentPlaybackRate = 1.0f;
     private float youtubeCurrentTime = 0f;
@@ -367,9 +368,10 @@ public class ContentFragment extends Fragment {
         cardTypeIcon = v.findViewById(R.id.card_content_type_icon);
         
         cardPomodoro = v.findViewById(R.id.card_pomodoro);
-        layoutVideo = v.findViewById(R.id.layout_video_container);
+        layoutVideo = v.findViewById(R.id.layout_video_wrapper);
         cardReading = v.findViewById(R.id.card_reading_content);
         cardPodcast = v.findViewById(R.id.card_podcast_player);
+        cardQuiz = v.findViewById(R.id.card_quiz_content);
         
         ivPodcastCover = v.findViewById(R.id.iv_podcast_cover);
         tvPodcastTitle = v.findViewById(R.id.tv_podcast_title);
@@ -430,6 +432,7 @@ public class ContentFragment extends Fragment {
     }
 
     private void navigateStep(int delta) {
+        stopMedia(); // Stop media before navigating
         currentStep += delta;
         if (currentStep < 1) currentStep = 1;
         if (currentStep > totalSteps) currentStep = totalSteps;
@@ -441,66 +444,114 @@ public class ContentFragment extends Fragment {
     private boolean isReadingActive = false;
 
     private void updateUIForStep() {
-        pbContent.setProgress(currentStep * 50);
+        // Removed stopMedia() from here to prevent stopping media that was just started by content loader
+        
+        if (layoutVideo != null) layoutVideo.setVisibility(View.GONE);
+        if (btnVideoSpeed != null) btnVideoSpeed.setVisibility(View.GONE);
+        if (cardPodcast != null) cardPodcast.setVisibility(View.GONE);
+        if (cardReading != null) cardReading.setVisibility(View.GONE);
+        if (cardQuiz != null) cardQuiz.setVisibility(View.GONE);
+
+        pbContent.setProgress((currentStep * 100) / totalSteps);
         tvStep.setText("Konten " + currentStep + " dari " + totalSteps);
+        
+        if (getView() != null) {
+            TextView tvInfo = getView().findViewById(R.id.tv_content_info);
+            if (tvInfo != null) {
+                tvInfo.setText(totalSteps + " Konten • 45 menit");
+            }
+        }
         
         String style = (tvTopicTitle.getTag() != null) ? (String) tvTopicTitle.getTag() : "Visual";
 
         if (currentStep == 1) {
-            layoutVideo.setVisibility(View.GONE);
-            cardPodcast.setVisibility(View.GONE);
-            cardReading.setVisibility(View.GONE);
             btnPrev.setVisibility(View.GONE);
             btnNext.setText("Selanjutnya →");
 
             if (style.equalsIgnoreCase("Audio")) {
                 tvTypeLabel.setText("Podcast Pembelajaran");
                 ivTypeIcon.setImageResource(android.R.drawable.ic_lock_silent_mode_off); 
-                tvVideoSpeed.setVisibility(View.GONE);
-                btnVideoSpeed.setVisibility(View.GONE);
                 ivVideoLandscape.setVisibility(View.GONE);
                 
-                if (isAudioActive) cardPodcast.setVisibility(View.VISIBLE);
-                else if (isVideoActive) layoutVideo.setVisibility(View.VISIBLE);
+                // If it's a YouTube video for audio style, show the video player instead
+                if (isVideoActive) {
+                    layoutVideo.setVisibility(View.VISIBLE);
+                } else {
+                    cardPodcast.setVisibility(View.VISIBLE);
+                }
                 
                 cardTypeIcon.setCardBackgroundColor(Color.parseColor("#EEF2FF"));
                 ImageViewCompat.setImageTintList(ivTypeIcon, ColorStateList.valueOf(Color.parseColor("#4F46E5")));
             } else if (style.equalsIgnoreCase("Kinestetik")) {
                 tvTypeLabel.setText("Video Tutorial Praktik");
                 ivTypeIcon.setImageResource(android.R.drawable.ic_menu_slideshow);
-                tvVideoSpeed.setVisibility(View.VISIBLE);
-                btnVideoSpeed.setVisibility(View.VISIBLE);
                 
-                if (isVideoActive) layoutVideo.setVisibility(View.VISIBLE);
-                else if (isAudioActive) cardPodcast.setVisibility(View.VISIBLE);
+                layoutVideo.setVisibility(View.VISIBLE);
+                if (btnVideoSpeed != null) btnVideoSpeed.setVisibility(View.VISIBLE);
 
                 cardTypeIcon.setCardBackgroundColor(Color.parseColor("#FFF7ED"));
                 ImageViewCompat.setImageTintList(ivTypeIcon, ColorStateList.valueOf(Color.parseColor("#EA580C")));
             } else {
                 tvTypeLabel.setText("Video Pembelajaran");
                 ivTypeIcon.setImageResource(android.R.drawable.ic_menu_slideshow);
-                tvVideoSpeed.setVisibility(View.VISIBLE);
-                btnVideoSpeed.setVisibility(View.VISIBLE);
                 
-                if (isVideoActive) layoutVideo.setVisibility(View.VISIBLE);
+                layoutVideo.setVisibility(View.VISIBLE);
+                if (btnVideoSpeed != null) btnVideoSpeed.setVisibility(View.VISIBLE);
 
                 cardTypeIcon.setCardBackgroundColor(Color.parseColor("#FEE4E2"));
                 ImageViewCompat.setImageTintList(ivTypeIcon, ColorStateList.valueOf(Color.parseColor("#D92D20")));
             }
-        } else {
+            
+            // Auto-play media if on step 1 and url is available
+            if (currentMediaUrl != null) {
+                playMedia(currentMediaUrl);
+            }
+        } else if (currentStep == 2) {
             tvTypeLabel.setText("Materi Bacaan");
             if (tvReadingTitle != null && topicJudul != null) tvReadingTitle.setText("MATERI PEMBELAJARAN: " + topicJudul.toUpperCase());
-            layoutVideo.setVisibility(View.GONE);
-            cardPodcast.setVisibility(View.GONE);
             cardReading.setVisibility(View.VISIBLE);
+            
+            btnPrev.setVisibility(View.VISIBLE);
+            btnPrev.setEnabled(true);
+            
+            if (style.equalsIgnoreCase("Kinestetik")) {
+                btnNext.setText("Selanjutnya →");
+            } else {
+                btnNext.setText("Selesai");
+            }
+            
+            cardTypeIcon.setCardBackgroundColor(Color.parseColor("#E0F2FE"));
+            ivTypeIcon.setImageResource(android.R.drawable.ic_menu_agenda);
+            ImageViewCompat.setImageTintList(ivTypeIcon, ColorStateList.valueOf(Color.parseColor("#0284C7")));
+        } else if (currentStep == 3 && style.equalsIgnoreCase("Kinestetik")) {
+            tvTypeLabel.setText("Evaluasi & Praktik");
+            cardQuiz.setVisibility(View.VISIBLE);
             
             btnPrev.setVisibility(View.VISIBLE);
             btnPrev.setEnabled(true);
             btnNext.setText("Selesai");
             
-            cardTypeIcon.setCardBackgroundColor(Color.parseColor("#E0F2FE"));
-            ivTypeIcon.setImageResource(android.R.drawable.ic_menu_agenda);
-            ImageViewCompat.setImageTintList(ivTypeIcon, ColorStateList.valueOf(Color.parseColor("#0284C7")));
+            cardTypeIcon.setCardBackgroundColor(Color.parseColor("#FFF1F2"));
+            ivTypeIcon.setImageResource(android.R.drawable.star_on);
+            ImageViewCompat.setImageTintList(ivTypeIcon, ColorStateList.valueOf(Color.parseColor("#D92D20")));
+            
+            // Inject summary into quiz card if available
+            View rootView = getView();
+            if (rootView != null) {
+                ViewGroup layoutSummary = rootView.findViewById(R.id.layout_quiz_summary);
+                if (layoutSummary != null && layoutSummary.getChildCount() == 0) {
+                    TextView tvSummary = new TextView(getContext());
+                    tvSummary.setText("• Video: Teknik praktik " + topicJudul + "\n• Teori: Konsep dasar dan prosedur kerja");
+                    tvSummary.setTextColor(Color.parseColor("#475467"));
+                    tvSummary.setTextSize(14);
+                    tvSummary.setLineSpacing(0, 1.4f);
+                    layoutSummary.addView(tvSummary);
+                    
+                    View padding = new View(getContext());
+                    padding.setLayoutParams(new android.widget.LinearLayout.LayoutParams(1, (int)(16 * getResources().getDisplayMetrics().density)));
+                    layoutSummary.addView(padding);
+                }
+            }
         }
     }
 
@@ -617,6 +668,12 @@ public class ContentFragment extends Fragment {
             String style = doc.getString("gaya_belajar");
             if (style == null) style = "Visual";
             
+            if (style.equalsIgnoreCase("Kinestetik")) {
+                totalSteps = 3;
+            } else {
+                totalSteps = 2;
+            }
+            
             if (getView() != null) {
                 TextView tvStyle = getView().findViewById(R.id.tv_learning_style);
                 TextView tvInfo = getView().findViewById(R.id.tv_content_info);
@@ -678,46 +735,35 @@ public class ContentFragment extends Fragment {
                 String yUrl = content.getVisual().getYoutube_url();
                 String vUrl = content.getVisual().getVideo_url();
                 
-                String targetUrl = (yUrl != null && !yUrl.trim().isEmpty()) ? yUrl : vUrl;
-                if (targetUrl != null && !targetUrl.trim().isEmpty()) {
-                    isVideoActive = true;
-                    layoutVideo.setVisibility(View.VISIBLE);
-                    cardPodcast.setVisibility(View.GONE);
-                    playMedia(targetUrl.trim());
-                } else showEmptyMedia("Video");
+                currentMediaUrl = (yUrl != null && !yUrl.trim().isEmpty()) ? yUrl : vUrl;
+                if (currentMediaUrl == null || currentMediaUrl.trim().isEmpty()) {
+                    showEmptyMedia("Video");
+                }
             } else if (style.equalsIgnoreCase("Audio") && content.getAudio() != null) {
                 if (tvExplanation != null) tvExplanation.setText(content.getAudio().getDescription());
                 String yUrl = content.getAudio().getYoutube_url();
                 String aUrl = content.getAudio().getAudio_url();
                 
-                String targetUrl = (yUrl != null && !yUrl.trim().isEmpty()) ? yUrl : aUrl;
-                if (targetUrl != null && !targetUrl.trim().isEmpty()) {
+                currentMediaUrl = (yUrl != null && !yUrl.trim().isEmpty()) ? yUrl : aUrl;
+                if (currentMediaUrl != null && !currentMediaUrl.trim().isEmpty()) {
                     isAudioActive = true;
-                    layoutVideo.setVisibility(View.GONE);
-                    cardPodcast.setVisibility(View.VISIBLE);
-                    
                     if (tvPodcastTitle != null) tvPodcastTitle.setText("Podcast: " + (topicJudul != null ? topicJudul : "Materi"));
                     if (tvPodcastSubtitle != null) tvPodcastSubtitle.setText("Podcast Pembelajaran");
-
-                    playMedia(targetUrl.trim());
-                } else showEmptyMedia("Audio");
+                } else {
+                    showEmptyMedia("Audio");
+                }
             } else if (style.equalsIgnoreCase("Kinestetik") && content.getKinestetik() != null) {
                 if (tvExplanation != null) tvExplanation.setText(content.getKinestetik().getDescription());
                 String yUrl = content.getKinestetik().getYoutube_url();
                 String fUrl = content.getKinestetik().getFile_url();
                 String kUrl = content.getKinestetik().getKin_url();
                 
-                String targetUrl = null;
-                if (yUrl != null && !yUrl.trim().isEmpty()) targetUrl = yUrl.trim();
-                else if (kUrl != null && !kUrl.trim().isEmpty()) targetUrl = kUrl.trim();
-                else if (fUrl != null && !fUrl.trim().isEmpty()) targetUrl = fUrl.trim();
+                currentMediaUrl = null;
+                if (yUrl != null && !yUrl.trim().isEmpty()) currentMediaUrl = yUrl.trim();
+                else if (kUrl != null && !kUrl.trim().isEmpty()) currentMediaUrl = kUrl.trim();
+                else if (fUrl != null && !fUrl.trim().isEmpty()) currentMediaUrl = fUrl.trim();
 
-                if (targetUrl != null) {
-                    isVideoActive = true;
-                    layoutVideo.setVisibility(View.VISIBLE);
-                    cardPodcast.setVisibility(View.GONE);
-                    playMedia(targetUrl);
-                } else {
+                if (currentMediaUrl == null) {
                     showEmptyMedia("Materi Kinestetik");
                 }
             }
@@ -744,15 +790,23 @@ public class ContentFragment extends Fragment {
 
     private void playMedia(String url) {
         if (url == null || url.trim().isEmpty()) {
-            layoutVideo.setVisibility(View.GONE);
-            cardPodcast.setVisibility(View.GONE);
             return;
+        }
+
+        // Prevent restarting the same media if it's already playing or prepared
+        if (activeYouTubePlayer != null && youTubePlayerView.getVisibility() == View.VISIBLE && isVideoPlaying) {
+             return;
+        }
+        if (nativeMediaPlayer != null && nativeMediaPlayer.isPlaying()) {
+             return;
         }
 
         final String finalUrl = convertToDirectUrl(url);
         final String videoId = extractId(finalUrl);
         
         if (!videoId.isEmpty()) {
+            isVideoActive = true;
+            isAudioActive = false;
             playYouTube(videoId);
         } else if (isAudioActive) {
             playAudio(finalUrl);
@@ -820,16 +874,20 @@ public class ContentFragment extends Fragment {
     private void playAudio(String url) {
         youTubePlayerView.setVisibility(View.GONE);
         nativeVideoView.setVisibility(View.GONE);
+        cardPodcast.setVisibility(View.VISIBLE);
         
         try {
             if (nativeMediaPlayer != null) {
-                nativeMediaPlayer.stop();
+                try {
+                    nativeMediaPlayer.stop();
+                } catch (Exception ignored) {}
                 nativeMediaPlayer.release();
                 nativeMediaPlayer = null;
             }
             nativeMediaPlayer = new MediaPlayer();
             
-            // Set Audio Attributes (Modern way)
+            nativeMediaPlayer.setVolume(1.0f, 1.0f);
+            
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                 nativeMediaPlayer.setAudioAttributes(new android.media.AudioAttributes.Builder()
                         .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
@@ -842,11 +900,9 @@ public class ContentFragment extends Fragment {
             nativeMediaPlayer.setDataSource(url);
             
             nativeMediaPlayer.setOnPreparedListener(mp -> {
-                // Only start here! This avoids error -38 (IllegalStateException)
                 int durationSec = mp.getDuration() / 1000;
                 if (audioSeekBar != null) {
                     audioSeekBar.setMax(durationSec);
-                    audioSeekBar.setProgress(0);
                 }
                 mp.start();
                 isVideoPlaying = true;
@@ -855,11 +911,10 @@ public class ContentFragment extends Fragment {
             });
 
             nativeMediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                String errorMsg = "Gagal memutar audio. (Error: " + what + ")";
-                if (what == -38) errorMsg = "Audio belum siap. Coba tekan Play lagi.";
-                Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                
-                // Critical: Reset on error to allow retry
+                android.util.Log.e("AudioPlayer", "Error: " + what + ", " + extra);
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Gagal memutar audio.", Toast.LENGTH_SHORT).show();
+                }
                 mp.reset();
                 isVideoPlaying = false;
                 if (btnAudioPlayPause != null) btnAudioPlayPause.setImageResource(android.R.drawable.ic_media_play);
@@ -872,14 +927,12 @@ public class ContentFragment extends Fragment {
                 if (audioSeekBar != null) audioSeekBar.setProgress(0);
             });
 
-            // Always use prepareAsync for network URLs to keep UI responsive
             nativeMediaPlayer.prepareAsync();
             
         } catch (Exception e) {
-            Toast.makeText(getContext(), "Format link audio tidak valid", Toast.LENGTH_SHORT).show();
-            if (nativeMediaPlayer != null) {
-                nativeMediaPlayer.release();
-                nativeMediaPlayer = null;
+            android.util.Log.e("AudioPlayer", "Exception: " + e.getMessage());
+            if (getContext() != null) {
+                Toast.makeText(getContext(), "Format audio tidak didukung", Toast.LENGTH_SHORT).show();
             }
         }
     }

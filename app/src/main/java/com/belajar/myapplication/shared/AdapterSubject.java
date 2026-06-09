@@ -95,6 +95,10 @@ public class AdapterSubject extends RecyclerView.Adapter<AdapterSubject.ViewHold
             if (lower.contains("chem") || lower.contains("kimia"))  return R.drawable.shared_ic_chem;
             if (lower.contains("bio"))                               return R.drawable.shared_ic_bio;
             if (lower.contains("phys") || lower.contains("fisika")) return R.drawable.shared_ic_phys;
+            if (lower.contains("geografi") || lower.contains("geo")) return R.drawable.shared_ic_degree;
+            if (lower.contains("ekonomi") || lower.contains("econ")) return R.drawable.shared_ic_stats;
+            if (lower.contains("sejarah") || lower.contains("hist")) return R.drawable.shared_ic_book;
+            if (lower.contains("sosiologi") || lower.contains("sos")) return R.drawable.shared_ic_people;
         }
         return R.drawable.shared_ic_math; // default
     }

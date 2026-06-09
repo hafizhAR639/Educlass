@@ -266,6 +266,11 @@ public class EditTopicActivity extends AppCompatActivity {
             visualMap.put("youtube_url", etVisualYoutube.getText().toString());
             
             if (visualUri != null) {
+                // Delete old file if exists
+                if (existingContent != null && existingContent.getVisual() != null && existingContent.getVisual().getVideo_url() != null) {
+                    deleteFileFromStorage(existingContent.getVisual().getVideo_url());
+                }
+
                 StorageReference ref = storage.getReference().child("content/" + topicId + "/visual_" + UUID.randomUUID().toString());
                 com.google.firebase.storage.UploadTask uploadTask = ref.putFile(visualUri);
                 
@@ -290,6 +295,10 @@ public class EditTopicActivity extends AppCompatActivity {
                 updateAudio(content, styles);
             }
         } else {
+            // If style was removed, delete the old file
+            if (existingContent != null && existingContent.getVisual() != null && existingContent.getVisual().getVideo_url() != null) {
+                deleteFileFromStorage(existingContent.getVisual().getVideo_url());
+            }
             updateAudio(content, styles);
         }
     }
@@ -301,6 +310,11 @@ public class EditTopicActivity extends AppCompatActivity {
             audioMap.put("youtube_url", etAudioYoutube.getText().toString());
             
             if (audioUri != null) {
+                // Delete old file if exists
+                if (existingContent != null && existingContent.getAudio() != null && existingContent.getAudio().getAudio_url() != null) {
+                    deleteFileFromStorage(existingContent.getAudio().getAudio_url());
+                }
+
                 StorageReference ref = storage.getReference().child("content/" + topicId + "/audio_" + UUID.randomUUID().toString());
                 com.google.firebase.storage.UploadTask uploadTask = ref.putFile(audioUri);
                 
@@ -325,6 +339,10 @@ public class EditTopicActivity extends AppCompatActivity {
                 updateKin(content, styles);
             }
         } else {
+            // If style was removed, delete old file
+            if (existingContent != null && existingContent.getAudio() != null && existingContent.getAudio().getAudio_url() != null) {
+                deleteFileFromStorage(existingContent.getAudio().getAudio_url());
+            }
             updateKin(content, styles);
         }
     }
@@ -336,6 +354,11 @@ public class EditTopicActivity extends AppCompatActivity {
             kinMap.put("youtube_url", etKinYoutube.getText().toString());
             
             if (kinUri != null) {
+                // Delete old file if exists
+                if (existingContent != null && existingContent.getKinestetik() != null && existingContent.getKinestetik().getFile_url() != null) {
+                    deleteFileFromStorage(existingContent.getKinestetik().getFile_url());
+                }
+
                 StorageReference ref = storage.getReference().child("content/" + topicId + "/kin_" + UUID.randomUUID().toString());
                 com.google.firebase.storage.UploadTask uploadTask = ref.putFile(kinUri);
                 
@@ -361,6 +384,10 @@ public class EditTopicActivity extends AppCompatActivity {
                 saveFinalUpdate(content);
             }
         } else {
+            // If style was removed, delete old file
+            if (existingContent != null && existingContent.getKinestetik() != null && existingContent.getKinestetik().getFile_url() != null) {
+                deleteFileFromStorage(existingContent.getKinestetik().getFile_url());
+            }
             saveFinalUpdate(content);
         }
     }
@@ -377,10 +404,36 @@ public class EditTopicActivity extends AppCompatActivity {
     }
 
     private void deleteTopic() {
-        db.collection("topics").document(topicId).delete().addOnSuccessListener(aVoid -> {
-            db.collection("content").document(topicId).delete();
-            Toast.makeText(this, "Materi berhasil dihapus", Toast.LENGTH_SHORT).show();
-            finish();
-        });
+        // Delete Firestore documents
+        db.collection("topics").document(topicId).delete();
+        db.collection("content").document(topicId).delete();
+
+        // Delete associated files from Storage
+        if (existingContent != null) {
+            if (existingContent.getVisual() != null && existingContent.getVisual().getVideo_url() != null) {
+                deleteFileFromStorage(existingContent.getVisual().getVideo_url());
+            }
+            if (existingContent.getAudio() != null && existingContent.getAudio().getAudio_url() != null) {
+                deleteFileFromStorage(existingContent.getAudio().getAudio_url());
+            }
+            if (existingContent.getKinestetik() != null && existingContent.getKinestetik().getFile_url() != null) {
+                deleteFileFromStorage(existingContent.getKinestetik().getFile_url());
+            }
+        }
+
+        Toast.makeText(this, "Materi dan file berhasil dihapus", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    private void deleteFileFromStorage(String url) {
+        if (url == null || url.isEmpty() || url.contains("youtube.com") || url.contains("youtu.be")) return;
+        try {
+            StorageReference ref = storage.getReferenceFromUrl(url);
+            ref.delete().addOnFailureListener(e -> {
+                android.util.Log.e("EditTopic", "Gagal menghapus file: " + e.getMessage());
+            });
+        } catch (Exception e) {
+            android.util.Log.e("EditTopic", "Error parsing URL untuk dihapus: " + e.getMessage());
+        }
     }
 }

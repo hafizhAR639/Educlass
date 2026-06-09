@@ -44,15 +44,15 @@
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="37.5dp"
         app:cardElevation="8dp"
-        app:strokeColor="#000000"
-        app:strokeWidth="1.5dp">
+        app:strokeColor="#F0F0F0"
+        app:strokeWidth="1dp">
 
         <ImageView
             android:id="@+id/iv_subject_icon"
-            android:layout_width="match_parent"
-            android:layout_height="86dp"
-            android:padding="-12dp"
-            android:scaleType="centerCrop"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
             android:src="@drawable/shared_ic_math" />
 
     </com.google.android.material.card.MaterialCardView>

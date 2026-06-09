@@ -40,16 +40,25 @@
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Circular Icon -->
-        <ImageView
-            android:id="@+id/iv_subject_icon"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+        <!-- Circular Icon Container -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:elevation="4dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/shared_ic_phys" />
+            app:cardCornerRadius="32dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="1.5dp"
+            app:strokeColor="#F0F0F0"
+            app:cardBackgroundColor="#FFFFFF">
+
+            <ImageView
+                android:id="@+id/iv_subject_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:scaleType="fitCenter" />
+        </com.google.android.material.card.MaterialCardView>
 
     </RelativeLayout>
 </LinearLayout>

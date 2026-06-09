@@ -38,8 +38,9 @@ public class HomeFragment extends Fragment {
     private CardView cardHighlight;
     private TextView tvHighlightTitle, tvHighlightProgress, tvGreeting;
     private LinearProgressIndicator pbHighlight;
-    private ImageView ivProfile;
+    private ImageView ivProfile, ivHeaderHighlight;
     private FirebaseFirestore db;
+    private String userJurusan;
 
     @Nullable
     @Override
@@ -62,12 +63,31 @@ public class HomeFragment extends Fragment {
         
         tvGreeting = view.findViewById(R.id.tv_greeting);
         ivProfile = view.findViewById(R.id.iv_user_profile);
+        ivHeaderHighlight = view.findViewById(R.id.iv_header_highlight);
         db = FirebaseFirestore.getInstance();
 
+        // Navigasi ke Profil saat foto atau nama diklik
+        if (ivProfile != null) {
+            ivProfile.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                        .replace(R.id.layout_fragment_container, new ProfileFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
+        if (tvGreeting != null) {
+            tvGreeting.setOnClickListener(v -> {
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+                        .replace(R.id.layout_fragment_container, new ProfileFragment())
+                        .addToBackStack(null)
+                        .commit();
+            });
+        }
+
         loadUserData();
-        setupHighlight();
-        setupSubjects();
-        setupPopularTopics();
         setupSearch();
         
         view.findViewById(R.id.btn_continue).setOnClickListener(v -> {
@@ -110,6 +130,7 @@ public class HomeFragment extends Fragment {
             if (doc.exists() && isAdded()) {
                 String name = doc.getString("nama");
                 String photoUrl = doc.getString("photoUrl");
+                userJurusan = doc.getString("jurusan");
 
                 if (name != null && tvGreeting != null) {
                     tvGreeting.setText("Hallo, " + name + " 👋");
@@ -118,6 +139,25 @@ public class HomeFragment extends Fragment {
                 if (photoUrl != null && !photoUrl.isEmpty() && ivProfile != null) {
                     Glide.with(this).load(photoUrl).into(ivProfile);
                 }
+
+                // Update Header Image based on major
+                if (ivHeaderHighlight != null) {
+                    // Use the same stylish header image for both to maintain visual consistency
+                    ivHeaderHighlight.setImageResource(R.drawable.user_img_header_math);
+                    ivHeaderHighlight.setAlpha(0.35f);
+                    
+                    // If IPS, we can use a slightly different tint or background color if desired
+                    if ("IPS".equalsIgnoreCase(userJurusan)) {
+                        cardHighlight.setCardBackgroundColor(android.graphics.Color.parseColor("#1E293B")); // Darker slate for IPS
+                    } else {
+                        cardHighlight.setCardBackgroundColor(android.graphics.Color.parseColor("#2D3E50")); // Original dark blue
+                    }
+                }
+
+                // Load data that depends on major
+                setupHighlight();
+                setupSubjects();
+                setupPopularTopics();
             }
         });
     }
@@ -137,6 +177,7 @@ public class HomeFragment extends Fragment {
                     tvHighlightTitle.setText(lastTopicTitle);
                     int p = progress != null ? progress.intValue() : 0;
                     tvHighlightProgress.setText(p + "% completed");
+                    pbHighlight.setVisibility(View.VISIBLE);
                     pbHighlight.setProgress(p);
 
                     cardHighlight.setOnClickListener(v -> {
@@ -152,7 +193,16 @@ public class HomeFragment extends Fragment {
                                 .commit();
                     });
                 } else {
-                    cardHighlight.setVisibility(View.GONE);
+                    // Show a welcome card instead of hiding it, so the layout stays consistent
+                    cardHighlight.setVisibility(View.VISIBLE);
+                    tvHighlightTitle.setText("Ayo mulai belajar hari ini! 🚀");
+                    tvHighlightProgress.setText("Pilih materi untuk memulai");
+                    pbHighlight.setVisibility(View.GONE);
+                    
+                    cardHighlight.setOnClickListener(v -> {
+                        // Scroll to subjects or show a toast
+                        rvSubjects.smoothScrollToPosition(0);
+                    });
                 }
             }
         });
@@ -232,11 +282,32 @@ public class HomeFragment extends Fragment {
             for (QueryDocumentSnapshot doc : result) {
                 ModelSubject s = doc.toObject(ModelSubject.class);
                 s.setSubject_id(doc.getId());
-                list.add(s);
+                
+                // Filter berdasarkan jurusan user
+                if (userJurusan != null && !userJurusan.isEmpty()) {
+                    String subJurusan = s.getJurusan();
+                    String nama = s.getNama() != null ? s.getNama().toLowerCase() : "";
+                    
+                    // Specific exclusion to avoid mixing IPA/IPS incorrectly if DB tags are missing
+                    if (userJurusan.equalsIgnoreCase("IPS")) {
+                        if (nama.contains("matematika") || nama.contains("math") || nama.contains("fisika") || nama.contains("kimia") || nama.contains("biologi")) {
+                            continue;
+                        }
+                    } else if (userJurusan.equalsIgnoreCase("IPA")) {
+                        if (nama.contains("ekonomi") || nama.contains("geografi") || nama.contains("sosiologi") || nama.contains("sejarah")) {
+                            continue;
+                        }
+                    }
+
+                    if (subJurusan == null || subJurusan.isEmpty() || subJurusan.equalsIgnoreCase(userJurusan)) {
+                        list.add(s);
+                    }
+                } else {
+                    list.add(s);
+                }
             }
 
             if (list.isEmpty()) {
-                // Fallback jika DB kosong
                 addFallbackSubjects(list);
             }
 
@@ -264,17 +335,60 @@ public class HomeFragment extends Fragment {
     }
 
     private void addFallbackSubjects(List<ModelSubject> list) {
-        ModelSubject math = new ModelSubject();
-        math.setNama("Mathematics");
-        math.setIcon_name("shared_ic_math");
-        math.setColor_hex("#D1E9FF");
-        list.add(math);
+        if ("IPS".equalsIgnoreCase(userJurusan)) {
+            // 1. Geografi (Blue) - Consistent with Admin
+            ModelSubject geo = new ModelSubject();
+            geo.setNama("Geografi");
+            geo.setIcon_name("shared_ic_degree");
+            geo.setColor_hex("#D1E9FF");
+            list.add(geo);
 
-        ModelSubject chem = new ModelSubject();
-        chem.setNama("Chemistry");
-        chem.setIcon_name("shared_ic_chem");
-        chem.setColor_hex("#CEF7FF");
-        list.add(chem);
+            // 2. Ekonomi (Cyan) - Consistent with Admin
+            ModelSubject econ = new ModelSubject();
+            econ.setNama("Ekonomi");
+            econ.setIcon_name("shared_ic_stats");
+            econ.setColor_hex("#CEF7FF");
+            list.add(econ);
+
+            // 3. Sosiologi (Green) - Consistent with Admin
+            ModelSubject sos = new ModelSubject();
+            sos.setNama("Sosiologi");
+            sos.setIcon_name("shared_ic_people");
+            sos.setColor_hex("#D1FADF");
+            list.add(sos);
+
+            // 4. Sejarah (Purple) - Consistent with Admin
+            ModelSubject hist = new ModelSubject();
+            hist.setNama("Sejarah");
+            hist.setIcon_name("shared_ic_book");
+            hist.setColor_hex("#E9D7FE");
+            list.add(hist);
+        } else {
+            // IPA Fallback (matching the image)
+            ModelSubject math = new ModelSubject();
+            math.setNama("Matematika");
+            math.setIcon_name("shared_ic_math");
+            math.setColor_hex("#D1E9FF");
+            list.add(math);
+
+            ModelSubject chem = new ModelSubject();
+            chem.setNama("Kimia");
+            chem.setIcon_name("shared_ic_chem");
+            chem.setColor_hex("#CEF7FF");
+            list.add(chem);
+
+            ModelSubject bio = new ModelSubject();
+            bio.setNama("Biologi");
+            bio.setIcon_name("shared_ic_bio");
+            bio.setColor_hex("#D1FADF");
+            list.add(bio);
+
+            ModelSubject phys = new ModelSubject();
+            phys.setNama("Fisika");
+            phys.setIcon_name("shared_ic_phys");
+            phys.setColor_hex("#E9D7FE");
+            list.add(phys);
+        }
     }
 
     private void setupPopularTopics() {
@@ -285,39 +399,127 @@ public class HomeFragment extends Fragment {
             String userStyle = userDoc.getString("gaya_belajar");
             if (userStyle == null) userStyle = "Visual";
             final String finalStyle = userStyle.toLowerCase();
+            final String major = userDoc.getString("jurusan");
 
-            db.collection("topics").orderBy("views_count", com.google.firebase.firestore.Query.Direction.DESCENDING).limit(20).get()
-                    .addOnSuccessListener(result -> {
-                        List<ModelTopic> list = new ArrayList<>();
-                        for (com.google.firebase.firestore.QueryDocumentSnapshot doc : result) {
-                            ModelTopic topic = doc.toObject(ModelTopic.class);
-                            topic.setTopic_id(doc.getId());
-                            
-                            List<String> styles = topic.getLearning_styles();
-                            if (styles != null && styles.contains(finalStyle)) {
-                                list.add(topic);
-                            }
+            // Step 1: Get all subjects that belong to the user's major
+            db.collection("subjects")
+                    .whereEqualTo("jurusan", major)
+                    .get()
+                    .addOnSuccessListener(subjectResult -> {
+                        java.util.Set<String> majorSubjectIds = new java.util.HashSet<>();
+                        for (QueryDocumentSnapshot subDoc : subjectResult) {
+                            majorSubjectIds.add(subDoc.getId());
                         }
 
-                        AdapterTopic adapter = new AdapterTopic(list, false, false, AdapterTopic.TYPE_POPULAR, new AdapterTopic.OnTopicClickListener() {
-                            @Override
-                            public void onTopicClick(ModelTopic topic, boolean isLocked) {
-                                MateriFragment fragment = new MateriFragment();
-                                Bundle bundle = new Bundle();
-                                bundle.putString("subject_id", topic.getSubject_id());
-                                bundle.putString("subject_name", "Materi");
-                                fragment.setArguments(bundle);
+                        // Step 2: Fetch topics and filter strictly by majorSubjectIds
+                        db.collection("topics")
+                                .orderBy("views_count", Query.Direction.DESCENDING)
+                                .limit(100)
+                                .get()
+                                .addOnSuccessListener(result -> {
+                                    List<ModelTopic> list = new ArrayList<>();
+                                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : result) {
+                                        ModelTopic topic = doc.toObject(ModelTopic.class);
+                                        topic.setTopic_id(doc.getId());
+                                        
+                                        String title = topic.getJudul() != null ? topic.getJudul().toLowerCase() : "";
 
-                                getParentFragmentManager().beginTransaction()
-                                        .replace(R.id.layout_fragment_container, fragment)
-                                        .addToBackStack(null)
-                                        .commit();
-                            }
-                        });
+                                        // Safety check: even if subject_id matches, exclude based on title keywords if they conflict with major
+                                        if ("IPS".equalsIgnoreCase(major)) {
+                                            if (title.contains("matematika") || title.contains("math") || title.contains("aljabar") || 
+                                                title.contains("fisika") || title.contains("kimia") || title.contains("biologi") || 
+                                                title.contains("turunan") || title.contains("integral") || title.contains("sel") || title.contains("atom")) {
+                                                continue;
+                                            }
+                                        } else if ("IPA".equalsIgnoreCase(major)) {
+                                            if (title.contains("ekonomi") || title.contains("geografi") || title.contains("sosiologi") || 
+                                                title.contains("sejarah") || title.contains("pasar") || title.contains("peta") || title.contains("sosial")) {
+                                                continue;
+                                            }
+                                        }
 
-                        rvPopular.setLayoutManager(new GridLayoutManager(getContext(), 2));
-                        rvPopular.setAdapter(adapter);
+                                        // CRITICAL FILTER: Must belong to a subject of the user's major OR match the title keywords for that major
+                                        boolean isMajorSubject = majorSubjectIds.contains(topic.getSubject_id());
+                                        
+                                        if (isMajorSubject) {
+                                            List<String> styles = topic.getLearning_styles();
+                                            if (styles != null && styles.contains(finalStyle)) {
+                                                list.add(topic);
+                                            }
+                                        }
+                                        if (list.size() >= 4) break;
+                                    }
+
+                                    // Fallbacks if no data found for this major
+                                    if (list.isEmpty()) {
+                                        if ("IPS".equalsIgnoreCase(major)) {
+                                            addFallbackIpsTopics(list);
+                                        } else {
+                                            addFallbackIpaTopics(list);
+                                        }
+                                    }
+
+                                    AdapterTopic adapter = new AdapterTopic(list, false, false, AdapterTopic.TYPE_POPULAR, new AdapterTopic.OnTopicClickListener() {
+                                        @Override
+                                        public void onTopicClick(ModelTopic topic, boolean isLocked) {
+                                            // Directly open content or navigate to subject
+                                            MateriFragment fragment = new MateriFragment();
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("subject_id", topic.getSubject_id());
+                                            bundle.putString("subject_name", "Materi");
+                                            fragment.setArguments(bundle);
+
+                                            getParentFragmentManager().beginTransaction()
+                                                    .replace(R.id.layout_fragment_container, fragment)
+                                                    .addToBackStack(null)
+                                                    .commit();
+                                        }
+                                    });
+
+                                    rvPopular.setLayoutManager(new GridLayoutManager(getContext(), 2));
+                                    rvPopular.setAdapter(adapter);
+                                });
                     });
         });
+    }
+
+    private void addFallbackIpaTopics(List<ModelTopic> list) {
+        ModelTopic t1 = new ModelTopic();
+        t1.setJudul("Hukum Newton");
+        t1.setViews_count("25rb views");
+        t1.setSubject_id("phys_id");
+        list.add(t1);
+
+        ModelTopic t2 = new ModelTopic();
+        t2.setJudul("Sistem Reproduksi");
+        t2.setViews_count("20rb views");
+        t2.setSubject_id("bio_id");
+        list.add(t2);
+    }
+
+    private void addFallbackIpsTopics(List<ModelTopic> list) {
+        ModelTopic t1 = new ModelTopic();
+        t1.setJudul("Letak Geografis Indonesia");
+        t1.setViews_count("12rb views");
+        t1.setSubject_id("geo_id"); // Dummy ID
+        list.add(t1);
+
+        ModelTopic t2 = new ModelTopic();
+        t2.setJudul("Konsep Dasar Ekonomi");
+        t2.setViews_count("10rb views");
+        t2.setSubject_id("econ_id"); // Dummy ID
+        list.add(t2);
+        
+        ModelTopic t3 = new ModelTopic();
+        t3.setJudul("Interaksi Sosial");
+        t3.setViews_count("8rb views");
+        t3.setSubject_id("sos_id"); // Dummy ID
+        list.add(t3);
+        
+        ModelTopic t4 = new ModelTopic();
+        t4.setJudul("Zaman Praaksara");
+        t4.setViews_count("15rb views");
+        t4.setSubject_id("hist_id"); // Dummy ID
+        list.add(t4);
     }
 }

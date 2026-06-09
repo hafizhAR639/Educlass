@@ -14,8 +14,12 @@ public class UIUtils {
         int resId = R.drawable.shared_bg_header_blue; // Default
         String lowName = subjectName.toLowerCase();
         
-        if (lowName.contains("matematika")) resId = R.drawable.user_img_header_math;
-        // Tambahkan kondisi lain di sini (Fisika, Kimia, dll) jika sudah ada asetnya
+        if (lowName.contains("matematika") || lowName.contains("math")) resId = R.drawable.user_img_header_math;
+        else if (lowName.contains("fisika") || lowName.contains("phys")) resId = R.drawable.user_img_header_math; // Use math as placeholder
+        else if (lowName.contains("geografi") || lowName.contains("geo")) resId = R.drawable.shared_bg_header_blue;
+        else if (lowName.contains("sejarah") || lowName.contains("hist")) resId = R.drawable.shared_bg_header_blue;
+        else if (lowName.contains("ekonomi") || lowName.contains("econ")) resId = R.drawable.shared_bg_header_blue;
+        else if (lowName.contains("sosiologi") || lowName.contains("sos")) resId = R.drawable.shared_bg_header_blue;
         
         imageView.setImageResource(resId);
     }
