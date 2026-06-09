@@ -203,6 +203,14 @@ public class MateriFragment extends Fragment {
                 java.util.List<String> styles = topic.getLearning_styles();
                 if (styles != null && styles.contains(finalStyle.toLowerCase())) {
                     matches = true;
+                    
+                    // Filter Tambahan Khusus Kinestetik: Hanya tampilkan Aljabar (Bukan Aljabar Dasar/Aljabar 2)
+                    if (finalStyle.equalsIgnoreCase("Kinestetik")) {
+                        String judul = topic.getJudul().toLowerCase().trim();
+                        if (!judul.equals("aljabar")) {
+                            matches = false;
+                        }
+                    }
                 }
 
                 if (matches) {

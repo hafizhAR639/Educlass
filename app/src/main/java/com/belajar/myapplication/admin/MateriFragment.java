@@ -170,6 +170,9 @@ public class MateriFragment extends Fragment {
     private void deleteTopic(ModelTopic topic) {
         if (topic.getTopic_id() == null) return;
         db.collection("topics").document(topic.getTopic_id()).delete().addOnSuccessListener(aVoid -> {
+            // Hapus juga data content agar tidak duplikasi/sampah
+            db.collection("content").document(topic.getTopic_id()).delete();
+
             // Log Activity
             Map<String, Object> log = new HashMap<>();
             log.put("description", "Admin menghapus materi: " + topic.getJudul());
@@ -241,7 +244,15 @@ public class MateriFragment extends Fragment {
         } else {
             for (ModelTopic topic : allTopicList) {
                 if (topic.getLearning_styles() != null && topic.getLearning_styles().contains(style)) {
-                    filteredTopicList.add(topic);
+                    // Filter Tambahan Khusus Kinestetik: Hanya tampilkan Aljabar (Bukan Aljabar Dasar/Aljabar 2)
+                    if (style.equals("kinestetik")) {
+                        String judul = topic.getJudul().toLowerCase().trim();
+                        if (judul.equals("aljabar")) {
+                            filteredTopicList.add(topic);
+                        }
+                    } else {
+                        filteredTopicList.add(topic);
+                    }
                 }
             }
         }
