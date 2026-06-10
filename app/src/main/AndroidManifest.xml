@@ -23,9 +23,9 @@
         android:theme="@style/Theme.MyApplication"
         android:enableOnBackInvokedCallback="true">
 
-        <!-- SplashActivity sebagai pintu masuk utama -->
+        <!-- UserSplashActivity sebagai pintu masuk utama -->
         <activity
-            android:name=".user.SplashActivity"
+            android:name=".user.UserSplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,46 +43,46 @@
 
         <!-- MainActivity adalah container utama untuk Fragment Home, Modul, dll -->
         <activity
-            android:name=".user.MainActivity"
+            android:name=".user.UserMainActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|screenLayout"
             android:windowSoftInputMode="adjustNothing" />
 
         <activity
-            android:name=".user.EditProfileActivity"
+            android:name=".user.UserEditProfileActivity"
             android:exported="false" />
 
         <activity
-            android:name=".user.ChangePasswordActivity"
+            android:name=".user.UserChangePasswordActivity"
             android:exported="false" />
 
         <activity
-            android:name=".user.PrivacyActivity"
+            android:name=".user.UserPrivacyActivity"
             android:exported="false" />
 
         <activity
-            android:name=".user.ChooseMajorActivity"
+            android:name=".user.UserChooseMajorActivity"
             android:exported="false" />
 
         <!-- Admin Section -->
         <activity
-            android:name=".admin.MainActivity"
+            android:name=".admin.AdminMainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".admin.ManageUserActivity"
+            android:name=".admin.AdminUserListActivity"
             android:exported="false" />
 
         <activity
-            android:name=".admin.AddSubjectActivity"
+            android:name=".admin.AdminAddSubjectActivity"
             android:exported="false" />
 
         <activity
-            android:name=".admin.AddTopicActivity"
+            android:name=".admin.AdminAddTopicActivity"
             android:exported="false" />
 
         <activity
-            android:name=".admin.EditTopicActivity"
+            android:name=".admin.AdminEditTopicActivity"
             android:exported="false" />
 
         <activity

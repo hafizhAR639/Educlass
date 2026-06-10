@@ -148,6 +148,7 @@
 
                         <!-- Background image with overlay -->
                         <ImageView
+                            android:id="@+id/iv_header_highlight"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:alpha="0.35"
