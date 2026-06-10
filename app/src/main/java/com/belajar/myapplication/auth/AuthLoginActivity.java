@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.belajar.myapplication.R;
 import com.belajar.myapplication.user.UserMainActivity;
+import com.belajar.myapplication.shared.UIUtils;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -63,7 +64,7 @@ public class AuthLoginActivity extends AppCompatActivity {
             String password = etPassword.getText().toString().trim();
 
             if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-                Toast.makeText(this, "Email and Password required", Toast.LENGTH_SHORT).show();
+                UIUtils.showCustomToast(this, "Email and Password required");
                 return;
             }
 
@@ -102,7 +103,7 @@ public class AuthLoginActivity extends AppCompatActivity {
                             })
                             .addOnFailureListener(e -> {
                                 progressDialog.dismiss();
-                                Toast.makeText(AuthLoginActivity.this, "Error fetching user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                UIUtils.showCustomToast(AuthLoginActivity.this, "Error fetching user data: " + e.getMessage());
                             });
                 }
 
@@ -111,7 +112,7 @@ public class AuthLoginActivity extends AppCompatActivity {
                     // ALUR AUTENTIKASI (STEP 3 - GAGAL):
                     // Jika password salah atau email tidak terdaftar, pesan error dari Firebase diterima di sini.
                     progressDialog.dismiss();
-                    Toast.makeText(AuthLoginActivity.this, "Error: " + message, Toast.LENGTH_LONG).show();
+                    UIUtils.showCustomToast(AuthLoginActivity.this, "Error: " + message);
                 }
             });
         });

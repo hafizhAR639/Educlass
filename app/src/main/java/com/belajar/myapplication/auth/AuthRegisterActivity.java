@@ -9,9 +9,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.belajar.myapplication.R;
+import com.belajar.myapplication.shared.UIUtils;
 import com.google.firebase.auth.FirebaseUser;
 
 public class AuthRegisterActivity extends AppCompatActivity {
@@ -68,7 +68,7 @@ public class AuthRegisterActivity extends AppCompatActivity {
             String confirmPwd = etConfirmPassword.getText().toString().trim();
 
             if (TextUtils.isEmpty(fullName) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-                Toast.makeText(this, "Semua field harus diisi!", Toast.LENGTH_SHORT).show();
+                UIUtils.showCustomToast(this, "Semua field harus diisi!");
                 return;
             }
 
@@ -82,14 +82,14 @@ public class AuthRegisterActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(FirebaseUser user) {
                     progressDialog.dismiss();
-                    Toast.makeText(AuthRegisterActivity.this, "Registrasi Berhasil!", Toast.LENGTH_SHORT).show();
+                    UIUtils.showCustomToast(AuthRegisterActivity.this, "Registrasi Berhasil!");
                     finish();
                 }
 
                 @Override
                 public void onFailure(String message) {
                     progressDialog.dismiss();
-                    Toast.makeText(AuthRegisterActivity.this, "Registrasi Gagal: " + message, Toast.LENGTH_LONG).show();
+                    UIUtils.showCustomToast(AuthRegisterActivity.this, "Registrasi Gagal: " + message);
                 }
             });
         });
