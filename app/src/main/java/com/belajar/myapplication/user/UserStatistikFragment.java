@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class StatistikFragment extends Fragment {
+public class UserStatistikFragment extends Fragment {
 
     private ImageView ivProfile;
     private TextView tvWeeklyTime, tvStreak;
@@ -58,7 +58,7 @@ public class StatistikFragment extends Fragment {
                 } else {
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
-                            .replace(R.id.layout_fragment_container, new HomeFragment())
+                            .replace(R.id.layout_fragment_container, new UserHomeFragment())
                             .commit();
                 }
             }

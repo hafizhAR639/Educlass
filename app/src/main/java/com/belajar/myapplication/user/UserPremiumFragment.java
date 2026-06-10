@@ -12,7 +12,7 @@ import com.belajar.myapplication.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class PremiumFragment extends Fragment {
+public class UserPremiumFragment extends Fragment {
 
     @Nullable
     @Override

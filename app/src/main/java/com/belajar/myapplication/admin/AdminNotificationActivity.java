@@ -33,8 +33,8 @@ public class AdminNotificationActivity extends AppCompatActivity {
 
         loadMockData();
 
-        rvToday.setAdapter(new AdapterNotification(listToday));
-        rvYesterday.setAdapter(new AdapterNotification(listYesterday));
+        rvToday.setAdapter(new AdminAdapterNotification(listToday));
+        rvYesterday.setAdapter(new AdminAdapterNotification(listYesterday));
     }
 
     private void loadMockData() {

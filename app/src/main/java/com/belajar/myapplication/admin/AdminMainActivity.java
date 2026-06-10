@@ -1,7 +1,7 @@
 package com.belajar.myapplication.admin;
 
 import android.os.Bundle;
-import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.belajar.myapplication.R;
@@ -9,7 +9,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class AdminMainActivity extends AppCompatActivity {
 
     private int currentMenuId = R.id.nav_home;
     private final Map<Integer, Integer> menuOrder = new HashMap<>();
@@ -37,10 +37,10 @@ public class MainActivity extends AppCompatActivity {
             if (currentFragment instanceof AdminHomeFragment) {
                 bottomNav.getMenu().findItem(R.id.nav_home).setChecked(true);
                 currentMenuId = R.id.nav_home;
-            } else if (currentFragment instanceof ModulFragment || currentFragment instanceof MateriFragment) {
+            } else if (currentFragment instanceof AdminSubjectListFragment || currentFragment instanceof AdminTopicListFragment) {
                 bottomNav.getMenu().findItem(R.id.nav_modul).setChecked(true);
                 currentMenuId = R.id.nav_modul;
-            } else if (currentFragment instanceof StatistikFragment) {
+            } else if (currentFragment instanceof AdminStatistikFragment) {
                 bottomNav.getMenu().findItem(R.id.nav_chart).setChecked(true);
                 currentMenuId = R.id.nav_chart;
             } else if (currentFragment instanceof AdminProfileFragment) {
@@ -66,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
                 currentMenuId = newId;
                 return true;
             } else if (newId == R.id.nav_modul) {
-                selectedFragment = new ModulFragment();
+                selectedFragment = new AdminSubjectListFragment();
             } else if (newId == R.id.nav_chart) {
-                selectedFragment = new StatistikFragment();
+                selectedFragment = new AdminStatistikFragment();
             } else if (newId == R.id.nav_profile) {
                 selectedFragment = new AdminProfileFragment();
             }

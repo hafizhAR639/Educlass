@@ -11,7 +11,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class UserMainActivity extends AppCompatActivity {
 
     private int currentMenuId = R.id.nav_home;
     private final Map<Integer, Integer> menuOrder = new HashMap<>();
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         }, false);
 
         if (savedInstanceState == null) {
-            loadFragment(new HomeFragment(), false);
+            loadFragment(new UserHomeFragment(), false);
         }
 
         bottomNav.setOnItemSelectedListener(item -> {
@@ -54,13 +54,13 @@ public class MainActivity extends AppCompatActivity {
             boolean slideRight = newPos != null && currentPos != null && newPos > currentPos;
 
             if (newId == R.id.nav_home) {
-                selectedFragment = new HomeFragment();
+                selectedFragment = new UserHomeFragment();
             } else if (newId == R.id.nav_modul) {
-                selectedFragment = new ModulFragment();
+                selectedFragment = new UserSubjectListFragment();
             } else if (newId == R.id.nav_chart) {
-                selectedFragment = new StatistikFragment();
+                selectedFragment = new UserStatistikFragment();
             } else if (newId == R.id.nav_profile) {
-                selectedFragment = new ProfileFragment();
+                selectedFragment = new UserProfileFragment();
             }
 
             if (selectedFragment != null) {
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateBottomNavVisibility(Fragment fragment, BottomNavigationView bottomNav) {
         if (bottomNav == null) return;
         
-        if (fragment instanceof PremiumFragment || fragment instanceof NotificationFragment) {
+        if (fragment instanceof UserPremiumFragment || fragment instanceof UserNotificationFragment) {
             bottomNav.setVisibility(View.GONE);
         } else {
             bottomNav.setVisibility(View.VISIBLE);
@@ -96,13 +96,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Update selected item based on fragment type
         int targetId = -1;
-        if (fragment instanceof HomeFragment) {
+        if (fragment instanceof UserHomeFragment) {
             targetId = R.id.nav_home;
-        } else if (fragment instanceof ModulFragment || fragment instanceof MateriFragment || fragment instanceof ContentFragment) {
+        } else if (fragment instanceof UserSubjectListFragment || fragment instanceof UserTopicListFragment || fragment instanceof UserContentFragment) {
             targetId = R.id.nav_modul;
-        } else if (fragment instanceof StatistikFragment) {
+        } else if (fragment instanceof UserStatistikFragment) {
             targetId = R.id.nav_chart;
-        } else if (fragment instanceof ProfileFragment) {
+        } else if (fragment instanceof UserProfileFragment) {
             targetId = R.id.nav_profile;
         }
 

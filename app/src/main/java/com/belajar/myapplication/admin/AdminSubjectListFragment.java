@@ -2,10 +2,10 @@ package com.belajar.myapplication.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,7 +16,6 @@ import com.belajar.myapplication.R;
 import com.belajar.myapplication.data.local.AppDatabase;
 import com.belajar.myapplication.data.models.ModelSubject;
 import com.belajar.myapplication.shared.AdapterSubject;
-import com.belajar.myapplication.shared.FirebaseHelper;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ import java.util.List;
  * Fragment untuk mengelola Daftar Mata Pelajaran (Modul) di sisi Admin.
  * Prinsip KISS: Logika fetching data dimiripkan dengan sisi User agar semua data (termasuk Matematika) muncul.
  */
-public class ModulFragment extends Fragment {
+public class AdminSubjectListFragment extends Fragment {
 
     private AdapterSubject adapterIpa, adapterIps;
     private final List<ModelSubject> subjectListIpa = new ArrayList<>();
@@ -56,10 +55,10 @@ public class ModulFragment extends Fragment {
 
         // 3. Tombol Tambah Mata Pelajaran (IPA & IPS)
         view.findViewById(R.id.btn_add_subject_ipa).setOnClickListener(v -> {
-            startActivity(new Intent(getActivity(), AddSubjectActivity.class));
+            startActivity(new Intent(getActivity(), AdminAddSubjectActivity.class));
         });
         view.findViewById(R.id.btn_add_subject_ips).setOnClickListener(v -> {
-            startActivity(new Intent(getActivity(), AddSubjectActivity.class));
+            startActivity(new Intent(getActivity(), AdminAddSubjectActivity.class));
         });
 
         // 4. Tombol Kembali
@@ -77,7 +76,7 @@ public class ModulFragment extends Fragment {
     }
 
     private void navigateToMateri(ModelSubject subject) {
-        MateriFragment fragment = new MateriFragment();
+        AdminTopicListFragment fragment = new AdminTopicListFragment();
         Bundle bundle = new Bundle();
         bundle.putString("subject_id", subject.getSubject_id());
         bundle.putString("subject_name", subject.getNama());
@@ -90,29 +89,42 @@ public class ModulFragment extends Fragment {
     }
 
     /**
-     * Strategi Hybrid: Cek lokal dulu agar cepat, lalu update dari Firebase di background.
+     * Strategi Hybrid: Cek lokal dulu agar cepat, lalu update dari Firebase secara real-time.
      */
     private void fetchSubjectsHybrid() {
         if (getContext() == null) return;
+        final android.content.Context context = getContext().getApplicationContext();
 
-        // 1. Ambil data dari Room (Lokal) - Harus di Background Thread agar tidak crash
-        new Thread(() -> {
-            List<ModelSubject> cachedSubjects = AppDatabase.getInstance(requireContext()).subjectDao().getAllSubjects();
-            if (getActivity() != null && !cachedSubjects.isEmpty()) {
-                getActivity().runOnUiThread(() -> processListToAdapter(cachedSubjects));
+        // 1. Ambil data dari Room (Lokal)
+        try {
+            Log.d("AdminSubject", "Fetching from Room (Main Thread)...");
+            List<ModelSubject> cachedSubjects = AppDatabase.getInstance(context).subjectDao().getAllSubjects();
+            Log.d("AdminSubject", "Room count: " + (cachedSubjects != null ? cachedSubjects.size() : 0));
+            if (cachedSubjects != null && !cachedSubjects.isEmpty()) {
+                processListToAdapter(cachedSubjects);
             }
-        }).start();
+        } catch (Exception e) {
+            Log.e("AdminSubject", "Room Error: " + e.getMessage());
+        }
 
-        // 2. Tetap ambil data terbaru dari Firestore
-        FirebaseHelper.fetchSubjects(task -> {
-            if (getContext() == null || !isAdded()) return;
-            if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
-                saveAndProcessRemoteData(task.getResult());
+        // 2. Gunakan SnapshotListener (Real-time dari Firebase)
+        Log.d("AdminSubject", "Starting Firestore Listener...");
+        db.collection("subjects").addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.e("AdminSubject", "Firestore Error: " + error.getMessage());
+                return;
             }
+            if (value == null) {
+                Log.d("AdminSubject", "Firestore returned null");
+                return;
+            }
+            Log.d("AdminSubject", "Firestore raw count: " + value.size());
+            if (!isAdded()) return;
+            saveAndProcessRemoteData(value, context);
         });
     }
 
-    private void saveAndProcessRemoteData(com.google.firebase.firestore.QuerySnapshot result) {
+    private void saveAndProcessRemoteData(com.google.firebase.firestore.QuerySnapshot result, android.content.Context context) {
         List<ModelSubject> remoteList = new ArrayList<>();
         for (QueryDocumentSnapshot document : result) {
             ModelSubject subject = document.toObject(ModelSubject.class);
@@ -120,29 +132,35 @@ public class ModulFragment extends Fragment {
             remoteList.add(subject);
         }
 
-        // Simpan ke Room di Background Thread
-        new Thread(() -> {
-            if (getContext() != null) {
-                AppDatabase.getInstance(requireContext()).subjectDao().insertSubjects(remoteList);
-            }
-        }).start();
+        if (!remoteList.isEmpty()) {
+            new Thread(() -> {
+                try {
+                    AppDatabase.getInstance(context).subjectDao().insertSubjects(remoteList);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
         
-        // Update tampilan UI (Firebase callback sudah di UI Thread)
         processListToAdapter(remoteList);
     }
 
     private void processListToAdapter(List<ModelSubject> list) {
+        Log.d("AdminSubject", "Processing list to adapter. Total: " + list.size());
         subjectListIpa.clear();
         subjectListIps.clear();
 
         for (ModelSubject subject : list) {
             String jurusan = subject.getJurusan();
+            Log.d("AdminSubject", "Subject: " + subject.getNama() + ", Jurusan: " + jurusan);
             if (jurusan != null && jurusan.equalsIgnoreCase("ips")) {
                 subjectListIps.add(subject);
             } else {
                 subjectListIpa.add(subject);
             }
         }
+
+        Log.d("AdminSubject", "IPA count: " + subjectListIpa.size() + ", IPS count: " + subjectListIps.size());
 
         // Urutkan
         subjectListIpa.sort((a, b) -> Long.compare(a.getOrder(), b.getOrder()));

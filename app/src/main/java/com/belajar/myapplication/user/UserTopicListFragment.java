@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MateriFragment extends Fragment {
+public class UserTopicListFragment extends Fragment {
 
     private String subjectId, subjectName;
     private RecyclerView rvTopics;
@@ -88,6 +88,10 @@ public class MateriFragment extends Fragment {
                 boolean isPremium = doc.exists() && Boolean.TRUE.equals(doc.getBoolean("isPremium"));
                 setupAdapter(isPremium);
                 startTopicsListener();
+            }).addOnFailureListener(e -> {
+                // Jika gagal (misal SecurityException), asumsikan bukan premium tapi tetap jalankan
+                setupAdapter(false);
+                startTopicsListener();
             });
         } else {
             setupAdapter(false);
@@ -101,7 +105,7 @@ public class MateriFragment extends Fragment {
             public void onTopicClick(ModelTopic topic, boolean isLocked) {
                 if (isLocked) {
                     getParentFragmentManager().beginTransaction()
-                            .replace(R.id.layout_fragment_container, new PremiumFragment())
+                            .replace(R.id.layout_fragment_container, new UserPremiumFragment())
                             .addToBackStack(null)
                             .commit();
                 } else {
@@ -150,7 +154,7 @@ public class MateriFragment extends Fragment {
     }
 
     private void navigateToContent(ModelTopic topic, boolean usePomodoro, int focus, int breakT) {
-        ContentFragment fragment = new ContentFragment();
+        UserContentFragment fragment = new UserContentFragment();
         Bundle bundle = new Bundle();
         bundle.putString("topic_id", topic.getTopic_id());
         bundle.putString("topic_judul", topic.getJudul());
@@ -198,11 +202,23 @@ public class MateriFragment extends Fragment {
                 ModelTopic topic = document.toObject(ModelTopic.class);
                 topic.setTopic_id(document.getId());
 
-                // Strict Filtering Logic: only show topics that explicitly contain the user's style
+                // Filtering Logic: Tampilkan jika cocok dengan gaya belajar atau jika tidak ada batasan gaya
                 boolean matches = false;
                 java.util.List<String> styles = topic.getLearning_styles();
-                if (styles != null && styles.contains(finalStyle.toLowerCase())) {
-                    matches = true;
+                String lowStyle = finalStyle.toLowerCase();
+
+                if (styles != null && !styles.isEmpty()) {
+                    if (styles.contains(lowStyle)) matches = true;
+                } else {
+                    // Cek boolean flags sebagai fallback
+                    if (lowStyle.contains("visual") && topic.isHas_visual()) matches = true;
+                    else if (lowStyle.contains("audio") && topic.isHas_audio()) matches = true;
+                    else if (lowStyle.contains("kinestetik") && topic.isHas_kinestetik()) matches = true;
+                    
+                    // Jika tidak ada info gaya sama sekali, tampilkan saja
+                    if (!topic.isHas_visual() && !topic.isHas_audio() && !topic.isHas_kinestetik() && (styles == null || styles.isEmpty())) {
+                        matches = true;
+                    }
                 }
 
                 if (matches) {
@@ -211,6 +227,16 @@ public class MateriFragment extends Fragment {
                     } else {
                         topic.setProgress(0);
                     }
+                    topicList.add(topic);
+                }
+            }
+
+            // Jika setelah difilter kosong, tampilkan semua saja daripada user bingung
+            if (topicList.isEmpty() && !result.isEmpty()) {
+                for (QueryDocumentSnapshot document : result) {
+                    ModelTopic topic = document.toObject(ModelTopic.class);
+                    topic.setTopic_id(document.getId());
+                    if (completedIds.contains(topic.getTopic_id())) topic.setProgress(100);
                     topicList.add(topic);
                 }
             }
@@ -246,13 +272,17 @@ public class MateriFragment extends Fragment {
 
     private void updateModuleCountText(int completedCount) {
         if (tvModuleCount != null) {
-            String style = tvCurrentStyle != null ? tvCurrentStyle.getText().toString() : "Visual";
             int total = topicList.size();
-            int progressPercent = total > 0 ? (completedCount * 100 / total) : 0;
+            
+            int progressPercent = 0;
+            if (total > 0) {
+                // Pastikan progress tidak melebihi 100%
+                progressPercent = Math.min(100, (completedCount * 100 / total));
+            }
             
             tvModuleCount.setText(String.format(Locale.getDefault(), 
-                "%d Modul • %d%% Selesai • Gaya: %s", 
-                total, progressPercent, style));
+                "%d Modul • %d%% Selesai", 
+                total, progressPercent));
         }
     }
 

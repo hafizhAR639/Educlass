@@ -21,9 +21,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-public class EditProfileActivity extends AppCompatActivity {
+public class UserEditProfileActivity extends AppCompatActivity {
 
     private EditText etName, etEmail;
     private TextView tvPreviewName, tvPreviewEmail;

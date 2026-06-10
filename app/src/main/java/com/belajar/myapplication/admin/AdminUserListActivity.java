@@ -22,10 +22,10 @@ import java.util.List;
  * Aktivitas untuk mengelola daftar pengguna (User).
  * Admin dapat melihat dan mengatur data pengguna aplikasi.
  */
-public class ManageUserActivity extends AppCompatActivity {
+public class AdminUserListActivity extends AppCompatActivity {
 
     private RecyclerView rvUsers;
-    private AdapterUserAdmin adapter;
+    private AdminAdapterUser adapter;
     private final List<ModelUser> userList = new ArrayList<>();
     private FirebaseFirestore db;
     private EditText etSearch;
@@ -60,7 +60,7 @@ public class ManageUserActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         if (rvUsers == null) return;
         rvUsers.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new AdapterUserAdmin(userList);
+        adapter = new AdminAdapterUser(userList);
         rvUsers.setAdapter(adapter);
     }
 

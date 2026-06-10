@@ -12,11 +12,11 @@ import com.belajar.myapplication.R;
 import com.belajar.myapplication.data.models.ModelActivity;
 import java.util.List;
 
-public class AdapterActivity extends RecyclerView.Adapter<AdapterActivity.ViewHolder> {
+public class AdminAdapterActivity extends RecyclerView.Adapter<AdminAdapterActivity.ViewHolder> {
 
     private final List<ModelActivity> activityList;
 
-    public AdapterActivity(List<ModelActivity> activityList) {
+    public AdminAdapterActivity(List<ModelActivity> activityList) {
         this.activityList = activityList;
     }
 

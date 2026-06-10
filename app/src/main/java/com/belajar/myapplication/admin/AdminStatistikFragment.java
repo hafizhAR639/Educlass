@@ -15,7 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
  * Fragment untuk menampilkan data statistik penggunaan aplikasi.
  * Menampilkan ringkasan aktivitas melalui grafik dan angka yang sinkron dengan database.
  */
-public class StatistikFragment extends Fragment {
+public class AdminStatistikFragment extends Fragment {
 
     private TextView tvTotalUser, tvTotalModul, tvActiveToday, tvAvgDuration;
     private FirebaseFirestore db;

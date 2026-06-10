@@ -12,7 +12,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class ChangePasswordActivity extends AppCompatActivity {
+public class UserChangePasswordActivity extends AppCompatActivity {
 
     private EditText etOldPassword, etNewPassword, etConfirmPassword;
     private FirebaseUser user;

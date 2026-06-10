@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.belajar.myapplication.R;
 import com.belajar.myapplication.auth.AuthLoginActivity;
 
-public class SplashActivity extends AppCompatActivity {
+public class UserSplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,7 +15,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.user_activity_splash);
 
         new Handler().postDelayed(() -> {
-            Intent intent = new Intent(SplashActivity.this, AuthLoginActivity.class);
+            Intent intent = new Intent(UserSplashActivity.this, AuthLoginActivity.class);
             startActivity(intent);
             finish();
         }, 3000);

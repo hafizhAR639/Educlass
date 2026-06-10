@@ -11,9 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.belajar.myapplication.R;
-import java.util.Locale;
 
-public class PomodoroFragment extends Fragment {
+public class UserPomodoroFragment extends Fragment {
 
     private TextView tvTimer;
     private Button btnStartPause, btnReset;

@@ -13,14 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class AdapterUserAdmin extends RecyclerView.Adapter<AdapterUserAdmin.ViewHolder> {
+public class AdminAdapterUser extends RecyclerView.Adapter<AdminAdapterUser.ViewHolder> {
 
     private List<ModelUser> userList;
     private List<ModelUser> userListFull;
     private String selectedFilter = "Semua";
     private String searchQuery = "";
 
-    public AdapterUserAdmin(List<ModelUser> userList) {
+    public AdminAdapterUser(List<ModelUser> userList) {
         this.userList = new ArrayList<>(userList);
         this.userListFull = new ArrayList<>(userList);
     }

@@ -12,11 +12,11 @@ import com.belajar.myapplication.R;
 import com.belajar.myapplication.data.models.ModelNotification;
 import java.util.List;
 
-public class AdapterNotification extends RecyclerView.Adapter<AdapterNotification.ViewHolder> {
+public class AdminAdapterNotification extends RecyclerView.Adapter<AdminAdapterNotification.ViewHolder> {
 
     private final List<ModelNotification> notificationList;
 
-    public AdapterNotification(List<ModelNotification> notificationList) {
+    public AdminAdapterNotification(List<ModelNotification> notificationList) {
         this.notificationList = notificationList;
     }
 

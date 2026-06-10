@@ -5,7 +5,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.belajar.myapplication.R;
 
-public class PrivacyActivity extends AppCompatActivity {
+public class UserPrivacyActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

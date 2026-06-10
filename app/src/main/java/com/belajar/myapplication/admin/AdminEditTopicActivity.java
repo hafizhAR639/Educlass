@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class EditTopicActivity extends AppCompatActivity {
+public class AdminEditTopicActivity extends AppCompatActivity {
 
     private EditText etTitle, etDesc;
     private ChipGroup chipGroup;

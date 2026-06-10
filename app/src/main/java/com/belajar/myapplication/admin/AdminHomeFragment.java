@@ -35,7 +35,7 @@ public class AdminHomeFragment extends Fragment {
     private ImageView ivAvatar;
     private FirebaseFirestore db;
     private RecyclerView rvActivities;
-    private AdapterActivity activityAdapter;
+    private AdminAdapterActivity activityAdapter;
     private final List<ModelActivity> activityList = new ArrayList<>();
 
     @Nullable
@@ -68,7 +68,7 @@ public class AdminHomeFragment extends Fragment {
 
         // Tombol Kelola User
         view.findViewById(R.id.rl_btn_kelola_user).setOnClickListener(v -> {
-            startActivity(new Intent(getActivity(), ManageUserActivity.class));
+            startActivity(new Intent(getActivity(), AdminUserListActivity.class));
         });
 
         // Tombol Statistik
@@ -102,7 +102,7 @@ public class AdminHomeFragment extends Fragment {
     private void setupRecyclerView() {
         if (rvActivities == null) return;
         rvActivities.setLayoutManager(new LinearLayoutManager(getContext()));
-        activityAdapter = new AdapterActivity(activityList);
+        activityAdapter = new AdminAdapterActivity(activityList);
         rvActivities.setAdapter(activityAdapter);
     }
 
@@ -124,7 +124,7 @@ public class AdminHomeFragment extends Fragment {
     private void navigateToSearch(String query) {
         if (getActivity() != null) {
             getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.admin_fragment_container, SearchFragment.newInstance(query))
+                    .replace(R.id.admin_fragment_container, AdminSearchFragment.newInstance(query))
                     .addToBackStack(null)
                     .commit();
         }

@@ -175,6 +175,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
                 android:paddingHorizontal="20dp"
                 tools:listitem="@layout/user_item_topic" />
         </LinearLayout>

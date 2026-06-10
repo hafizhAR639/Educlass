@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class ChooseMajorActivity extends AppCompatActivity {
+public class UserChooseMajorActivity extends AppCompatActivity {
 
     private View cardIpa, cardIps;
     private ImageView ivCheckIpa, ivCheckIps;
@@ -84,7 +84,7 @@ public class ChooseMajorActivity extends AppCompatActivity {
         db.collection("users").document(user.getUid())
                 .update("jurusan", selectedMajor)
                 .addOnSuccessListener(aVoid -> {
-                    startActivity(new Intent(ChooseMajorActivity.this, MainActivity.class));
+                    startActivity(new Intent(UserChooseMajorActivity.this, UserMainActivity.class));
                     finish();
                 })
                 .addOnFailureListener(e -> {

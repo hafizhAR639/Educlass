@@ -12,7 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.belajar.myapplication.R;
-import com.belajar.myapplication.user.MainActivity;
+import com.belajar.myapplication.user.UserMainActivity;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -84,19 +84,19 @@ public class AuthLoginActivity extends AppCompatActivity {
                                     String jurusan = documentSnapshot.getString("jurusan");
                                     
                                     if (role != null && role.equals("admin")) {
-                                        startActivity(new Intent(AuthLoginActivity.this, com.belajar.myapplication.admin.MainActivity.class));
+                                        startActivity(new Intent(AuthLoginActivity.this, com.belajar.myapplication.admin.AdminMainActivity.class));
                                     } else {
                                         // Cek apakah sudah pilih jurusan
                                         if (jurusan == null || jurusan.isEmpty()) {
-                                            startActivity(new Intent(AuthLoginActivity.this, com.belajar.myapplication.user.ChooseMajorActivity.class));
+                                            startActivity(new Intent(AuthLoginActivity.this, com.belajar.myapplication.user.UserChooseMajorActivity.class));
                                         } else {
-                                            startActivity(new Intent(AuthLoginActivity.this, MainActivity.class));
+                                            startActivity(new Intent(AuthLoginActivity.this, UserMainActivity.class));
                                         }
                                     }
                                     finish();
                                 } else {
                                     // Default jika data user tidak ditemukan di Firestore
-                                    startActivity(new Intent(AuthLoginActivity.this, MainActivity.class));
+                                    startActivity(new Intent(AuthLoginActivity.this, UserMainActivity.class));
                                     finish();
                                 }
                             })

@@ -17,7 +17,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class ProfileFragment extends Fragment {
+public class UserProfileFragment extends Fragment {
 
     private AuthManager authManager;
     private FirebaseFirestore db;
@@ -66,7 +66,7 @@ public class ProfileFragment extends Fragment {
                     } else {
                         getActivity().getSupportFragmentManager().beginTransaction()
                                 .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
-                                .replace(R.id.layout_fragment_container, new HomeFragment())
+                                .replace(R.id.layout_fragment_container, new UserHomeFragment())
                                 .commit();
                     }
                 }
@@ -75,19 +75,19 @@ public class ProfileFragment extends Fragment {
 
         if (btnEditProfile != null) {
             btnEditProfile.setOnClickListener(v -> {
-                startActivity(new Intent(getActivity(), EditProfileActivity.class));
+                startActivity(new Intent(getActivity(), UserEditProfileActivity.class));
             });
         }
 
         if (btnChangePassword != null) {
             btnChangePassword.setOnClickListener(v -> {
-                startActivity(new Intent(getActivity(), ChangePasswordActivity.class));
+                startActivity(new Intent(getActivity(), UserChangePasswordActivity.class));
             });
         }
 
         if (btnPrivacy != null) {
             btnPrivacy.setOnClickListener(v -> {
-                startActivity(new Intent(getActivity(), PrivacyActivity.class));
+                startActivity(new Intent(getActivity(), UserPrivacyActivity.class));
             });
         }
 

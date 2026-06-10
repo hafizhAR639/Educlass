@@ -17,7 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchFragment extends Fragment {
+public class AdminSearchFragment extends Fragment {
 
     private String query;
     private RecyclerView rvResults;
@@ -25,8 +25,8 @@ public class SearchFragment extends Fragment {
     private final List<ModelSubject> resultList = new ArrayList<>();
     private FirebaseFirestore db;
 
-    public static SearchFragment newInstance(String query) {
-        SearchFragment fragment = new SearchFragment();
+    public static AdminSearchFragment newInstance(String query) {
+        AdminSearchFragment fragment = new AdminSearchFragment();
         Bundle args = new Bundle();
         args.putString("query", query);
         fragment.setArguments(args);
@@ -59,7 +59,7 @@ public class SearchFragment extends Fragment {
         rvResults.setLayoutManager(new LinearLayoutManager(getContext()));
         
         adapter = new AdapterSubject(resultList, R.layout.admin_item_subject_admin, (subject, v) -> {
-            MateriFragment fragment = new MateriFragment();
+            AdminTopicListFragment fragment = new AdminTopicListFragment();
             Bundle bundle = new Bundle();
             bundle.putString("subject_id", subject.getSubject_id());
             bundle.putString("subject_name", subject.getNama());

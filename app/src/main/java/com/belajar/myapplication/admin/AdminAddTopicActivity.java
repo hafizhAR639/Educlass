@@ -12,8 +12,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import com.belajar.myapplication.R;
-import com.belajar.myapplication.data.models.ModelTopic;
-import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -24,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class AddTopicActivity extends AppCompatActivity {
+public class AdminAddTopicActivity extends AppCompatActivity {
 
     private EditText etTitle, etDesc;
     private ChipGroup chipGroup;

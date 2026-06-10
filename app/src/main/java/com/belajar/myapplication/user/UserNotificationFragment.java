@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class NotificationFragment extends Fragment {
+public class UserNotificationFragment extends Fragment {
 
     @Nullable
     @Override
